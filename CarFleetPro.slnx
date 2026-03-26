@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="CarFleetPro.API/CarFleetPro.API.csproj" />
+  <Project Path="CarFleetPro.Mobile/CarFleetPro.Mobile.csproj" />
+</Solution>
