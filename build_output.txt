@@ -1,0 +1,9 @@
+﻿  Geri y├╝klenecek projeler belirleniyor...
+  Geri y├╝kleme i├ğin t├╝m projeler g├╝ncel.
+  CarFleetPro.API -> C:\Users\Alper\Desktop\CarFleetPro\CarFleetPro.API\bin\Debug\net10.0\CarFleetPro.API.dll
+
+Olu┼şturma ba┼şar─▒l─▒ oldu.
+    0 Uyar─▒
+    0 Hata
+
+Ge├ğen S├╝re 00:00:02.45
