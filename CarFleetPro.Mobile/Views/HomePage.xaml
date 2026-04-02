@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="CarFleetPro.Mobile.Views.HomePage"
+             BackgroundColor="#F3F4F6"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto, *, Auto">
+
+        <Border Grid.Row="0"
+                BackgroundColor="#0A1128" 
+                StrokeThickness="0"
+                HeightRequest="110">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="0, 0, 20, 20" />
+            </Border.StrokeShape>
+
+            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="5">
+                <HorizontalStackLayout HorizontalOptions="Center" Spacing="0">
+                    <Label Text="CARFLEET" FontSize="14" TextColor="White" FontAttributes="Bold" />
+                    <Label Text="PRO" FontSize="14" TextColor="#3B82F6" FontAttributes="Bold" />
+                </HorizontalStackLayout>
+
+                <Label Text="ANA SAYFA" FontSize="26" TextColor="White" HorizontalOptions="Center" Margin="0,5,0,0"/>
+            </VerticalStackLayout>
+        </Border>
+
+        <CollectionView Grid.Row="1" 
+                        Margin="0,10,0,0"
+                        SelectionMode="None">
+            
+
+            <CollectionView.Footer>
+                <BoxView HeightRequest="20" BackgroundColor="Transparent"/>
+            </CollectionView.Footer>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame BackgroundColor="White" 
+                           CornerRadius="12" 
+                           Padding="10" 
+                           Margin="20, 10, 20, 10" 
+                           HasShadow="True" 
+                           BorderColor="Transparent">
+
+                        <VerticalStackLayout Spacing="10">
+
+                            <Frame Padding="0" CornerRadius="10" BorderColor="#D1D5DB" HasShadow="False" BackgroundColor="White">
+                                <Image Source="dotnet_bot.png" 
+                                       HeightRequest="150" 
+                                       Aspect="AspectFit" 
+                                       Margin="10"/>
+                            </Frame>
+
+                            <Grid ColumnDefinitions="Auto, *, Auto" Padding="5,0" Margin="0,5">
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer />
+                                </Grid.GestureRecognizers>
+
+                                <HorizontalStackLayout Grid.Column="0" Spacing="6" VerticalOptions="Center">
+                                    <Ellipse Fill="#10B981" WidthRequest="16" HeightRequest="16" VerticalOptions="Center"/>
+                                    <Label Text="MÜSAİT" TextColor="#1F2937" FontSize="15" FontAttributes="Bold" VerticalOptions="Center"/>
+                                </HorizontalStackLayout>
+
+                                <Image Grid.Column="2" 
+                                       Source="arrowdown.svg" 
+                                       HeightRequest="20" 
+                                       WidthRequest="20" 
+                                       VerticalOptions="Center" 
+                                       HorizontalOptions="End"/>
+                            </Grid>
+
+                            <Frame Padding="15" CornerRadius="10" BorderColor="#D1D5DB" HasShadow="False" BackgroundColor="White">
+                                <Grid ColumnDefinitions="*, *" RowSpacing="5">
+                                    <VerticalStackLayout Grid.Column="0" Spacing="5">
+                                        <Label Text="Kiralayan: Yok" FontSize="12" TextColor="#4B5563"/>
+                                        <Label Text="Kiralama Fiyatı: 26.000TL" FontSize="12" TextColor="#4B5563"/>
+                                        <Label Text="Kiralama Süresi: -" FontSize="12" TextColor="#4B5563"/>
+                                        <Label Text="Kiralama Tarihi: -" FontSize="12" TextColor="#4B5563"/>
+                                    </VerticalStackLayout>
+
+                                    <VerticalStackLayout Grid.Column="1" Spacing="5">
+                                        <Label Text="Araç Plakası: 34 ABC 123" FontSize="12" TextColor="#4B5563" HorizontalOptions="End"/>
+                                        <Label Text="Araç Marka: FORD" FontSize="12" TextColor="#4B5563" HorizontalOptions="End"/>
+                                        <Label Text="Araç Model: FOCUS" FontSize="12" TextColor="#3B82F6" FontAttributes="Bold" HorizontalOptions="End"/>
+                                        <Label Text="Araç Hp: 120" FontSize="12" TextColor="#4B5563" HorizontalOptions="End"/>
+                                        <Label Text="Araç Yaşı: 1" FontSize="12" TextColor="#4B5563" HorizontalOptions="End"/>
+                                        <Label Text="Araç KM: 15000" FontSize="12" TextColor="#4B5563" HorizontalOptions="End"/>
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Frame>
+
+                        </VerticalStackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <Border Grid.Row="2" 
+                BackgroundColor="#0A1128" 
+                StrokeThickness="0" 
+                HeightRequest="75">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="20,20,0,0" />
+            </Border.StrokeShape>
+
+            <Grid ColumnDefinitions="*, *, *, *" Padding="10,0">
+                <Image Grid.Column="0" Source="homenegatif.svg" HeightRequest="26" HorizontalOptions="Center" VerticalOptions="Center" />
+                <Frame Grid.Column="1" BackgroundColor="Transparent" BorderColor="#3B82F6" CornerRadius="12" Padding="12, 8" HorizontalOptions="Center" VerticalOptions="Center" HasShadow="False">
+                    <Image Source="garagepozitif.svg" HeightRequest="26" />
+                </Frame>
+                <Image Grid.Column="2" Source="plusnegatif.svg" HeightRequest="32" HorizontalOptions="Center" VerticalOptions="Center" />
+                <Image Grid.Column="3" Source="settingsnegatif.svg" HeightRequest="26" HorizontalOptions="Center" VerticalOptions="Center" />
+            </Grid>
+        </Border>
+
+    </Grid>
+</ContentPage>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="CarFleetPro.Mobile.Views.LoginPage"
+             BackgroundColor="#F3F4F6"
+             Shell.NavBarIsVisible="False">
+
+    <Grid>
+        <Border BackgroundColor="#0A1128" 
+                StrokeThickness="0"
+                VerticalOptions="Start"
+                HeightRequest="320">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="0, 0, 30, 30" />
+            </Border.StrokeShape>
+        </Border>
+
+        <ScrollView>
+            <VerticalStackLayout Padding="30, 60, 30, 30">
+
+                <VerticalStackLayout HorizontalOptions="Center" Spacing="5" Margin="0,0,0,30">
+
+                    <Image Source="app_logo.png" 
+                           HeightRequest="100"    WidthRequest="100"     Aspect="AspectFit"     HorizontalOptions="Center"
+                           Margin="0,0,0,15"/>
+                    <HorizontalStackLayout HorizontalOptions="Center" Spacing="0">
+                        <Label Text="CARFLEET" FontSize="28" TextColor="White" FontAttributes="Bold" />
+                        <Label Text="PRO" FontSize="28" TextColor="#3B82F6" FontAttributes="Bold" />
+                    </HorizontalStackLayout>
+
+                    <Label Text="HOŞ GELDİNİZ" 
+                           FontSize="20" 
+                           TextColor="White" 
+                           HorizontalOptions="Center" 
+                           Margin="0, 20, 0, 0" />
+                </VerticalStackLayout>
+
+                <Frame BackgroundColor="White" 
+                       CornerRadius="10" 
+                       Padding="20, 30" 
+                       HasShadow="True"
+                       BorderColor="Transparent"
+                       Margin="0, 10, 0, 0">
+
+                    <VerticalStackLayout Spacing="20">
+
+                        <Frame Padding="15,0" CornerRadius="8" BorderColor="#D1D5DB" HasShadow="False" BackgroundColor="White" HeightRequest="50">
+                            <Entry Placeholder="HOŞ GELDİNİZ" 
+                                   TextColor="#1F2937"
+                                   PlaceholderColor="#9CA3AF"
+                                   VerticalOptions="Center" />
+                        </Frame>
+
+                        <Frame Padding="15,0" CornerRadius="8" BorderColor="#D1D5DB" HasShadow="False" BackgroundColor="White" HeightRequest="50">
+                            <Entry Placeholder="********" 
+                                   IsPassword="True" 
+                                   TextColor="#1F2937"
+                                   PlaceholderColor="#9CA3AF"
+                                   VerticalOptions="Center" />
+                        </Frame>
+
+                        <Button Text="GİRİŞ" 
+                                BackgroundColor="#3B82F6" 
+                                TextColor="White" 
+                                FontAttributes="Bold" 
+                                FontSize="16"
+                                CornerRadius="8" 
+                                HeightRequest="50" 
+                                Margin="0, 10, 0, 0"/>
+
+                    </VerticalStackLayout>
+                </Frame>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+
+</ContentPage>
