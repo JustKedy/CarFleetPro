@@ -18,5 +18,7 @@
         public string? PhotoUrl { get; set; } // Cloudinary'den gelecek link
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
+        public int HorsePower { get; set; }
+        public string? ImageUrl { get; set; } // Soru işareti boş bırakılabilir demek
     }
 }

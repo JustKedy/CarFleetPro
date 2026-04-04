@@ -9,10 +9,14 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Veritabanı Bağlantısı (Kopmalara Karşı Çelik Yelekli Hali)
+// 1. Veritabanı Bağlantısı (Kopmalara ve Batch çakışmalarına karşı tam koruma)
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
-    npgsqlOptions => npgsqlOptions.EnableRetryOnFailure()));
+    npgsqlOptions => 
+    {
+        npgsqlOptions.EnableRetryOnFailure();
+        npgsqlOptions.MaxBatchSize(1); // İŞTE GERÇEK YERİ BURASI!
+    }));
 
 // 2. ASP.NET Identity Kurulumu
 builder.Services.AddIdentity<AppUser, IdentityRole>()

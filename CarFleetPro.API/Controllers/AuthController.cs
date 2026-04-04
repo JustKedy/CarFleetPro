@@ -25,7 +25,6 @@ namespace CarFleetPro.API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto model)
         {
-            // Kullanıcı zaten var mı kontrolü
             var existingUser = await _userManager.FindByEmailAsync(model.Email);
             if (existingUser != null)
                 return BadRequest("Bu email adresi zaten kullanımda.");
@@ -35,7 +34,7 @@ namespace CarFleetPro.API.Controllers
                 UserName = model.Email,
                 Email = model.Email,
                 FullName = model.FullName,
-                Role = "Agent" // Varsayılan olarak herkesi çalışan (Agent) yapıyoruz
+                Role = "Agent"
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
@@ -54,7 +53,6 @@ namespace CarFleetPro.API.Controllers
             if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
                 return Unauthorized("Email veya şifre hatalı.");
 
-            // JWT Token Oluşturma İşlemleri
             var authClaims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
