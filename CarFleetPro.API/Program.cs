@@ -1,18 +1,18 @@
-using Microsoft.OpenApi;
 using CarFleetPro.API.Data;
 using CarFleetPro.API.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-
+using Microsoft.OpenApi;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Veritabanı Bağlantısı (Senin başarıyla kurduğun kısım)
+// 1. Veritabanı Bağlantısı (Kopmalara Karşı Çelik Yelekli Hali)
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
+    npgsqlOptions => npgsqlOptions.EnableRetryOnFailure()));
 
 // 2. ASP.NET Identity Kurulumu
 builder.Services.AddIdentity<AppUser, IdentityRole>()
@@ -45,10 +45,11 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-// 4. Swagger Ayarları (Ekrana kilit butonu ekliyoruz)
+// 4. Swagger Ayarları (Senin bizzat çözdüğün, tam uyumlu versiyon)
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "CarFleetPro API", Version = "v1" });
+
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "JWT Token'ınızı buraya yapıştırın. Örnek: Bearer {token}",
@@ -57,10 +58,11 @@ builder.Services.AddSwaggerGen(c =>
         Type = SecuritySchemeType.ApiKey,
         Scheme = "Bearer"
     });
-    c.AddSecurityRequirement(_ => new OpenApiSecurityRequirement
+
+    c.AddSecurityRequirement(document => new OpenApiSecurityRequirement
     {
         {
-            new OpenApiSecuritySchemeReference("Bearer"),
+            new OpenApiSecuritySchemeReference("Bearer", document),
             new List<string>()
         }
     });
@@ -77,7 +79,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Sıralama çok önemli: Önce kimlik sor (Authentication), sonra yetkiye bak (Authorization)
+// Sıralama çok önemli: Önce kimlik sor, sonra yetkiye bak
 app.UseAuthentication();
 app.UseAuthorization();
 
