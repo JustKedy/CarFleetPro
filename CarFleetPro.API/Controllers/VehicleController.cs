@@ -20,10 +20,24 @@ namespace CarFleetPro.API.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetAllVehicles()
+        [AllowAnonymous] 
+        public async Task<IActionResult> GetAllVehicles([FromQuery] string? status)
         {
-            var vehicles = await _context.Vehicles.ToListAsync();
+            // Önce tüm araçları veritabanından çekmek için hazırlık yap
+            var query = _context.Vehicles.AsQueryable();
+
+            // Eğer Yunus parametre gönderdiyse (örn: ?status=müsait), ona göre filtrele
+            if (!string.IsNullOrEmpty(status))
+            {
+                if (status.ToLower() == "müsait") 
+                    query = query.Where(v => v.Status == VehicleStatus.Available);
+                else if (status.ToLower() == "dolu") 
+                    query = query.Where(v => v.Status == VehicleStatus.Rented);
+                else if (status.ToLower() == "bakımda") 
+                    query = query.Where(v => v.Status == VehicleStatus.Maintenance);
+            }
+
+            var vehicles = await query.ToListAsync();
             return Ok(vehicles);
         }
 
@@ -46,6 +60,7 @@ namespace CarFleetPro.API.Controllers
                 Mileage = dto.Mileage,
                 HorsePower = dto.HorsePower,
                 ImageUrl = dto.ImageUrl,
+                Color = dto.Color,
                 Status = VehicleStatus.Available,
                 CreatedAt = DateTime.UtcNow
             };
@@ -73,9 +88,26 @@ namespace CarFleetPro.API.Controllers
             vehicle.Mileage = dto.Mileage;
             vehicle.HorsePower = dto.HorsePower;
             vehicle.ImageUrl = dto.ImageUrl;
+            vehicle.Color = dto.Color;
 
             await _context.SaveChangesAsync();
             return Ok(new { message = "Araç başarıyla güncellendi!", vehicle });
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteVehicle(int id)
+        {
+            var vehicle = await _context.Vehicles.FindAsync(id);
+            if (vehicle == null) return NotFound("Silinecek araç bulunamadı.");
+
+            // Araba şu an kiradaysa silinmesine izin verme!
+            if (vehicle.Status == VehicleStatus.Rented)
+                return BadRequest("Bu araç şu anda kirada olduğu için sistemden silinemez!");
+
+            _context.Vehicles.Remove(vehicle);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = $"{vehicle.PlateNumber} plakalı araç filodan silindi." });
         }
         [HttpGet("cards")]
         [AllowAnonymous]

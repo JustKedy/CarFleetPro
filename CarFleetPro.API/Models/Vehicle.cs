@@ -1,4 +1,4 @@
-﻿namespace CarFleetPro.API.Models
+namespace CarFleetPro.API.Models
 {
     public class Vehicle
     {
@@ -20,5 +20,6 @@
         public DateTime? UpdatedAt { get; set; }
         public int HorsePower { get; set; }
         public string? ImageUrl { get; set; } // Soru işareti boş bırakılabilir demek
+        public string? Color { get; set; }
     }
 }

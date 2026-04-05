@@ -30,5 +30,6 @@ namespace CarFleetPro.API.DTOs
         public int Mileage { get; set; }
         public int HorsePower { get; set; }
         public string? ImageUrl { get; set; }
+        public string? Color { get; set; }
     }
 }
