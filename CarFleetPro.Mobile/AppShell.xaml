@@ -9,7 +9,7 @@
 
     <ShellContent
     Title="Giriş Ekranı"
-    ContentTemplate="{DataTemplate views:LoginPage}"
-    Route="LoginPage" />
+    ContentTemplate="{DataTemplate views:HomePage}"
+    Route="HomePage" />
 
 </Shell>
