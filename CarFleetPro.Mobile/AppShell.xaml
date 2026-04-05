@@ -8,8 +8,8 @@
     Shell.FlyoutBehavior="Disabled">
 
     <ShellContent
-        Title="Login"
-        ContentTemplate="{DataTemplate views:LoginPage}"
-        Route="LoginPage" />
+    Title="Giriş Ekranı"
+    ContentTemplate="{DataTemplate views:LoginPage}"
+    Route="LoginPage" />
 
 </Shell>

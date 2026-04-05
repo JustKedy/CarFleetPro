@@ -12,4 +12,9 @@ public partial class HomePage : ContentPage
         // Tasarým ile Veriyi Birleþtiren Köprü!
         BindingContext = new HomeViewModel();
     }
+
+    private async void OnOpenFormClicked(object sender, TappedEventArgs e)
+    {
+        await Navigation.PushModalAsync(new FleetManagementPage());
+    }
 }
