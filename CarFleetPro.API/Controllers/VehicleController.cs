@@ -96,5 +96,36 @@ namespace CarFleetPro.API.Controllers
 
             return Ok(cardList); // Kadir'in istediği o kusursuz JSON paketini yolla!
         }
+
+        [HttpPut("{id}/maintenance/start")]
+        public async Task<IActionResult> SendToMaintenance(int id)
+        {
+            var vehicle = await _context.Vehicles.FindAsync(id);
+            if (vehicle == null) return NotFound("Araç bulunamadı.");
+            
+            // Sadece müsait olan araçlar bakıma gidebilir (Kiradaki araba gidemez)
+            if (vehicle.Status != VehicleStatus.Available) 
+                return BadRequest("Sadece müsait durumdaki araçlar bakıma alınabilir.");
+
+            vehicle.Status = VehicleStatus.Maintenance;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = $"{vehicle.PlateNumber} plakalı araç bakıma alındı." });
+        }
+
+        [HttpPut("{id}/maintenance/end")]
+        public async Task<IActionResult> EndMaintenance(int id)
+        {
+            var vehicle = await _context.Vehicles.FindAsync(id);
+            if (vehicle == null) return NotFound("Araç bulunamadı.");
+            
+            if (vehicle.Status != VehicleStatus.Maintenance) 
+                return BadRequest("Bu araç zaten bakımda değil.");
+
+            vehicle.Status = VehicleStatus.Available;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = $"{vehicle.PlateNumber} plakalı aracın bakımı bitti, tekrar müsait." });
+        }
     }
 }
