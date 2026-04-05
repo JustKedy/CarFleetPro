@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:CarFleetPro.Mobile.Controls"
+             x:Class="CarFleetPro.Mobile.Views.AddNewVehiclePage"
+             Title="Yeni Araç Ekle"
+             BackgroundColor="#F5F5F5"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="*, Auto">
+
+        <ScrollView Grid.Row="0" Padding="20">
+            <VerticalStackLayout Spacing="15">
+
+                <VerticalStackLayout Spacing="5" HorizontalOptions="Center">
+                    <Border BackgroundColor="#E0E0E0" 
+                            HeightRequest="150" 
+                            WidthRequest="250" 
+                            StrokeShape="RoundRectangle 10"
+                            HorizontalOptions="Center">
+                        <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="5">
+                            <Label Text="&#xf1b9;" 
+                                   FontFamily="FontAwesome" 
+                                   FontSize="60" 
+                                   TextColor="#757575" 
+                                   HorizontalOptions="Center" />
+                            <Label Text="ARAÇ GÖRSELİ YÜKLE" 
+                                   TextColor="Black" 
+                                   FontAttributes="Bold" 
+                                   HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Button Text="GÖRSEL SEÇ" 
+                            BackgroundColor="#757575" 
+                            TextColor="White" 
+                            CornerRadius="10" 
+                            Padding="10" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="10" Margin="0,15,0,0">
+
+                    <Grid ColumnDefinitions="Auto, *" ColumnSpacing="10" VerticalOptions="Center">
+                        <Label Grid.Column="0" Text="Plaka:" TextColor="Black" VerticalOptions="Center" WidthRequest="100"/>
+                        <Border Grid.Column="1" Stroke="#BDBDBD" StrokeThickness="1" StrokeShape="RoundRectangle 5">
+                            <Entry Placeholder="Plaka Giriniz" />
+                        </Border>
+                    </Grid>
+
+                    <Grid ColumnDefinitions="Auto, *" ColumnSpacing="10" VerticalOptions="Center">
+                        <Label Grid.Column="0" Text="Marka:" TextColor="Black" VerticalOptions="Center" WidthRequest="100"/>
+                        <Border Grid.Column="1" Stroke="#BDBDBD" StrokeThickness="1" StrokeShape="RoundRectangle 5">
+                            <Picker Title="Marka Seç" TitleColor="#757575">
+                                <Picker.Items>
+                                    <x:String>Renault</x:String>
+                                    <x:String>Ford</x:String>
+                                    <x:String>Fiat</x:String>
+                                </Picker.Items>
+                            </Picker>
+                        </Border>
+                    </Grid>
+
+                    <Grid ColumnDefinitions="Auto, *" ColumnSpacing="10" VerticalOptions="Center">
+                        <Label Grid.Column="0" Text="Model:" TextColor="Black" VerticalOptions="Center" WidthRequest="100"/>
+                        <Border Grid.Column="1" Stroke="#BDBDBD" StrokeThickness="1" StrokeShape="RoundRectangle 5">
+                            <Picker Title="Model Seç" TitleColor="#757575">
+                                <Picker.Items>
+                                    <x:String>Clio</x:String>
+                                    <x:String>Focus</x:String>
+                                    <x:String>Egea</x:String>
+                                </Picker.Items>
+                            </Picker>
+                        </Border>
+                    </Grid>
+
+                    <Grid ColumnDefinitions="Auto, *" ColumnSpacing="10" VerticalOptions="Center">
+                        <Label Grid.Column="0" Text="Model Yılı:" TextColor="Black" VerticalOptions="Center" WidthRequest="100"/>
+                        <Border Grid.Column="1" Stroke="#BDBDBD" StrokeThickness="1" StrokeShape="RoundRectangle 5">
+                            <Entry Keyboard="Numeric" Placeholder="Örn: 2022" />
+                        </Border>
+                    </Grid>
+
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="10" VerticalOptions="Center">
+                        <Grid Grid.Column="0" ColumnDefinitions="Auto, *" ColumnSpacing="5" VerticalOptions="Center">
+                            <Label Grid.Column="0" Text="HP:" TextColor="Black" VerticalOptions="Center"/>
+                            <Border Grid.Column="1" Stroke="#BDBDBD" StrokeThickness="1" StrokeShape="RoundRectangle 5">
+                                <Entry Keyboard="Numeric" Placeholder="BG" />
+                            </Border>
+                        </Grid>
+
+                        <Grid Grid.Column="1" ColumnDefinitions="Auto, *" ColumnSpacing="5" VerticalOptions="Center">
+                            <Label Grid.Column="0" Text="KM:" TextColor="Black" VerticalOptions="Center"/>
+                            <Border Grid.Column="1" Stroke="#BDBDBD" StrokeThickness="1" StrokeShape="RoundRectangle 5">
+                                <Entry Keyboard="Numeric" Placeholder="0 Km" />
+                            </Border>
+                        </Grid>
+                    </Grid>
+
+                    <Grid ColumnDefinitions="Auto, *" ColumnSpacing="10" VerticalOptions="Center">
+                        <Label Grid.Column="0" Text="Renk:" TextColor="Black" VerticalOptions="Center" WidthRequest="100"/>
+                        <Border Grid.Column="1" Stroke="#BDBDBD" StrokeThickness="1" StrokeShape="RoundRectangle 5">
+                            <Entry Placeholder="Örn: Beyaz" />
+                        </Border>
+                    </Grid>
+
+                    <Grid ColumnDefinitions="Auto, *" ColumnSpacing="10" VerticalOptions="Center">
+                        <Label Grid.Column="0" Text="Durum:" TextColor="Black" VerticalOptions="Center" WidthRequest="100"/>
+                        <Border Grid.Column="1" Stroke="#BDBDBD" StrokeThickness="1" StrokeShape="RoundRectangle 5">
+                            <Picker Title="Durum Seç" SelectedIndex="0" TitleColor="#757575">
+                                <Picker.Items>
+                                    <x:String>Müsait</x:String>
+                                    <x:String>Dolu</x:String>
+                                    <x:String>Bakımda</x:String>
+                                </Picker.Items>
+                            </Picker>
+                        </Border>
+                    </Grid>
+
+                </VerticalStackLayout>
+
+                <Grid ColumnDefinitions="*, *" ColumnSpacing="20" Margin="0,25,0,0">
+                    <Button Grid.Column="0" 
+                            Text="KAYDET" 
+                            BackgroundColor="#2196F3" 
+                            TextColor="White" 
+                            CornerRadius="10" 
+                            Padding="15" />
+
+                    <Button Grid.Column="1" 
+                            Text="İPTAL ET" 
+                            BackgroundColor="White" 
+                            TextColor="#2196F3" 
+                            CornerRadius="10" 
+                            BorderColor="#2196F3" 
+                            BorderWidth="1" 
+                            Padding="15" />
+                </Grid>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <controls:BottomNavBar Grid.Row="1" SelectedTab="List" />
+
+    </Grid>
+</ContentPage>
