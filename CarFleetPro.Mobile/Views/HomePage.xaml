@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:CarFleetPro.Mobile.Controls"
              x:Class="CarFleetPro.Mobile.Views.HomePage"
              BackgroundColor="#F3F4F6"
              Shell.NavBarIsVisible="False">
@@ -42,7 +43,6 @@
 
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-
                     <Border BackgroundColor="White" 
                             Padding="10" 
                             Margin="20, 10, 20, 10" 
@@ -115,28 +115,7 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
 
-        <Border Grid.Row="2" 
-                BackgroundColor="#0A1128" 
-                StrokeThickness="0" 
-                HeightRequest="75">
-            <Border.StrokeShape>
-                <RoundRectangle CornerRadius="20,20,0,0" />
-            </Border.StrokeShape>
-
-            <Grid ColumnDefinitions="*, *, *, *" Padding="10,0">
-                <Image Grid.Column="0" Source="homenegatif.svg" HeightRequest="26" HorizontalOptions="Center" VerticalOptions="Center" />
-
-                <Border Grid.Column="1" BackgroundColor="Transparent" Stroke="#3B82F6" StrokeThickness="1" Padding="12, 8" HorizontalOptions="Center" VerticalOptions="Center">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="12" />
-                    </Border.StrokeShape>
-                    <Image Source="garagepozitif.svg" HeightRequest="26" />
-                </Border>
-
-                <Image Grid.Column="2" Source="plusnegatif.svg" HeightRequest="32" HorizontalOptions="Center" VerticalOptions="Center" />
-                <Image Grid.Column="3" Source="settingsnegatif.svg" HeightRequest="26" HorizontalOptions="Center" VerticalOptions="Center" />
-            </Grid>
-        </Border>
+        <controls:BottomNavBar Grid.Row="2" SelectedTab="Garage" />
 
     </Grid>
 </ContentPage>

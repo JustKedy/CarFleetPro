@@ -6,4 +6,9 @@ public partial class HomePage : ContentPage
     {
         InitializeComponent();
     }
+
+    private async void OnOpenFormClicked(object sender, TappedEventArgs e)
+    {
+        await Navigation.PushModalAsync(new FleetManagementPage());
+    }
 }
