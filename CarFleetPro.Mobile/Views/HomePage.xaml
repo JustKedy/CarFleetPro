@@ -45,7 +45,7 @@
 						   BorderColor="Transparent">
 						<VerticalStackLayout Spacing="10">
 							<Frame Padding="0" CornerRadius="10" BorderColor="#D1D5DB" HasShadow="False" BackgroundColor="White">
-								<Image Source="dotnet_bot.png" HeightRequest="150" Aspect="AspectFit" Margin="10"/>
+								<Image Source="{Binding ResimUrl, TargetNullValue='dotnet_bot.png'}" HeightRequest="150" Aspect="AspectFill" Margin="10"/>
 							</Frame>
 
 							<Grid ColumnDefinitions="Auto, *, Auto" Padding="5,0" Margin="0,5">
@@ -59,10 +59,10 @@
 							<Frame Padding="15" CornerRadius="10" BorderColor="#D1D5DB" HasShadow="False" BackgroundColor="White">
 								<Grid ColumnDefinitions="*, *" RowSpacing="5">
 									<VerticalStackLayout Grid.Column="0" Spacing="5">
-										<Label Text="Kiralayan: Yok" FontSize="12" TextColor="#4B5563"/>
-										<Label Text="{Binding KiralamaFiyati, StringFormat='Kiralama Fiyatı: {0:N0}TL'}" FontSize="12" TextColor="#4B5563"/>
-										<Label Text="{Binding KiralamaSuresi, StringFormat='Kiralama Süresi: {0}'}" FontSize="12" TextColor="#4B5563"/>
-										<Label Text="Kiralama Tarihi: -" FontSize="12" TextColor="#4B5563"/>
+										<Label Text="{Binding KiralayanKisi, StringFormat='Kiralayan: {0}', TargetNullValue='Kiralayan: Yok'}" FontSize="12" TextColor="#4B5563"/>
+										<Label Text="{Binding KiralamaFiyati, StringFormat='Kiralama Fiyatı: {0:N0}TL', TargetNullValue='Kiralama Fiyatı: -'}" FontSize="12" TextColor="#4B5563"/>
+										<Label Text="{Binding KiralamaSuresi, StringFormat='Kiralama Süresi: {0}', TargetNullValue='Kiralama Süresi: -'}" FontSize="12" TextColor="#4B5563"/>
+										<Label Text="{Binding KiralamaTarihi, StringFormat='Kiralama Tarihi: {0}', TargetNullValue='Kiralama Tarihi: -'}" FontSize="12" TextColor="#4B5563"/>
 									</VerticalStackLayout>
 
 									<VerticalStackLayout Grid.Column="1" Spacing="5">

@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.ObjectModel;
@@ -43,24 +43,23 @@ namespace CarFleetPro.Mobile.ViewModels
                     foreach (var vehicle in apiVehicles) { AracListesi.Add(vehicle); }
                 });
             }
-            catch
+            catch (Exception ex)
             {
-                // API KAPALIYSA VEYA VERİTABANI BOŞSA BURASI KESİN ÇALIŞACAK
+                // HATA MESAJINI EKRANDA GÖSTER - sebebi anlayalım!
+                var hataMesaji = ex.InnerException?.Message ?? ex.Message;
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     AracListesi.Clear();
                     AracListesi.Add(new Vehicle
                     {
-                        Id = Guid.NewGuid(),
-                        Plaka = "34 HATA 404",
-                        Marka = "VERİTABANI BOŞ",
-                        Model = "VEYA API KAPALI",
-                        Hp = 150,
-                        Yas = 2,
-                        Km = 25000,
-                        Durum = "MÜSAİT",
-                        KiralamaFiyati = 30000,
-                        KiralamaSuresi = "5 Gün",
+                        Id = -1,
+                        Plaka = "BAĞLANTI HATASI",
+                        Marka = hataMesaji,  // <-- Asıl hata buraya yazılacak
+                        Model = ex.GetType().Name,
+                        Hp = 0,
+                        Yas = 0,
+                        Km = 0,
+                        Durum = "BAKIMDA",
                         IsExpanded = false
                     });
                 });

@@ -44,6 +44,8 @@ namespace CarFleetPro.API.Controllers
                 TransmissionType = dto.TransmissionType,
                 DailyRate = dto.DailyRate,
                 Mileage = dto.Mileage,
+                HorsePower = dto.HorsePower,
+                ImageUrl = dto.ImageUrl,
                 Status = VehicleStatus.Available,
                 CreatedAt = DateTime.UtcNow
             };
@@ -52,6 +54,28 @@ namespace CarFleetPro.API.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Araç filoya başarıyla eklendi!", vehicle = newVehicle });
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateVehicle(int id, [FromBody] CreateVehicleDto dto)
+        {
+            var vehicle = await _context.Vehicles.FindAsync(id);
+            if (vehicle == null) return NotFound("Araç bulunamadı.");
+
+            vehicle.PlateNumber = dto.PlateNumber;
+            vehicle.Brand = dto.Brand;
+            vehicle.Model = dto.Model;
+            vehicle.Year = dto.Year;
+            vehicle.VehicleType = dto.VehicleType;
+            vehicle.FuelType = dto.FuelType;
+            vehicle.TransmissionType = dto.TransmissionType;
+            vehicle.DailyRate = dto.DailyRate;
+            vehicle.Mileage = dto.Mileage;
+            vehicle.HorsePower = dto.HorsePower;
+            vehicle.ImageUrl = dto.ImageUrl;
+
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Araç başarıyla güncellendi!", vehicle });
         }
         [HttpGet("cards")]
         [AllowAnonymous]

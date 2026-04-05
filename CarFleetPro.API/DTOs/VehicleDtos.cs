@@ -28,5 +28,7 @@ namespace CarFleetPro.API.DTOs
         public Models.TransmissionType TransmissionType { get; set; }
         public decimal DailyRate { get; set; }
         public int Mileage { get; set; }
+        public int HorsePower { get; set; }
+        public string? ImageUrl { get; set; }
     }
 }
