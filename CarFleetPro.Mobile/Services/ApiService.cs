@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -18,12 +18,24 @@ namespace CarFleetPro.Mobile.Services
         // Alper'in API portu kaçsa (örn: 5001) onu buraya yazın.
         private const string BaseUrl = "http://10.0.2.2:5161/api/";
 
+        // Sertifika hatalarını yok sayan köprü (Sadece geliştirme aşaması için!)
+        private static HttpMessageHandler GetInsecureHandler()
+        {
+            var handler = new HttpClientHandler();
+            // SSL sertifikası ne olursa olsun (geçersiz/sahte) TRUE dönüp kabul et
+            handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) =>
+            {
+                return true;
+            };
+            return handler;
+        }
+
         public ApiService()
         {
-            _httpClient = new HttpClient();
+            _httpClient = new HttpClient(GetInsecureHandler()); // Sertifikayı sorgulama!
             _httpClient.BaseAddress = new Uri(BaseUrl);
 
-            // API 3 saniye içinde cevap vermezse bekleme, direkt patlat!
+            // 50 saniye içinde cevap vermezse bekleme, direkt patlat!
             _httpClient.Timeout = TimeSpan.FromSeconds(50);
         }
 

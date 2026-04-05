@@ -81,7 +81,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection(); // Mobil test için kapalı — Android emülatörü dev sertifikasına güvenmez
 
 // Sıralama çok önemli: Önce kimlik sor, sonra yetkiye bak
 app.UseAuthentication();

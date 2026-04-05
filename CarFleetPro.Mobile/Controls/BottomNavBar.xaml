@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="CarFleetPro.Mobile.Controls.BottomNavBar">
+
+    <Border BackgroundColor="#0A1128" StrokeThickness="0" HeightRequest="75">
+        <Border.StrokeShape>
+            <RoundRectangle CornerRadius="20,20,0,0" />
+        </Border.StrokeShape>
+
+        <Grid ColumnDefinitions="*, *, *, *" Padding="10,0">
+
+            <Border x:Name="HomeBorder" Grid.Column="0" BackgroundColor="Transparent" Stroke="Transparent" StrokeThickness="1" Padding="12, 8" HorizontalOptions="Center" VerticalOptions="Center">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <Image x:Name="HomeImg" Source="homenegatif.svg" HeightRequest="26" />
+            </Border>
+
+            <Border x:Name="GarageBorder" Grid.Column="1" BackgroundColor="Transparent" Stroke="Transparent" StrokeThickness="1" Padding="12, 8" HorizontalOptions="Center" VerticalOptions="Center">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <Image x:Name="GarageImg" Source="garagenegatif.svg" HeightRequest="26" />
+            </Border>
+
+            <Border x:Name="ListBorder" Grid.Column="2" BackgroundColor="Transparent" Stroke="Transparent" StrokeThickness="1" Padding="12, 8" HorizontalOptions="Center" VerticalOptions="Center">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <Image x:Name="ListImg" Source="listnegatif.svg" HeightRequest="26" />
+            </Border>
+
+            <Border x:Name="SettingsBorder" Grid.Column="3" BackgroundColor="Transparent" Stroke="Transparent" StrokeThickness="1" Padding="12, 8" HorizontalOptions="Center" VerticalOptions="Center">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <Image x:Name="SettingsImg" Source="settingsnegatif.svg" HeightRequest="26" />
+            </Border>
+
+        </Grid>
+    </Border>
+</ContentView>
