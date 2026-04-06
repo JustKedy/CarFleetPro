@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Maui.Controls;
+using CarFleetPro.Mobile.Views; // Görünümleri tanıyabilmesi için
 
 namespace CarFleetPro.Mobile;
 
@@ -11,12 +13,12 @@ public partial class App : Application
 
     protected override Window CreateWindow(IActivationState? activationState)
     {
-        // MAUI'nin varsayılan penceresini oluşturuyoruz (AppShell'i çağırarak)
-        var window = new Window(new AppShell());
-
-        // Pencere boyutlarını telefon formatına (dikey) sabitliyoruz
-        window.Width = 400;
-        window.Height = 850;
+        // Object Initializer kullanarak hem oluşturuyoruz hem de boyutlarını veriyoruz.
+        Window window = new(new NavigationPage(new()))
+        {
+            Width = 400,
+            Height = 850
+        };
 
         return window;
     }

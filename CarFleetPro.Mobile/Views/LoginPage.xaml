@@ -72,6 +72,7 @@
                         </Border>
 
                         <Button Text="GİRİŞ" 
+                                Clicked="OnLoginClicked"
                                 BackgroundColor="#3B82F6" 
                                 TextColor="White" 
                                 FontAttributes="Bold" 

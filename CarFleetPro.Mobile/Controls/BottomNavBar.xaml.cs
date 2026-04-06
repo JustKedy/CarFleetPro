@@ -1,3 +1,7 @@
+using Microsoft.Maui.Controls;
+using System;
+using CarFleetPro.Mobile.Views; // Sayfalara (HomePage, GaragePage vb.) ulaşmak için ekledik
+
 namespace CarFleetPro.Mobile.Controls;
 
 public partial class BottomNavBar : ContentView
@@ -62,5 +66,34 @@ public partial class BottomNavBar : ContentView
                 SettingsImg.Source = "settingspozitif.svg";
                 break;
         }
+    }
+
+    // ----- YENİ EKLENEN: SAYFA GEÇİŞ (NAVİGASYON) METOTLARI -----
+
+    private async void OnHomeTapped(object? sender, TappedEventArgs e)
+    {
+        // Zaten bu sayfadaysak hiçbir şey yapma
+        if (SelectedTab == "Home") return;
+
+        // false parametresi animasyonu kapatır, alt menü sekmesi gibi anında geçer
+        await Navigation.PushAsync(new HomePage(), false);
+    }
+
+    private async void OnGarageTapped(object? sender, TappedEventArgs e)
+    {
+        if (SelectedTab == "Garage") return;
+        await Navigation.PushAsync(new GaragePage(), false);
+    }
+
+    private async void OnListTapped(object? sender, TappedEventArgs e)
+    {
+        if (SelectedTab == "List") return;
+        await Navigation.PushAsync(new FleetManagementPage(), false);
+    }
+
+    private async void OnSettingsTapped(object? sender, TappedEventArgs e)
+    {
+        if (SelectedTab == "Settings") return;
+        await Navigation.PushAsync(new SettingsPage(), false);
     }
 }

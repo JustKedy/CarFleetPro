@@ -11,6 +11,9 @@
         <Grid ColumnDefinitions="*, *, *, *" Padding="10,0">
 
             <Border x:Name="HomeBorder" Grid.Column="0" BackgroundColor="Transparent" Stroke="Transparent" StrokeThickness="1" Padding="12, 8" HorizontalOptions="Center" VerticalOptions="Center">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnHomeTapped" />
+                </Border.GestureRecognizers>
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="12" />
                 </Border.StrokeShape>
@@ -18,6 +21,9 @@
             </Border>
 
             <Border x:Name="GarageBorder" Grid.Column="1" BackgroundColor="Transparent" Stroke="Transparent" StrokeThickness="1" Padding="12, 8" HorizontalOptions="Center" VerticalOptions="Center">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnGarageTapped" />
+                </Border.GestureRecognizers>
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="12" />
                 </Border.StrokeShape>
@@ -25,6 +31,9 @@
             </Border>
 
             <Border x:Name="ListBorder" Grid.Column="2" BackgroundColor="Transparent" Stroke="Transparent" StrokeThickness="1" Padding="12, 8" HorizontalOptions="Center" VerticalOptions="Center">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnListTapped" />
+                </Border.GestureRecognizers>
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="12" />
                 </Border.StrokeShape>
@@ -32,6 +41,9 @@
             </Border>
 
             <Border x:Name="SettingsBorder" Grid.Column="3" BackgroundColor="Transparent" Stroke="Transparent" StrokeThickness="1" Padding="12, 8" HorizontalOptions="Center" VerticalOptions="Center">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnSettingsTapped" />
+                </Border.GestureRecognizers>
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="12" />
                 </Border.StrokeShape>

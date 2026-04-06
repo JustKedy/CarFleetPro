@@ -9,12 +9,7 @@ public partial class HomePage : ContentPage
     {
         InitializeComponent();
 
-        // Tasarým ile Veriyi Birleþtiren Köprü!
+        // Yeni Dashboard sayfamÄ±zÄ±n motorunu baÄŸlÄ±yoruz
         BindingContext = new HomeViewModel();
-    }
-
-    private async void OnOpenFormClicked(object sender, TappedEventArgs e)
-    {
-        await Navigation.PushModalAsync(new FleetManagementPage());
     }
 }
