@@ -14,7 +14,7 @@ public partial class App : Application
     protected override Window CreateWindow(IActivationState? activationState)
     {
         // Object Initializer kullanarak hem oluşturuyoruz hem de boyutlarını veriyoruz.
-        Window window = new(new NavigationPage(new()))
+        Window window = new(new NavigationPage(new LoginPage()))
         {
             Width = 400,
             Height = 850
