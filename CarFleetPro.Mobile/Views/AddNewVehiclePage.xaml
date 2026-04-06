@@ -67,13 +67,24 @@
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="8" />
                                 </Border.StrokeShape>
-                                <Entry Placeholder="Marka" TextColor="#1F2937" PlaceholderColor="#9CA3AF" BackgroundColor="Transparent"/>
+                                <Picker x:Name="BrandPicker" 
+                                        Title="Marka" 
+                                        TextColor="#1F2937" 
+                                        TitleColor="#9CA3AF" 
+                                        BackgroundColor="Transparent">
+                                </Picker>
                             </Border>
+
                             <Border Grid.Column="1" Stroke="#E5E7EB" StrokeThickness="1" BackgroundColor="#F9FAFB" Padding="15,0" HeightRequest="50">
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="8" />
                                 </Border.StrokeShape>
-                                <Entry Placeholder="Model" TextColor="#1F2937" PlaceholderColor="#9CA3AF" BackgroundColor="Transparent"/>
+                                <Picker x:Name="ModelPicker" 
+                                        Title="Model" 
+                                        TextColor="#1F2937" 
+                                        TitleColor="#9CA3AF" 
+                                        BackgroundColor="Transparent">
+                                </Picker>
                             </Border>
                         </Grid>
 
@@ -84,11 +95,20 @@
                                 </Border.StrokeShape>
                                 <Entry Placeholder="Yıl" Keyboard="Numeric" TextColor="#1F2937" PlaceholderColor="#9CA3AF" BackgroundColor="Transparent"/>
                             </Border>
+
                             <Border Grid.Column="1" Stroke="#E5E7EB" StrokeThickness="1" BackgroundColor="#F9FAFB" Padding="15,0" HeightRequest="50">
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="8" />
                                 </Border.StrokeShape>
-                                <Entry Placeholder="Renk" TextColor="#1F2937" PlaceholderColor="#9CA3AF" BackgroundColor="Transparent"/>
+                                <Picker Title="Renk" TextColor="#1F2937" TitleColor="#9CA3AF" BackgroundColor="Transparent">
+                                    <Picker.Items>
+                                        <x:String>Beyaz</x:String>
+                                        <x:String>Siyah</x:String>
+                                        <x:String>Gri</x:String>
+                                        <x:String>Kırmızı</x:String>
+                                        <x:String>Mavi</x:String>
+                                    </Picker.Items>
+                                </Picker>
                             </Border>
                         </Grid>
 
@@ -134,4 +154,4 @@
         <controls:BottomNavBar Grid.Row="2" SelectedTab="List" />
 
     </Grid>
-</ContentPage>  
+</ContentPage>
