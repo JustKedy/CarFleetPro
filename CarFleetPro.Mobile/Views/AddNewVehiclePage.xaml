@@ -94,15 +94,8 @@
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="8" />
                                 </Border.StrokeShape>
-                                <Picker x:Name="RenkPicker" Title="Renk" TextColor="#1F2937" TitleColor="#9CA3AF" BackgroundColor="Transparent">
-                                    <Picker.Items>
-                                        <x:String>Beyaz</x:String>
-                                        <x:String>Siyah</x:String>
-                                        <x:String>Gri</x:String>
-                                        <x:String>Kırmızı</x:String>
-                                        <x:String>Mavi</x:String>
-                                    </Picker.Items>
-                                </Picker>
+                                <Picker x:Name="RenkPicker" Title="Renk" TextColor="#1F2937" TitleColor="#9CA3AF" BackgroundColor="Transparent" />
+
                             </Border>
                         </Grid>
 
@@ -125,13 +118,8 @@
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="8" />
                             </Border.StrokeShape>
-                            <Picker x:Name="DurumPicker" Title="Mevcut Durum Seçin" TextColor="#1F2937" TitleColor="#9CA3AF" BackgroundColor="Transparent">
-                                <Picker.Items>
-                                    <x:String>MÜSAİT</x:String>
-                                    <x:String>DOLU</x:String>
-                                    <x:String>BAKIMDA</x:String>
-                                </Picker.Items>
-                            </Picker>
+                            <Picker x:Name="DurumPicker" Title="Mevcut Durum Seçin" TextColor="#1F2937" TitleColor="#9CA3AF" BackgroundColor="Transparent" />
+
                         </Border>
 
                     </VerticalStackLayout>

@@ -21,12 +21,12 @@ namespace CarFleetPro.Mobile.ViewModels
             _ = LoadVehiclesFromApi();
         }
 
-        private async Task LoadVehiclesFromApi()
+        private async Task LoadVehiclesFromApi(bool forceRefresh = false)
         {
             try
             {
                 // 1. API'ye bağlanıp veriyi çekiyoruz
-                var apiVehicles = await _apiService.GetVehiclesAsync();
+                var apiVehicles = await _apiService.GetVehiclesAsync(forceRefresh);
 
                 // 2. Eğer Alper'in veritabanı boşsa, hata fırlatıp aşağıdaki catch bloğuna düşürüyoruz
                 if (apiVehicles == null || apiVehicles.Count == 0)
@@ -62,6 +62,12 @@ namespace CarFleetPro.Mobile.ViewModels
                     });
                 });
             }
+        }
+
+        [RelayCommand]
+        public async Task VerileriYenile()
+        {
+            await LoadVehiclesFromApi(forceRefresh: true);
         }
 
         // Akordeon (Aşağı Ok) animasyonu için komut

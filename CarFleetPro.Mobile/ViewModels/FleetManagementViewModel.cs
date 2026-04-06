@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -24,14 +24,20 @@ namespace CarFleetPro.Mobile.ViewModels
             _ = VerileriYukle();
         }
 
-        private async Task VerileriYukle()
+        private async Task VerileriYukle(bool forceRefresh = false)
         {
-            var gelenAraclar = await _apiService.GetVehiclesAsync();
+            var gelenAraclar = await _apiService.GetVehiclesAsync(forceRefresh);
             if (gelenAraclar != null)
             {
                 _tumAraclar = gelenAraclar;
                 Filtrele("Tümü");
             }
+        }
+
+        [RelayCommand]
+        public async Task VerileriYenile()
+        {
+            await VerileriYukle(forceRefresh: true);
         }
 
         [RelayCommand]

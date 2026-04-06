@@ -33,5 +33,6 @@ namespace CarFleetPro.API.DTOs
         public string? ImageUrl { get; set; }
         public string? Color { get; set; }
         public string? Branch { get; set; }
+        public Models.VehicleStatus Status { get; set; }
     }
 }

@@ -72,18 +72,14 @@
                                 <HorizontalStackLayout Grid.Column="2" Spacing="15" VerticalOptions="Center">
 
                                     <ImageButton Source="edit.svg" 
-                                                 HeightRequest="22" 
-                                                 WidthRequest="22" 
-                                                 BackgroundColor="Transparent"
-                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:FleetManagementViewModel}}, Path=DuzenleCommand}" 
-                                                 CommandParameter="{Binding .}" />
+                 HeightRequest="22" WidthRequest="22" BackgroundColor="Transparent"
+                 Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:FleetManagementViewModel}}, Path=DuzenleCommand}" 
+                 CommandParameter="{Binding .}" />
 
                                     <ImageButton Source="trash.svg" 
-                                                 HeightRequest="22" 
-                                                 WidthRequest="22" 
-                                                 BackgroundColor="Transparent"
-                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:FleetManagementViewModel}}, Path=SilCommand}" 
-                                                 CommandParameter="{Binding .}" />
+                 HeightRequest="22" WidthRequest="22" BackgroundColor="Transparent"
+                 Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:FleetManagementViewModel}}, Path=SilCommand}" 
+                 CommandParameter="{Binding .}" />
 
                                 </HorizontalStackLayout>
                             </Grid>

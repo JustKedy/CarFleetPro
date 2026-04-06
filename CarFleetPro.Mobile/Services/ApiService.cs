@@ -48,36 +48,141 @@ namespace CarFleetPro.Mobile.Services
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             }
         }
-
-        // --- ALPER'İN POST /api/Auth/login UCU ---
-        public async Task<bool> LoginAsync(string email, string password)
+        // ApiService.cs içine eklenecekler
+        public async Task<List<string>> GetBrandsAsync()
         {
-            var loginData = new { Email = email, Password = password };
-            var response = await _httpClient.PostAsJsonAsync("Auth/login", loginData);
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                // Alper'den gelen Token'ı alıp SecureStorage'a güvenle kaydediyoruz
-                var result = await response.Content.ReadFromJsonAsync<AuthResponse>();
-                if (result?.Token != null)
-                {
-                    await SecureStorage.Default.SetAsync("jwt_token", result.Token);
-                    return true;
-                }
+                return await _httpClient.GetFromJsonAsync<List<string>>("CarBrands") ?? new List<string>();
             }
-            return false;
+            catch { return new List<string>(); }
+        }
+
+        public async Task<List<string>> GetModelsAsync(string brand)
+        {
+            try
+            {
+                // Markaya göre modelleri getirir
+                return await _httpClient.GetFromJsonAsync<List<string>>($"CarModels/{brand}") ?? new List<string>();
+            }
+            catch { return new List<string>(); }
+        }
+
+        public async Task<List<string>> GetColorsAsync()
+        {
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<List<string>>("CarColors") ?? new List<string>();
+            }
+            catch { return new List<string>(); }
+        }
+
+        public async Task<List<string>> GetStatusesAsync()
+        {
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<List<string>>("VehicleStatuses") ?? new List<string>();
+            }
+            catch { return new List<string> { "MÜSAİT", "DOLU", "BAKIMDA" }; }
+        }
+        public async Task<(bool Success, string Message)> CreateVehicleAsync(CreateVehicleRequest request)
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                var response = await _httpClient.PostAsJsonAsync("Vehicle", request);
+                var content = await response.Content.ReadAsStringAsync();
+
+                System.Diagnostics.Debug.WriteLine($"[API] POST Vehicle → {(int)response.StatusCode}: {content}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    _cachedVehicles = null; // Tüm uygulama için cache'i temizle
+                    return (true, "Araç başarıyla eklendi!");
+                }
+
+                // HTTP durum koduna göre anlamlı hata mesajı oluştur
+                var statusCode = (int)response.StatusCode;
+                var body = content.Trim().Trim('"');
+
+                return statusCode switch
+                {
+                    401 => (false, "Oturum açmanız gerekiyor. Lütfen tekrar giriş yapın."),
+                    403 => (false, "Bu işlem için yetkiniz yok."),
+                    400 => (false, string.IsNullOrEmpty(body) ? "Geçersiz veri gönderildi." : body),
+                    409 => (false, "Bu plakaya sahip araç zaten kayıtlı."),
+                    _   => (false, string.IsNullOrEmpty(body) ? $"Sunucu hatası ({statusCode})." : $"({statusCode}) {body}")
+                };
+            }
+            catch (TaskCanceledException)
+            {
+                return (false, "İstek zaman aşımına uğradı. Sunucu çalışıyor mu?");
+            }
+            catch (HttpRequestException ex)
+            {
+                return (false, $"Bağlantı hatası: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Bağlantı hatası: {ex.Message}");
+            }
+        }
+
+        // --- POST /api/Auth/login ---
+        public async Task<(bool Success, string Message)> LoginAsync(string email, string password)
+        {
+            try
+            {
+                var loginData = new { Email = email, Password = password };
+                var response = await _httpClient.PostAsJsonAsync("Auth/login", loginData);
+                var content = await response.Content.ReadAsStringAsync();
+
+                System.Diagnostics.Debug.WriteLine($"[AUTH] Login → {(int)response.StatusCode}: {content}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await System.Text.Json.JsonSerializer.DeserializeAsync<AuthResponse>(
+                        await response.Content.ReadAsStreamAsync(),
+                        new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                    if (result?.Token != null)
+                    {
+                        await SecureStorage.Default.SetAsync("jwt_token", result.Token);
+                        return (true, "Giriş başarılı!");
+                    }
+                    return (false, "Sunucudan geçersiz yanıt alındı.");
+                }
+
+                var body = content.Trim().Trim('"');
+                return (int)response.StatusCode switch
+                {
+                    401 => (false, string.IsNullOrEmpty(body) ? "Email veya şifre hatalı." : body),
+                    _   => (false, string.IsNullOrEmpty(body) ? $"Hata ({(int)response.StatusCode})." : body)
+                };
+            }
+            catch (TaskCanceledException)
+            {
+                return (false, "Sunucuya ulaşılamıyor. API çalışıyor mu?");
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Bağlantı hatası: {ex.Message}");
+            }
         }
 
         private static List<Vehicle>? _cachedVehicles = null;
         private static DateTime _lastDbUpdateTime = DateTime.MinValue;
 
         // --- ALPER'İN GET /api/Vehicle/cards UCU (Ana Sayfayı Dolduracak Olan) ---
-        public async Task<List<Vehicle>> GetVehiclesAsync()
+        public async Task<List<Vehicle>> GetVehiclesAsync(bool forceRefresh = false)
         {
             // İsteği atmadan önce Güvenlik Görevlisine Token'ı gösteriyoruz
             await SetAuthorizationHeader();
 
             DateTime currentDbUpdateTime = DateTime.MinValue;
+
+            // Zorla yenileme isteniyorsa cache'i temizle
+            if (forceRefresh) _cachedVehicles = null;
 
             try
             {
@@ -125,9 +230,10 @@ namespace CarFleetPro.Mobile.Services
         }
     }
 
-    // Token'ı okuyabilmek için ufak bir yardımcı sınıf
+    // API'nin login response'unu parse etmek için
     public class AuthResponse
     {
-        public string Token { get; set; } = string.Empty;
+        public string Token { get; set; } = string.Empty;       // "token" veya "Token"
+        public DateTime? Expiration { get; set; }               // "expiration"
     }
 }
