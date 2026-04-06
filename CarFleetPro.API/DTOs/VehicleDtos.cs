@@ -15,6 +15,7 @@ namespace CarFleetPro.API.DTOs
         public string? KiralamaSuresi { get; set; }
         public string? KiralamaTarihi { get; set; }
         public string? ResimUrl { get; set; }
+        public string? Branch { get; set; }
     }
 
     public class CreateVehicleDto
@@ -31,5 +32,6 @@ namespace CarFleetPro.API.DTOs
         public int HorsePower { get; set; }
         public string? ImageUrl { get; set; }
         public string? Color { get; set; }
+        public string? Branch { get; set; }
     }
 }

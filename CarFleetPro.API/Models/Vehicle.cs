@@ -21,5 +21,6 @@ namespace CarFleetPro.API.Models
         public int HorsePower { get; set; }
         public string? ImageUrl { get; set; } // Soru işareti boş bırakılabilir demek
         public string? Color { get; set; }
+        public string Branch { get; set; } = "Merkez Şube"; // Şube Filtresi İçin
     }
 }
