@@ -59,8 +59,11 @@ namespace CarFleetPro.Mobile.Services
             {
                 // Alper'den gelen Token'ı alıp SecureStorage'a güvenle kaydediyoruz
                 var result = await response.Content.ReadFromJsonAsync<AuthResponse>();
-                await SecureStorage.Default.SetAsync("jwt_token", result.Token);
-                return true;
+                if (result?.Token != null)
+                {
+                    await SecureStorage.Default.SetAsync("jwt_token", result.Token);
+                    return true;
+                }
             }
             return false;
         }
@@ -88,6 +91,6 @@ namespace CarFleetPro.Mobile.Services
     // Token'ı okuyabilmek için ufak bir yardımcı sınıf
     public class AuthResponse
     {
-        public string Token { get; set; }
+        public string Token { get; set; } = string.Empty;
     }
 }

@@ -20,6 +20,6 @@ namespace CarFleetPro.Mobile.Models
 
         // Akordeon animasyonu için UI tetikleyicisi
         [ObservableProperty]
-        private bool _isExpanded;
+        public partial bool IsExpanded { get; set; }
     }
 }
