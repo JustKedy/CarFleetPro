@@ -8,7 +8,7 @@
     Shell.FlyoutBehavior="Disabled">
 
     <ShellContent
-    Title="Giriş Ekranı"
+    Title="Giriş"
     ContentTemplate="{DataTemplate views:HomePage}"
     Route="HomePage" />
 
