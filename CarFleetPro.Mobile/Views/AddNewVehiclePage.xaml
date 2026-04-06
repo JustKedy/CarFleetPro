@@ -17,7 +17,7 @@
                     <Label Text="CARFLEET" FontSize="14" TextColor="White" FontAttributes="Bold" />
                     <Label Text="PRO" FontSize="14" TextColor="#3B82F6" FontAttributes="Bold" />
                 </HorizontalStackLayout>
-                <Label Text="YENİ ARAÇ EKLE" FontSize="26" TextColor="White" HorizontalOptions="Center" Margin="0,5,0,0"/>
+                <Label x:Name="PageTitleLabel" Text="YENİ ARAÇ EKLE" FontSize="26" TextColor="White" HorizontalOptions="Center" Margin="0,5,0,0"/>
             </VerticalStackLayout>
         </Border>
 
@@ -31,11 +31,15 @@
                     <Border.Shadow>
                         <Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.15"/>
                     </Border.Shadow>
+
                     <VerticalStackLayout Spacing="15" HorizontalOptions="Center">
-                        <Border BackgroundColor="#F3F4F6" HeightRequest="120" WidthRequest="200" Stroke="#D1D5DB" StrokeThickness="2" StrokeDashArray="5,5">
+                        <Border x:Name="ImageUploadBorder" BackgroundColor="#F3F4F6" HeightRequest="120" WidthRequest="200" Stroke="#D1D5DB" StrokeThickness="2" StrokeDashArray="5,5">
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="12" />
                             </Border.StrokeShape>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnUploadImageTapped" />
+                            </Border.GestureRecognizers>
                             <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="10">
                                 <Image Source="car.svg" HeightRequest="40" WidthRequest="40" Opacity="0.5" />
                                 <Label Text="Görsel Yüklemek İçin Tıklayın" FontSize="12" TextColor="#6B7280" FontAttributes="Bold" />
@@ -59,7 +63,7 @@
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="8" />
                             </Border.StrokeShape>
-                            <Entry Placeholder="Araç Plakası (Örn: 34 ABC 123)" TextColor="#1F2937" PlaceholderColor="#9CA3AF" BackgroundColor="Transparent" />
+                            <Entry x:Name="PlakaEntry" Placeholder="Araç Plakası (Örn: 34 ABC 123)" TextColor="#1F2937" PlaceholderColor="#9CA3AF" BackgroundColor="Transparent" />
                         </Border>
 
                         <Grid ColumnDefinitions="*, *" ColumnSpacing="15">
@@ -67,24 +71,14 @@
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="8" />
                                 </Border.StrokeShape>
-                                <Picker x:Name="BrandPicker" 
-                                        Title="Marka" 
-                                        TextColor="#1F2937" 
-                                        TitleColor="#9CA3AF" 
-                                        BackgroundColor="Transparent">
-                                </Picker>
+                                <Picker x:Name="BrandPicker" Title="Marka" TextColor="#1F2937" TitleColor="#9CA3AF" BackgroundColor="Transparent" />
                             </Border>
 
                             <Border Grid.Column="1" Stroke="#E5E7EB" StrokeThickness="1" BackgroundColor="#F9FAFB" Padding="15,0" HeightRequest="50">
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="8" />
                                 </Border.StrokeShape>
-                                <Picker x:Name="ModelPicker" 
-                                        Title="Model" 
-                                        TextColor="#1F2937" 
-                                        TitleColor="#9CA3AF" 
-                                        BackgroundColor="Transparent">
-                                </Picker>
+                                <Picker x:Name="ModelPicker" Title="Model" TextColor="#1F2937" TitleColor="#9CA3AF" BackgroundColor="Transparent" />
                             </Border>
                         </Grid>
 
@@ -93,14 +87,14 @@
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="8" />
                                 </Border.StrokeShape>
-                                <Entry Placeholder="Yıl" Keyboard="Numeric" TextColor="#1F2937" PlaceholderColor="#9CA3AF" BackgroundColor="Transparent"/>
+                                <Entry x:Name="YilEntry" Placeholder="Yıl" Keyboard="Numeric" TextColor="#1F2937" PlaceholderColor="#9CA3AF" BackgroundColor="Transparent"/>
                             </Border>
 
                             <Border Grid.Column="1" Stroke="#E5E7EB" StrokeThickness="1" BackgroundColor="#F9FAFB" Padding="15,0" HeightRequest="50">
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="8" />
                                 </Border.StrokeShape>
-                                <Picker Title="Renk" TextColor="#1F2937" TitleColor="#9CA3AF" BackgroundColor="Transparent">
+                                <Picker x:Name="RenkPicker" Title="Renk" TextColor="#1F2937" TitleColor="#9CA3AF" BackgroundColor="Transparent">
                                     <Picker.Items>
                                         <x:String>Beyaz</x:String>
                                         <x:String>Siyah</x:String>
@@ -117,13 +111,13 @@
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="8" />
                                 </Border.StrokeShape>
-                                <Entry Placeholder="KM" Keyboard="Numeric" TextColor="#1F2937" PlaceholderColor="#9CA3AF" BackgroundColor="Transparent"/>
+                                <Entry x:Name="KmEntry" Placeholder="KM" Keyboard="Numeric" TextColor="#1F2937" PlaceholderColor="#9CA3AF" BackgroundColor="Transparent"/>
                             </Border>
                             <Border Grid.Column="1" Stroke="#E5E7EB" StrokeThickness="1" BackgroundColor="#F9FAFB" Padding="15,0" HeightRequest="50">
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="8" />
                                 </Border.StrokeShape>
-                                <Entry Placeholder="Motor Gücü (HP)" Keyboard="Numeric" TextColor="#1F2937" PlaceholderColor="#9CA3AF" BackgroundColor="Transparent"/>
+                                <Entry x:Name="HpEntry" Placeholder="Motor Gücü (HP)" Keyboard="Numeric" TextColor="#1F2937" PlaceholderColor="#9CA3AF" BackgroundColor="Transparent"/>
                             </Border>
                         </Grid>
 
@@ -131,11 +125,11 @@
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="8" />
                             </Border.StrokeShape>
-                            <Picker Title="Mevcut Durum Seçin" TextColor="#1F2937" TitleColor="#9CA3AF" BackgroundColor="Transparent">
+                            <Picker x:Name="DurumPicker" Title="Mevcut Durum Seçin" TextColor="#1F2937" TitleColor="#9CA3AF" BackgroundColor="Transparent">
                                 <Picker.Items>
-                                    <x:String>Müsait</x:String>
-                                    <x:String>Dolu</x:String>
-                                    <x:String>Bakımda</x:String>
+                                    <x:String>MÜSAİT</x:String>
+                                    <x:String>DOLU</x:String>
+                                    <x:String>BAKIMDA</x:String>
                                 </Picker.Items>
                             </Picker>
                         </Border>
@@ -145,7 +139,7 @@
 
                 <Grid ColumnDefinitions="*, *" ColumnSpacing="15" Margin="20, 10, 20, 10">
                     <Button Grid.Column="0" Text="İPTAL ET" Clicked="OnCancelClicked" BackgroundColor="White" TextColor="#EF4444" BorderColor="#EF4444" BorderWidth="1" FontAttributes="Bold" CornerRadius="8" HeightRequest="50" />
-                    <Button Grid.Column="1" Text="KAYDET" BackgroundColor="#3B82F6" TextColor="White" FontAttributes="Bold" CornerRadius="8" HeightRequest="50" />
+                    <Button Grid.Column="1" Text="KAYDET" Clicked="OnSaveClicked" BackgroundColor="#3B82F6" TextColor="White" FontAttributes="Bold" CornerRadius="8" HeightRequest="50" />
                 </Grid>
 
             </VerticalStackLayout>

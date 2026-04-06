@@ -69,7 +69,7 @@ namespace CarFleetPro.Mobile.ViewModels
             {
                 _tumAraclar.Remove(secilenArac);
                 AracListesi.Remove(secilenArac);
-            }
+            } 
         }
     }
 }
