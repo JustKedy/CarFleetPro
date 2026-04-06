@@ -68,19 +68,56 @@ namespace CarFleetPro.Mobile.Services
             return false;
         }
 
+        private static List<Vehicle>? _cachedVehicles = null;
+        private static DateTime _lastDbUpdateTime = DateTime.MinValue;
+
         // --- ALPER'İN GET /api/Vehicle/cards UCU (Ana Sayfayı Dolduracak Olan) ---
         public async Task<List<Vehicle>> GetVehiclesAsync()
         {
             // İsteği atmadan önce Güvenlik Görevlisine Token'ı gösteriyoruz
             await SetAuthorizationHeader();
 
+            DateTime currentDbUpdateTime = DateTime.MinValue;
+
+            try
+            {
+                // 1. Önce Veritabanında bir değişiklik var mı diye soralım
+                var lastUpdatedResponse = await _httpClient.GetAsync("Vehicle/last-updated");
+                if (lastUpdatedResponse.IsSuccessStatusCode)
+                {
+                    var dbLastUpdatedText = await lastUpdatedResponse.Content.ReadAsStringAsync();
+                    // API'den gelen "2026-04-06T..." şeklindeki metni DateTime'a çeviriyoruz (Tırnak işaretlerini atarak)
+                    if (DateTime.TryParse(dbLastUpdatedText.Trim('"'), out DateTime dbLastUpdated))
+                    {
+                        currentDbUpdateTime = dbLastUpdated;
+                        // 2. Eğer elimizde zaten veri varsa ve veritabanı O ZAMANDAN BERİ DEĞİŞMEMİŞSE:
+                        if (_cachedVehicles != null && _lastDbUpdateTime >= dbLastUpdated)
+                        {
+                            // DB değişmemiş, API'yi yormadan eski listeyi ver!
+                            return new List<Vehicle>(_cachedVehicles); 
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                // Ufak bir bağlantı sorunu yada Endpoint yoksa hiç çökmeden normal çekme işlemine devam et.
+            }
+
+            // 3. Veritabanı DEĞİŞMİŞ ise (ya da ilk defa açılıyorsa) tüm veriyi baştan çek.
             var response = await _httpClient.GetAsync("Vehicle/cards");
 
             if (response.IsSuccessStatusCode)
             {
                 // Alper'den gelen JSON listesini bizim Vehicle modelimize çeviriyoruz
                 var vehicles = await response.Content.ReadFromJsonAsync<List<Vehicle>>();
-                return vehicles ?? new List<Vehicle>();
+                if (vehicles != null)
+                {
+                    _cachedVehicles = vehicles;
+                    // Bir sonraki sorgu için ne zaman güncellendiğini hafızaya al
+                    _lastDbUpdateTime = currentDbUpdateTime != DateTime.MinValue ? currentDbUpdateTime : DateTime.UtcNow;
+                    return new List<Vehicle>(_cachedVehicles);
+                }
             }
 
             // Hata varsa veya token geçersizse boş liste dön

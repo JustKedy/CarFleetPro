@@ -89,6 +89,7 @@ namespace CarFleetPro.API.Controllers
             vehicle.HorsePower = dto.HorsePower;
             vehicle.ImageUrl = dto.ImageUrl;
             vehicle.Color = dto.Color;
+            vehicle.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
             return Ok(new { message = "Araç başarıyla güncellendi!", vehicle });
@@ -109,6 +110,25 @@ namespace CarFleetPro.API.Controllers
 
             return Ok(new { message = $"{vehicle.PlateNumber} plakalı araç filodan silindi." });
         }
+
+        [HttpGet("last-updated")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetLastUpdated()
+        {
+            var maxVehicleCreatedAt = await _context.Vehicles.MaxAsync(v => (DateTime?)v.CreatedAt);
+            var maxVehicleUpdatedAt = await _context.Vehicles.MaxAsync(v => v.UpdatedAt); // Already nullable
+            var maxRentalCreatedAt = await _context.Rentals.MaxAsync(r => (DateTime?)r.CreatedAt);
+
+            var lastUpdated = new[] 
+            { 
+                maxVehicleCreatedAt ?? DateTime.MinValue, 
+                maxVehicleUpdatedAt ?? DateTime.MinValue, 
+                maxRentalCreatedAt ?? DateTime.MinValue 
+            }.Max();
+
+            return Ok(lastUpdated);
+        }
+
         [HttpGet("cards")]
         [AllowAnonymous]
         public async Task<IActionResult> GetVehicleCardsForFrontend()
