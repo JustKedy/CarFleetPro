@@ -74,6 +74,7 @@ namespace CarFleetPro.API.Controllers
                 HorsePower = dto.HorsePower,
                 ImageUrl = dto.ImageUrl,
                 Color = dto.Color,
+                Branch = dto.Branch ?? "Merkez Şube", // Şube bilgisi ekleniyor
                 Status = VehicleStatus.Available,
                 CreatedAt = DateTime.UtcNow
             };
@@ -103,6 +104,7 @@ namespace CarFleetPro.API.Controllers
             vehicle.HorsePower = dto.HorsePower;
             vehicle.ImageUrl = dto.ImageUrl;
             vehicle.Color = dto.Color;
+            vehicle.Branch = dto.Branch ?? "Merkez Şube"; // Şube bilgisi güncelleniyor
             vehicle.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
