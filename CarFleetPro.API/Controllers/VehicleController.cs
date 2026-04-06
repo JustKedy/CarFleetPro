@@ -130,6 +130,19 @@ namespace CarFleetPro.API.Controllers
             return Ok(new { message = $"{vehicle.PlateNumber} plakalı araç filodan silindi." });
         }
 
+        [HttpPost("upload-image")]
+        public IActionResult UploadVehicleImage(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("Lütfen bir görsel seçin.");
+
+            // TODO: İleride resmi buluta (Supabase Storage vb.) yükleme kodlarını buraya yazacağız.
+            // Şimdilik Yunus hata almasın diye ona başarılı bir sahte link dönüyoruz.
+            var fakeImageUrl = "https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg";
+
+            return Ok(new { message = "Görsel başarıyla yüklendi", imageUrl = fakeImageUrl });
+        }
+
         [HttpGet("last-updated")]
         [AllowAnonymous]
         public async Task<IActionResult> GetLastUpdated()
