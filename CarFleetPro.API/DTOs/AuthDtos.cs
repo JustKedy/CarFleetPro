@@ -1,4 +1,4 @@
-﻿namespace CarFleetPro.API.DTOs
+namespace CarFleetPro.API.DTOs
 {
     public class RegisterDto
     {

@@ -1,7 +1,8 @@
-﻿using CarFleetPro.API.DTOs;
+using CarFleetPro.API.DTOs;
 using CarFleetPro.API.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -77,6 +78,67 @@ namespace CarFleetPro.API.Controllers
                 expiration = token.ValidTo,
                 user = new { user.FullName, user.Email, user.Role }
             });
+        }
+
+        [HttpGet("me")]
+        [Authorize]
+        public async Task<IActionResult> GetMyProfile()
+        {
+            var userEmail = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Name)?.Value;
+            if (string.IsNullOrEmpty(userEmail)) return Unauthorized();
+
+            var user = await _userManager.FindByEmailAsync(userEmail);
+            if (user == null) return NotFound("Kullanıcı bulunamadı.");
+
+            return Ok(new 
+            {
+                fullName = user.FullName,
+                email = user.Email,
+                role = user.Role,
+                maintenanceAlerts = user.MaintenanceAlerts,
+                rentalExpiryAlerts = user.RentalExpiryAlerts,
+                instantAvailabilityAlerts = user.InstantAvailabilityAlerts
+            });
+        }
+
+        [HttpPost("change-password")]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
+        {
+            var userEmail = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Name)?.Value;
+            if (string.IsNullOrEmpty(userEmail)) return Unauthorized();
+            
+            var user = await _userManager.FindByEmailAsync(userEmail);
+            if (user == null) return NotFound("Kullanıcı bulunamadı.");
+
+            var result = await _userManager.ChangePasswordAsync(user, dto.OldPassword, dto.NewPassword);
+            
+            if (!result.Succeeded) 
+            {
+                var errorMsg = string.Join(", ", result.Errors.Select(e => e.Description));
+                return BadRequest(errorMsg);
+            }
+
+            return Ok(new { message = "Şifreniz başarıyla güncellendi!" });
+        }
+
+        [HttpPut("notifications")]
+        [Authorize]
+        public async Task<IActionResult> UpdateNotificationSettings([FromBody] UpdateNotificationsDto dto)
+        {
+            var userEmail = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Name)?.Value;
+            if (string.IsNullOrEmpty(userEmail)) return Unauthorized();
+
+            var user = await _userManager.FindByEmailAsync(userEmail);
+            if (user == null) return NotFound("Kullanıcı bulunamadı.");
+
+            user.MaintenanceAlerts = dto.MaintenanceAlerts;
+            user.RentalExpiryAlerts = dto.RentalExpiryAlerts;
+            user.InstantAvailabilityAlerts = dto.InstantAvailabilityAlerts;
+
+            await _userManager.UpdateAsync(user);
+
+            return Ok(new { message = "Bildirim tercihleri kaydedildi." });
         }
     }
 }
