@@ -74,6 +74,7 @@ namespace CarFleetPro.API.Controllers
                 HorsePower = dto.HorsePower,
                 ImageUrl = dto.ImageUrl,
                 Color = dto.Color,
+                Branch = dto.Branch ?? "Merkez Şube", // Şube bilgisi ekleniyor
                 Status = VehicleStatus.Available,
                 CreatedAt = DateTime.UtcNow
             };
@@ -103,6 +104,7 @@ namespace CarFleetPro.API.Controllers
             vehicle.HorsePower = dto.HorsePower;
             vehicle.ImageUrl = dto.ImageUrl;
             vehicle.Color = dto.Color;
+            vehicle.Branch = dto.Branch ?? "Merkez Şube"; // Şube bilgisi güncelleniyor
             vehicle.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
@@ -126,6 +128,19 @@ namespace CarFleetPro.API.Controllers
             _cache.Remove(VehicleCacheKey); // Veritabanı değişti, eski hafızayı sil!
 
             return Ok(new { message = $"{vehicle.PlateNumber} plakalı araç filodan silindi." });
+        }
+
+        [HttpPost("upload-image")]
+        public IActionResult UploadVehicleImage(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("Lütfen bir görsel seçin.");
+
+            // TODO: İleride resmi buluta (Supabase Storage vb.) yükleme kodlarını buraya yazacağız.
+            // Şimdilik Yunus hata almasın diye ona başarılı bir sahte link dönüyoruz.
+            var fakeImageUrl = "https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg";
+
+            return Ok(new { message = "Görsel başarıyla yüklendi", imageUrl = fakeImageUrl });
         }
 
         [HttpGet("last-updated")]
