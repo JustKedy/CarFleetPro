@@ -1,6 +1,10 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System;
 using CarFleetPro.Mobile.Models;
 using CarFleetPro.Mobile.Services;
 using Microsoft.Maui.Controls;
@@ -10,14 +14,13 @@ namespace CarFleetPro.Mobile.ViewModels
     public partial class FleetManagementViewModel : ObservableObject
     {
         private readonly ApiService _apiService;
-        private List<Vehicle> _tumAraclar = [];
+        private List<Vehicle> _tumAraclar = new();
 
-        public ObservableCollection<Vehicle> AracListesi { get; set; } = [];
+        public ObservableCollection<Vehicle> AracListesi { get; set; } = new();
 
-        // ─── Skeleton Screen Kontrolü ──────────────────────────────────
-        [ObservableProperty] private bool isLoading = true;
+        // AOT UYARISI ÇÖZÜMÜ
+        [ObservableProperty] public partial bool IsLoading { get; set; } = true;
 
-        // ─── Constructor (DI) ─────────────────────────────────────────
         public FleetManagementViewModel(ApiService apiService)
         {
             _apiService = apiService;
@@ -62,26 +65,29 @@ namespace CarFleetPro.Mobile.ViewModels
             }
         }
 
+        // STATİC UYARISI VE NULL CHECK ÇÖZÜMÜ
         [RelayCommand]
-        public async Task Duzenle(Vehicle secilenArac)
+        public static async Task Duzenle(Vehicle? secilenArac)
         {
-            if (secilenArac is null || Shell.Current is null) return;
-            await Shell.Current.DisplayAlertAsync("Düzenle",
-                $"{secilenArac.Marka} {secilenArac.Model} düzenleme sayfasına gidilecek.", "Tamam");
+            if (secilenArac is not null && Shell.Current is not null)
+            {
+                await Shell.Current.DisplayAlertAsync("Düzenle", $"{secilenArac.Marka} {secilenArac.Model} düzenleme sayfasına gidilecek.", "Tamam");
+            }
         }
 
+        // NULL CHECK ÇÖZÜMÜ
         [RelayCommand]
-        public async Task Sil(Vehicle secilenArac)
+        public async Task Sil(Vehicle? secilenArac)
         {
-            if (secilenArac is null || Shell.Current is null) return;
-
-            bool cevap = await Shell.Current.DisplayAlertAsync("Emin Misin?",
-                $"{secilenArac.Plaka} plakalı aracı silmek istediğine emin misin?", "Evet, Sil", "İptal");
-
-            if (cevap)
+            if (secilenArac is not null && Shell.Current is not null)
             {
-                _tumAraclar.Remove(secilenArac);
-                AracListesi.Remove(secilenArac);
+                bool cevap = await Shell.Current.DisplayAlertAsync("Emin Misin?", $"{secilenArac.Plaka} plakalı aracı silmek istediğine emin misin?", "Evet, Sil", "İptal");
+
+                if (cevap)
+                {
+                    _tumAraclar.Remove(secilenArac);
+                    AracListesi.Remove(secilenArac);
+                }
             }
         }
     }

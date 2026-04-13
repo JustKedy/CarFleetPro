@@ -1,4 +1,5 @@
 using Microsoft.Maui.Controls;
+using System;
 
 namespace CarFleetPro.Mobile.Views;
 
@@ -7,28 +8,31 @@ public partial class VehicleDetailsPage : ContentPage
     public VehicleDetailsPage()
     {
         InitializeComponent();
-
-        // YUNUS NOT: Buraya ileride dışarıdan seçilen aracın ID'si gelecek
-        // BindingContext = new VehicleDetailsViewModel(vehicleId);
     }
 
-    // Geri butonu için motor
     private async void OnBackClicked(object? sender, EventArgs e)
     {
-        // Sayfayı yığından (stack) geri fırlatır
-        await Navigation.PopAsync();
+        // "Null check can be simplified" uyarısı için modern C# kullanımı:
+        if (Navigation is not null)
+        {
+            await Navigation.PopAsync();
+        }
     }
 
-    // YUNUS İÇİN NOT: Bakım ve Kiralama butonları için Command'ler ViewModel'e taşınacak.
-    // Şimdilik tasarımın çalışması için buradalar.
     private async void OnMaintenanceClicked(object? sender, EventArgs e)
     {
-        await DisplayAlert("Bakım", "Araç bakım moduna alınıyor...", "Tamam");
+        if (Shell.Current is not null)
+        {
+            // DisplayAlert yerine DisplayAlertAsync kullanıldı!
+            await Shell.Current.DisplayAlertAsync("Bakım", "Araç bakım moduna alınıyor...", "Tamam");
+        }
     }
 
     private async void OnRentClicked(object? sender, EventArgs e)
     {
-        // Kiralama formuna (bir sonraki ekran) uçuş
-        // await Navigation.PushAsync(new RentalFormPage());
+        if (Navigation is not null)
+        {
+            await Navigation.PushAsync(new RentalFormPage());
+        }
     }
 }

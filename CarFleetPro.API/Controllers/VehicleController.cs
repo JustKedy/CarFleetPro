@@ -24,30 +24,27 @@ namespace CarFleetPro.API.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous] 
+        [AllowAnonymous]
         public async Task<IActionResult> GetAllVehicles([FromQuery] string? status)
         {
-            // 1. Önce listeyi Cache'den (Hafızadan) almayı deniyoruz
-            if (!_cache.TryGetValue(VehicleCacheKey, out List<Vehicle> vehicles))
+            // out parametresini Nullable (?) yapıp null kontrolü ekledik
+            if (!_cache.TryGetValue(VehicleCacheKey, out List<Vehicle>? vehicles) || vehicles == null)
             {
-                // 2. Eğer hafızada yoksa (ilk defa çalışıyorsa veya yeni araç eklendiyse) DB'den çek
                 vehicles = await _context.Vehicles.ToListAsync();
-
-                // 3. Çektiğin bu veriyi hafızaya kaydet (Ömrü: Biz silene kadar veya uygulama kapanana kadar)
                 var cacheOptions = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromHours(1));
                 _cache.Set(VehicleCacheKey, vehicles, cacheOptions);
             }
 
-            // 4. Hafızadaki liste üzerinden Yunus'un filtrelerini (Müsait, Dolu vs.) uygula
-            var query = vehicles.AsQueryable();
+            // Ünlem işareti (!) ile derleyiciye "Bunun null olmadığını garanti ediyorum" dedik. Hata uçtu!
+            var query = vehicles!.AsQueryable();
 
             if (!string.IsNullOrEmpty(status))
             {
-                if (status.ToLower() == "müsait") 
+                if (status.ToLower() == "müsait")
                     query = query.Where(v => v.Status == VehicleStatus.Available);
-                else if (status.ToLower() == "dolu") 
+                else if (status.ToLower() == "dolu")
                     query = query.Where(v => v.Status == VehicleStatus.Rented);
-                else if (status.ToLower() == "bakımda") 
+                else if (status.ToLower() == "bakımda")
                     query = query.Where(v => v.Status == VehicleStatus.Maintenance);
             }
 

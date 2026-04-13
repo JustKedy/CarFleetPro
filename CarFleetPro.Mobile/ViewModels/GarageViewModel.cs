@@ -13,7 +13,7 @@ namespace CarFleetPro.Mobile.ViewModels
         public ObservableCollection<Vehicle> AracListesi { get; set; } = [];
 
         // ─── Skeleton Screen Kontrolü ──────────────────────────────────
-        [ObservableProperty] private bool isLoading = true;
+        [ObservableProperty] public partial bool IsLoading { get; set; } = true;
 
         // ─── Constructor (DI) ─────────────────────────────────────────
         public GarageViewModel(ApiService apiService)

@@ -1,41 +1,42 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CarFleetPro.Mobile.Services;
+using Microsoft.Maui.Controls;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CarFleetPro.Mobile.ViewModels
 {
-    // Derlenmiş bağlamalar (x:DataType) için bu namespace'in XAML tarafında tanımlı olması gerekir.
-    // ViewModel artık DI üzerinden ApiService alıyor (new() yerine constructor injection).
     public partial class HomeViewModel : ObservableObject
     {
         private readonly ApiService _apiService;
 
         // ─── Dashboard İstatistikleri ──────────────────────────────────
-        [ObservableProperty] private int toplamAracSayisi;
-        [ObservableProperty] private int kiradakiAracSayisi;
-        [ObservableProperty] private int musaitAracSayisi;
+        [ObservableProperty] public partial int ToplamAracSayisi { get; set; }
+        [ObservableProperty] public partial int KiradakiAracSayisi { get; set; }
+        [ObservableProperty] public partial int MusaitAracSayisi { get; set; }
 
-        [ObservableProperty] private string kiraYuzdesi  = "0";
-        [ObservableProperty] private string musaitYuzdesi = "0";
-        [ObservableProperty] private string bakimYuzdesi  = "0";
+        [ObservableProperty] public partial string KiraYuzdesi { get; set; } = "0";
+        [ObservableProperty] public partial string MusaitYuzdesi { get; set; } = "0";
+        [ObservableProperty] public partial string BakimYuzdesi { get; set; } = "0";
 
-        [ObservableProperty] private ColumnDefinitionCollection grafikOranlari = new ColumnDefinitionCollection
+        [ObservableProperty]
+        public partial ColumnDefinitionCollection GrafikOranlari { get; set; } = new()
         {
             new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
             new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
             new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }
         };
-        [ObservableProperty] private int    aylikCiro;
-        [ObservableProperty] private string aracModelAdi     = string.Empty;
-        [ObservableProperty] private double barGenisligi     = 0;
-        [ObservableProperty] private int    kiralamaSayisi;
+
+        [ObservableProperty] public partial int AylikCiro { get; set; }
+        [ObservableProperty] public partial string AracModelAdi { get; set; } = string.Empty;
+        [ObservableProperty] public partial double BarGenisligi { get; set; } = 0;
+        [ObservableProperty] public partial int KiralamaSayisi { get; set; }
 
         // ─── Skeleton Screen Kontrolü ──────────────────────────────────
-        // IsLoading=true  → Skeleton görünür, gerçek içerik gizlenir
-        // IsLoading=false → Skeleton gizlenir, gerçek içerik görünür
-        [ObservableProperty] private bool isLoading = true;
+        [ObservableProperty] public partial bool IsLoading { get; set; } = true;
 
-        // ─── Constructor (DI) ─────────────────────────────────────────
         public HomeViewModel(ApiService apiService)
         {
             _apiService = apiService;
@@ -50,17 +51,17 @@ namespace CarFleetPro.Mobile.ViewModels
             {
                 var vehicles = await _apiService.GetVehiclesAsync();
 
-                if (vehicles == null || vehicles.Count == 0) return; // Boşsa fallback değerler kalsın
+                if (vehicles == null || vehicles.Count == 0) return;
 
                 int total = vehicles.Count;
-                ToplamAracSayisi    = total;
-                MusaitAracSayisi    = vehicles.Count(v => v.Durum == "MÜSAİT");
-                KiradakiAracSayisi  = vehicles.Count(v => v.Durum == "KİRADA" || v.Durum == "DOLU");
-                int bakimdaSayisi   = vehicles.Count(v => v.Durum == "BAKIMDA");
+                ToplamAracSayisi = total;
+                MusaitAracSayisi = vehicles.Count(v => v.Durum == "MÜSAİT");
+                KiradakiAracSayisi = vehicles.Count(v => v.Durum == "KİRADA" || v.Durum == "DOLU");
+                int bakimdaSayisi = vehicles.Count(v => v.Durum == "BAKIMDA");
 
-                KiraYuzdesi   = ((KiradakiAracSayisi * 100) / total).ToString();
-                MusaitYuzdesi = ((MusaitAracSayisi   * 100) / total).ToString();
-                BakimYuzdesi  = ((bakimdaSayisi      * 100) / total).ToString();
+                KiraYuzdesi = ((KiradakiAracSayisi * 100) / total).ToString();
+                MusaitYuzdesi = ((MusaitAracSayisi * 100) / total).ToString();
+                BakimYuzdesi = ((bakimdaSayisi * 100) / total).ToString();
 
                 var c1 = Math.Max(1, KiradakiAracSayisi);
                 var c2 = Math.Max(1, MusaitAracSayisi);
@@ -79,7 +80,6 @@ namespace CarFleetPro.Mobile.ViewModels
             }
             finally
             {
-                // Başarılı ya da hatalı her durumda skeleton'ı kaldır
                 IsLoading = false;
             }
         }
