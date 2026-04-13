@@ -11,7 +11,6 @@
 
     <Grid RowDefinitions="Auto, Auto, *, Auto, Auto">
 
-        <!-- ─── HEADER ─────────────────────────────────────────────── -->
         <Border Grid.Row="0" BackgroundColor="#0A1128" StrokeThickness="0" HeightRequest="110">
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="0,0,20,20"/>
@@ -26,26 +25,58 @@
             </VerticalStackLayout>
         </Border>
 
-        <!-- ─── FİLTRE BUTONLARI ───────────────────────────────────── -->
         <ScrollView Grid.Row="1" Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Margin="15,15,0,5">
             <HorizontalStackLayout Spacing="10">
-                <Button Text="Tümü"    Command="{Binding FiltreleCommand}" CommandParameter="Tümü"
-                        BackgroundColor="#0A1128" TextColor="White" CornerRadius="20" HeightRequest="40" Padding="15,0"/>
-                <Button Text="Müsait"  Command="{Binding FiltreleCommand}" CommandParameter="MÜSAİT"
-                        BackgroundColor="White" TextColor="#1F2937" BorderColor="#D1D5DB" BorderWidth="1" CornerRadius="20" HeightRequest="40" Padding="15,0"/>
+
+                <Button Text="Tümü" Command="{Binding FiltreleCommand}" CommandParameter="Tümü"
+                        BackgroundColor="White" TextColor="#1F2937" BorderColor="#D1D5DB" BorderWidth="1" CornerRadius="20" HeightRequest="40" Padding="15,0">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding SeciliFiltre}" Value="Tümü">
+                            <Setter Property="BackgroundColor" Value="#0A1128" />
+                            <Setter Property="TextColor" Value="White" />
+                            <Setter Property="BorderWidth" Value="0" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+
+                <Button Text="Müsait" Command="{Binding FiltreleCommand}" CommandParameter="MÜSAİT"
+                        BackgroundColor="White" TextColor="#1F2937" BorderColor="#D1D5DB" BorderWidth="1" CornerRadius="20" HeightRequest="40" Padding="15,0">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding SeciliFiltre}" Value="MÜSAİT">
+                            <Setter Property="BackgroundColor" Value="#0A1128" />
+                            <Setter Property="TextColor" Value="White" />
+                            <Setter Property="BorderWidth" Value="0" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+
                 <Button Text="Bakımda" Command="{Binding FiltreleCommand}" CommandParameter="BAKIMDA"
-                        BackgroundColor="White" TextColor="#1F2937" BorderColor="#D1D5DB" BorderWidth="1" CornerRadius="20" HeightRequest="40" Padding="15,0"/>
-                <Button Text="Dolu"    Command="{Binding FiltreleCommand}" CommandParameter="DOLU"
-                        BackgroundColor="White" TextColor="#1F2937" BorderColor="#D1D5DB" BorderWidth="1" CornerRadius="20" HeightRequest="40" Padding="15,0"/>
+                        BackgroundColor="White" TextColor="#1F2937" BorderColor="#D1D5DB" BorderWidth="1" CornerRadius="20" HeightRequest="40" Padding="15,0">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding SeciliFiltre}" Value="BAKIMDA">
+                            <Setter Property="BackgroundColor" Value="#0A1128" />
+                            <Setter Property="TextColor" Value="White" />
+                            <Setter Property="BorderWidth" Value="0" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+
+                <Button Text="Dolu" Command="{Binding FiltreleCommand}" CommandParameter="DOLU"
+                        BackgroundColor="White" TextColor="#1F2937" BorderColor="#D1D5DB" BorderWidth="1" CornerRadius="20" HeightRequest="40" Padding="15,0">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding SeciliFiltre}" Value="DOLU">
+                            <Setter Property="BackgroundColor" Value="#0A1128" />
+                            <Setter Property="TextColor" Value="White" />
+                            <Setter Property="BorderWidth" Value="0" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+
             </HorizontalStackLayout>
         </ScrollView>
 
-        <!-- ─── ORTA ALAN (Skeleton veya Gerçek Liste) ─────────────── -->
         <Grid Grid.Row="2">
 
-            <!-- ═══════════════════════════════════════════════════════
-                 GERÇEK İÇERİK  (IsLoading=false olunca görünür)
-            ════════════════════════════════════════════════════════════ -->
             <ScrollView VerticalScrollBarVisibility="Never"
                         IsVisible="{Binding IsLoading, Converter={StaticResource InverseBoolConverter}}">
                 <VerticalStackLayout Spacing="0" BindableLayout.ItemsSource="{Binding AracListesi}">
@@ -53,19 +84,23 @@
                         <DataTemplate x:DataType="models:Vehicle">
                             <Border BackgroundColor="White" Padding="15" Margin="20,10,20,10"
                                     Stroke="Transparent" StrokeThickness="0">
-                                <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
-                                <Border.Shadow><Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.15"/></Border.Shadow>
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="12"/>
+                                </Border.StrokeShape>
+                                <Border.Shadow>
+                                    <Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.15"/>
+                                </Border.Shadow>
 
                                 <Grid ColumnDefinitions="Auto,*,Auto">
-                                    <!-- Küçük araç ikonu -->
                                     <Border Grid.Column="0" WidthRequest="70" HeightRequest="70"
                                             BackgroundColor="#F3F4F6" StrokeThickness="0" VerticalOptions="Center">
-                                        <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="8"/>
+                                        </Border.StrokeShape>
                                         <Image Source="car.svg" HeightRequest="35" WidthRequest="35"
                                                HorizontalOptions="Center" VerticalOptions="Center"/>
                                     </Border>
 
-                                    <!-- Araç bilgileri -->
                                     <VerticalStackLayout Grid.Column="1" Margin="15,0,0,0" VerticalOptions="Center" Spacing="2">
                                         <Label FontAttributes="Bold" FontSize="16" TextColor="#1F2937">
                                             <Label.FormattedText>
@@ -117,15 +152,13 @@
                 </VerticalStackLayout>
             </ScrollView>
 
-            <!-- ═══════════════════════════════════════════════════════
-                 İSKELET EKRAN  (IsLoading=true iken görünür)
-                 4 adet araç satırı taklidi
-            ════════════════════════════════════════════════════════════ -->
             <VerticalStackLayout Padding="20,10,20,20" Spacing="15"
                                  IsVisible="{Binding IsLoading}">
 
                 <Border BackgroundColor="White" Padding="15" StrokeThickness="0">
-                    <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12"/>
+                    </Border.StrokeShape>
                     <Grid ColumnDefinitions="70,*,Auto" ColumnSpacing="15">
                         <BoxView Grid.Column="0" HeightRequest="70" WidthRequest="70" BackgroundColor="#E5E7EB" CornerRadius="8"/>
                         <VerticalStackLayout Grid.Column="1" Spacing="8" VerticalOptions="Center">
@@ -137,7 +170,9 @@
                 </Border>
 
                 <Border BackgroundColor="White" Padding="15" StrokeThickness="0">
-                    <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12"/>
+                    </Border.StrokeShape>
                     <Grid ColumnDefinitions="70,*,Auto" ColumnSpacing="15">
                         <BoxView Grid.Column="0" HeightRequest="70" WidthRequest="70" BackgroundColor="#E5E7EB" CornerRadius="8"/>
                         <VerticalStackLayout Grid.Column="1" Spacing="8" VerticalOptions="Center">
@@ -149,7 +184,9 @@
                 </Border>
 
                 <Border BackgroundColor="White" Padding="15" StrokeThickness="0">
-                    <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12"/>
+                    </Border.StrokeShape>
                     <Grid ColumnDefinitions="70,*,Auto" ColumnSpacing="15">
                         <BoxView Grid.Column="0" HeightRequest="70" WidthRequest="70" BackgroundColor="#E5E7EB" CornerRadius="8"/>
                         <VerticalStackLayout Grid.Column="1" Spacing="8" VerticalOptions="Center">
@@ -161,7 +198,9 @@
                 </Border>
 
                 <Border BackgroundColor="White" Padding="15" StrokeThickness="0">
-                    <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12"/>
+                    </Border.StrokeShape>
                     <Grid ColumnDefinitions="70,*,Auto" ColumnSpacing="15">
                         <BoxView Grid.Column="0" HeightRequest="70" WidthRequest="70" BackgroundColor="#E5E7EB" CornerRadius="8"/>
                         <VerticalStackLayout Grid.Column="1" Spacing="8" VerticalOptions="Center">

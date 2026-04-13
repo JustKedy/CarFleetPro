@@ -1,12 +1,15 @@
 using Microsoft.Maui.Controls;
 using System;
-using CarFleetPro.Mobile.Views; // Sayfalara (HomePage, GaragePage vb.) ulaşmak için ekledik
+using System.Threading.Tasks;
+using CarFleetPro.Mobile.Views;
 
 namespace CarFleetPro.Mobile.Controls;
 
 public partial class BottomNavBar : ContentView
 {
-    // Dışarıdan "Home", "Garage", "List" gibi parametreler almamızı sağlayan özellik
+    // [HAFIZA]: Uygulama genelinde son hangi sekmede olduğumuzu statik olarak tutuyoruz
+    private static int _lastTabIndex = 0;
+
     public static readonly BindableProperty SelectedTabProperty =
         BindableProperty.Create(nameof(SelectedTab), typeof(string), typeof(BottomNavBar), "Home", propertyChanged: OnSelectedTabChanged);
 
@@ -16,67 +19,95 @@ public partial class BottomNavBar : ContentView
         set => SetValue(SelectedTabProperty, value);
     }
 
+    private int _currentTabIndex;
+
     public BottomNavBar()
     {
         InitializeComponent();
-        UpdateUI(SelectedTab); // İlk açılışta UI'ı güncelle
     }
 
     private static void OnSelectedTabChanged(BindableObject bindable, object oldValue, object newValue)
     {
-        var control = (BottomNavBar)bindable;
-        control.UpdateUI((string)newValue);
+        if (bindable is BottomNavBar control)
+        {
+            control.UpdateUI((string)newValue);
+        }
     }
 
-    // Seçilen sekmeye göre ikonları pozitif/negatif yapan motor
+    // Navigasyon bittiğinde veya boyut değiştiğinde tetiklenir
+    private void OnNavGridSizeChanged(object? sender, EventArgs e)
+    {
+        if (NavGrid.Width > 0)
+        {
+            UpdateUI(SelectedTab);
+        }
+    }
+
     private void UpdateUI(string activeTab)
     {
-        // 1. Önce hepsini pasif (negatif) ve çerçevesiz yap
-        HomeBorder.Stroke = Colors.Transparent;
+        if (NavGrid.Width <= 0) return;
+
         HomeImg.Source = "homenegatif.svg";
-
-        GarageBorder.Stroke = Colors.Transparent;
         GarageImg.Source = "garagenegatif.svg";
-
-        ListBorder.Stroke = Colors.Transparent;
         ListImg.Source = "listnegatif.svg";
-
-        SettingsBorder.Stroke = Colors.Transparent;
         SettingsImg.Source = "settingsnegatif.svg";
-
-        // 2. Sadece seçili olanı aktif (pozitif) ve mavi çerçeveli yap
-        var activeColor = Color.FromArgb("#3B82F6");
 
         switch (activeTab)
         {
             case "Home":
-                HomeBorder.Stroke = activeColor;
                 HomeImg.Source = "homepozitif.svg";
+                _currentTabIndex = 0;
                 break;
             case "Garage":
-                GarageBorder.Stroke = activeColor;
                 GarageImg.Source = "garagepozitif.svg";
+                _currentTabIndex = 1;
                 break;
             case "List":
-                ListBorder.Stroke = activeColor;
                 ListImg.Source = "listpozitif.svg";
+                _currentTabIndex = 2;
                 break;
             case "Settings":
-                SettingsBorder.Stroke = activeColor;
                 SettingsImg.Source = "settingspozitif.svg";
+                _currentTabIndex = 3;
                 break;
         }
+
+        SlideIndicator();
     }
 
-    // ----- YENİ EKLENEN: SAYFA GEÇİŞ (NAVİGASYON) METOTLARI -----
+    // --- GERÇEK SÜZÜLME/SÜRÜKLENME MOTORU ---
+    private async void SlideIndicator()
+    {
+        double tabWidth = NavGrid.Width / 4;
+
+        // 1. Önce çerçeveyi hafızadaki 'eski' yerine ışınla (kullanıcı görmez)
+        double startX = _lastTabIndex * tabWidth;
+        SlidingIndicator.TranslationX = startX;
+
+        // 2. Şimdi yeni hedefe doğru yağ gibi sürükle
+        double targetX = _currentTabIndex * tabWidth;
+
+        // Eğer zaten aynı yerdeyse animasyon yapma
+        if (Math.Abs(startX - targetX) < 1) return;
+
+        // SÜRE: 500ms | EFEKT: CubicInOut (Yılan gibi süzülme)
+        await SlidingIndicator.TranslateToAsync(targetX, 0, 500, Easing.CubicInOut);
+
+        // 3. Hafızayı güncelle ki bir sonraki geçişte nereden başlayacağını bilsin
+        _lastTabIndex = _currentTabIndex;
+    }
+
+    private static async Task AnimateIcon(Border border)
+    {
+        await border.ScaleToAsync(0.8, 100, Easing.CubicOut);
+        await border.ScaleToAsync(1.0, 200, Easing.SpringOut);
+    }
 
     private async void OnHomeTapped(object? sender, TappedEventArgs e)
     {
-        // Zaten bu sayfadaysak hiçbir şey yapma
         if (SelectedTab == "Home") return;
-
-        // false parametresi animasyonu kapatır, alt menü sekmesi gibi anında geçer
-        // DI container'dan singleton instance'ı al — sayfa state'i sıfırlanmaz
+        _ = AnimateIcon(HomeBorder);
+        await Task.Delay(50);
         var page = IPlatformApplication.Current!.Services.GetRequiredService<HomePage>();
         await Navigation.PushAsync(page, false);
     }
@@ -84,6 +115,8 @@ public partial class BottomNavBar : ContentView
     private async void OnGarageTapped(object? sender, TappedEventArgs e)
     {
         if (SelectedTab == "Garage") return;
+        _ = AnimateIcon(GarageBorder);
+        await Task.Delay(50);
         var page = IPlatformApplication.Current!.Services.GetRequiredService<GaragePage>();
         await Navigation.PushAsync(page, false);
     }
@@ -91,6 +124,8 @@ public partial class BottomNavBar : ContentView
     private async void OnListTapped(object? sender, TappedEventArgs e)
     {
         if (SelectedTab == "List") return;
+        _ = AnimateIcon(ListBorder);
+        await Task.Delay(50);
         var page = IPlatformApplication.Current!.Services.GetRequiredService<FleetManagementPage>();
         await Navigation.PushAsync(page, false);
     }
@@ -98,6 +133,8 @@ public partial class BottomNavBar : ContentView
     private async void OnSettingsTapped(object? sender, TappedEventArgs e)
     {
         if (SelectedTab == "Settings") return;
+        _ = AnimateIcon(SettingsBorder);
+        await Task.Delay(50);
         await Navigation.PushAsync(new SettingsPage(), false);
     }
 }
