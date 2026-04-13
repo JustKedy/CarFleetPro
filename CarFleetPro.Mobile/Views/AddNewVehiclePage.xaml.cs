@@ -165,7 +165,8 @@ namespace CarFleetPro.Mobile.Views
             };
 
             // Kaydet butonunu pasif yap - çift tıklamayı önle
-            if (sender is Button saveBtn) saveBtn.IsEnabled = false;
+            Button? saveBtn = sender as Button;
+            if (saveBtn != null) saveBtn.IsEnabled = false;
 
             // ── 2. Düzenleme (PUT) mi Yeni Araç (POST) mu? ─────────────────────
             if (_duzenlenenArac != null)
@@ -173,7 +174,7 @@ namespace CarFleetPro.Mobile.Views
                 // VAR OLAN ARACI GÜNCELLE
                 var (success, message) = await _apiService.UpdateVehicleAsync(_duzenlenenArac.Id, request);
 
-                if (saveButton != null) saveButton.IsEnabled = true;
+                if (saveBtn != null) saveBtn.IsEnabled = true;
 
                 if (success)
                 {
@@ -191,7 +192,7 @@ namespace CarFleetPro.Mobile.Views
                 // YENİ ARAÇ EKLE
                 var (success, message) = await _apiService.CreateVehicleAsync(request);
 
-            if (sender is Button enableBtn) enableBtn.IsEnabled = true;
+                if (saveBtn != null) saveBtn.IsEnabled = true;
 
                 if (success)
                 {
