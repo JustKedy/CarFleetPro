@@ -12,7 +12,7 @@ namespace CarFleetPro.Mobile.ViewModels
     {
         private readonly ApiService _apiService;
 
-        // ─── Dashboard İstatistikleri ──────────────────────────────────
+        
         [ObservableProperty] public partial int ToplamAracSayisi { get; set; }
         [ObservableProperty] public partial int KiradakiAracSayisi { get; set; }
         [ObservableProperty] public partial int MusaitAracSayisi { get; set; }
@@ -34,7 +34,7 @@ namespace CarFleetPro.Mobile.ViewModels
         [ObservableProperty] public partial double BarGenisligi { get; set; } = 0;
         [ObservableProperty] public partial int KiralamaSayisi { get; set; }
 
-        // ─── Skeleton Screen Kontrolü ──────────────────────────────────
+        
         [ObservableProperty] public partial bool IsLoading { get; set; } = true;
 
         public HomeViewModel(ApiService apiService)
@@ -85,6 +85,6 @@ namespace CarFleetPro.Mobile.ViewModels
         }
 
         [RelayCommand]
-        public void SubeFiltrele(string subeId) { /* Şube filtresi ileride API'ye taşınacak */ }
+        public void SubeFiltrele(string subeId) {  }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace CarFleetPro.Mobile
+namespace CarFleetPro.Mobile
 {
     public partial class AppShell : Shell
     {

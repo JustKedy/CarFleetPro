@@ -36,9 +36,9 @@ namespace CarFleetPro.API.DTOs
         public Models.VehicleStatus Status { get; set; }
     }
 
-    /// <summary>
-    /// Araç detay sayfası için kapsamlı DTO (bakım + kiralama geçmişi dahil)
-    /// </summary>
+    
+    
+    
     public class VehicleDetailDto
     {
         public int VehicleId { get; set; }
@@ -50,7 +50,7 @@ namespace CarFleetPro.API.DTOs
         public string FuelType { get; set; } = string.Empty;
         public string TransmissionType { get; set; } = string.Empty;
         public decimal DailyRate { get; set; }
-        public string Status { get; set; } = string.Empty; // "MÜSAİT", "DOLU", "BAKIMDA"
+        public string Status { get; set; } = string.Empty; 
         public int Mileage { get; set; }
         public int HorsePower { get; set; }
         public string? Color { get; set; }
@@ -61,11 +61,11 @@ namespace CarFleetPro.API.DTOs
 
     public class VehicleHistoryItemDto
     {
-        public string Type { get; set; } = string.Empty; // "Kiralama" veya "Bakım"
-        public string Title { get; set; } = string.Empty; // "Kiralandı: Abdulkadir Toksöz" veya "Periyodik Bakım"
+        public string Type { get; set; } = string.Empty; 
+        public string Title { get; set; } = string.Empty; 
         public string DateRange { get; set; } = string.Empty;
-        public string Status { get; set; } = string.Empty; // "Tamamlandı", "Aktif", "Devam Ediyor"
-        public string? Amount { get; set; } // "12.000 TL"
-        public string Color { get; set; } = "#3B82F6"; // Timeline rengi
+        public string Status { get; set; } = string.Empty; 
+        public string? Amount { get; set; } 
+        public string Color { get; set; } = "#3B82F6"; 
     }
 }

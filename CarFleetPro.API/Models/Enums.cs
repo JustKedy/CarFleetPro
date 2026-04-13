@@ -1,4 +1,4 @@
-﻿namespace CarFleetPro.API.Models
+namespace CarFleetPro.API.Models
 {
    
     public enum VehicleType { Sedan, SUV, Hatchback, Van }

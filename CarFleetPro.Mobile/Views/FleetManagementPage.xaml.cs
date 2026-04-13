@@ -8,7 +8,7 @@ namespace CarFleetPro.Mobile.Views
     {
         private readonly FleetManagementViewModel _viewModel;
 
-        // DI: Singleton VM ile liste state'ini korur
+        
         public FleetManagementPage(FleetManagementViewModel viewModel)
         {
             InitializeComponent();
@@ -20,11 +20,11 @@ namespace CarFleetPro.Mobile.Views
         {
             base.OnAppearing();
 
-            // SAYFA AÇILIŞ ANİMASYONU
+            
             this.Opacity = 0;
             await this.FadeToAsync(1, 300, Easing.CubicOut);
 
-            // Eski kodun
+            
             await _viewModel.VerileriYenileCommand.ExecuteAsync(null);
         }
 
@@ -40,11 +40,11 @@ namespace CarFleetPro.Mobile.Views
             }
         }
 
-        // ==========================================================
-        // KESİN ÇÖZÜM: MAUI BindableLayout Hata Giderme
-        // Görsel ağaçtan (XAML) bağlamak yerine, Border'ın kendi arka 
-        // planındaki nesneyi C# ile ViewModel'e yönlendiriyoruz.
-        // ==========================================================
+        
+        
+        
+        
+        
         private void OnDuzenleTapped(object? sender, TappedEventArgs e)
         {
             if (sender is BindableObject bindable && bindable.BindingContext is Vehicle secilenArac)

@@ -19,9 +19,9 @@ namespace CarFleetPro.API.Controllers
             _context = context;
         }
 
-        /// <summary>
-        /// GET /api/Customer — Tüm müşterileri listele
-        /// </summary>
+        
+        
+        
         [HttpGet]
         public async Task<IActionResult> GetAllCustomers()
         {
@@ -53,9 +53,9 @@ namespace CarFleetPro.API.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// GET /api/Customer/search?q=isim veya telefon
-        /// </summary>
+        
+        
+        
         [HttpGet("search")]
         public async Task<IActionResult> SearchCustomers([FromQuery] string q)
         {
@@ -90,9 +90,9 @@ namespace CarFleetPro.API.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// GET /api/Customer/{id} — Müşteri detayı + kiralama geçmişi
-        /// </summary>
+        
+        
+        
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCustomerDetail(int id)
         {
@@ -137,9 +137,9 @@ namespace CarFleetPro.API.Controllers
             return Ok(detail);
         }
 
-        /// <summary>
-        /// GET /api/Customer/names — Kiralama formu için müşteri id+isim listesi
-        /// </summary>
+        
+        
+        
         [HttpGet("names")]
         public async Task<IActionResult> GetCustomerNames()
         {

@@ -18,11 +18,11 @@ namespace CarFleetPro.Mobile.ViewModels
 
         public ObservableCollection<Vehicle> AracListesi { get; set; } = new();
 
-        // AOT UYARISI ÇÖZÜMÜ
+        
         [ObservableProperty]
         public partial bool IsLoading { get; set; } = true;
 
-        // Seçili filtrenin rengini XAML tarafında değiştirmek için hafıza
+        
         [ObservableProperty]
         public partial string SeciliFiltre { get; set; } = "Tümü";
 
@@ -56,7 +56,7 @@ namespace CarFleetPro.Mobile.ViewModels
         [RelayCommand]
         public void Filtrele(string durum)
         {
-            // Hangi butona basıldıysa hafızaya alıyoruz ki arayüz bilsin
+            
             SeciliFiltre = durum;
 
             AracListesi.Clear();
@@ -78,14 +78,14 @@ namespace CarFleetPro.Mobile.ViewModels
         {
             if (secilenArac is not null && Application.Current?.Windows.Count > 0)
             {
-                // Kadir'in hazırladığı arayüze (Düzenleme Moduyla) geçiş yapıyoruz
+                
                 await Application.Current.Windows[0].Page!.Navigation.PushAsync(new Views.AddNewVehiclePage(secilenArac));
             }
         }
 
-        // =========================================================================
-        // [GÜNCELLENDİ] API BAĞLANTILI SİLME İŞLEMİ
-        // =========================================================================
+        
+        
+        
         [RelayCommand]
         public async Task Sil(Vehicle? secilenArac)
         {
@@ -96,12 +96,12 @@ namespace CarFleetPro.Mobile.ViewModels
 
                 if (cevap)
                 {
-                    // 1. API üzerinden Alper'in veritabanından siliyoruz (Id propertysini kullanıyoruz)
+                    
                     bool apiBasarili = await _apiService.DeleteVehicleAsync(secilenArac.Id);
 
                     if (apiBasarili)
                     {
-                        // 2. Veritabanından başarıyla silindiyse, ekrandaki listeden de uçur!
+                        
                         _tumAraclar.Remove(secilenArac);
                         AracListesi.Remove(secilenArac);
                         
@@ -109,7 +109,7 @@ namespace CarFleetPro.Mobile.ViewModels
                     }
                     else
                     {
-                        // Silerken hata çıkarsa kullanıcıyı uyar
+                        
                         await page.DisplayAlertAsync("Hata", "Araç silinirken veritabanı tarafında bir sorun oluştu.", "Tamam");
                     }
                 }

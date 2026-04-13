@@ -7,7 +7,7 @@ namespace CarFleetPro.Mobile.Controls;
 
 public partial class BottomNavBar : ContentView
 {
-    // [HAFIZA]: Uygulama genelinde son hangi sekmede olduğumuzu statik olarak tutuyoruz
+    
     private static int _lastTabIndex = 0;
 
     public static readonly BindableProperty SelectedTabProperty =
@@ -34,7 +34,7 @@ public partial class BottomNavBar : ContentView
         }
     }
 
-    // Navigasyon bittiğinde veya boyut değiştiğinde tetiklenir
+    
     private void OnNavGridSizeChanged(object? sender, EventArgs e)
     {
         if (NavGrid.Width > 0)
@@ -75,25 +75,25 @@ public partial class BottomNavBar : ContentView
         SlideIndicator();
     }
 
-    // --- GERÇEK SÜZÜLME/SÜRÜKLENME MOTORU ---
+    
     private async void SlideIndicator()
     {
         double tabWidth = NavGrid.Width / 4;
 
-        // 1. Önce çerçeveyi hafızadaki 'eski' yerine ışınla (kullanıcı görmez)
+        
         double startX = _lastTabIndex * tabWidth;
         SlidingIndicator.TranslationX = startX;
 
-        // 2. Şimdi yeni hedefe doğru yağ gibi sürükle
+        
         double targetX = _currentTabIndex * tabWidth;
 
-        // Eğer zaten aynı yerdeyse animasyon yapma
+        
         if (Math.Abs(startX - targetX) < 1) return;
 
-        // SÜRE: 500ms | EFEKT: CubicInOut (Yılan gibi süzülme)
+        
         await SlidingIndicator.TranslateToAsync(targetX, 0, 500, Easing.CubicInOut);
 
-        // 3. Hafızayı güncelle ki bir sonraki geçişte nereden başlayacağını bilsin
+        
         _lastTabIndex = _currentTabIndex;
     }
 

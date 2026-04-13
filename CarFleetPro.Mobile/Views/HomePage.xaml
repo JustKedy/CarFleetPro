@@ -10,7 +10,7 @@
 
     <Grid RowDefinitions="110, *, 75">
 
-        <!-- ─── HEADER ─────────────────────────────────────────────── -->
+        
         <Border Grid.Row="0" BackgroundColor="#0A1128" StrokeThickness="0">
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="0, 0, 20, 20" />
@@ -28,13 +28,11 @@
         <ScrollView Grid.Row="1" VerticalScrollBarVisibility="Never">
             <Grid>
 
-                <!-- ═══════════════════════════════════════════════════
-                     GERÇEK İÇERİK  (IsLoading=false olunca görünür)
-                ═══════════════════════════════════════════════════════ -->
+                
                 <VerticalStackLayout Padding="0,10,0,20" Spacing="15"
                                      IsVisible="{Binding IsLoading, Converter={StaticResource InverseBoolConverter}}">
 
-                    <!-- Şube filtre butonları -->
+                    
                     <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Margin="20,5,0,5">
                         <HorizontalStackLayout Spacing="10">
                             <Button Text="Tümü"         Command="{Binding SubeFiltreleCommand}" CommandParameter="0"
@@ -48,7 +46,7 @@
                         </HorizontalStackLayout>
                     </ScrollView>
 
-                    <!-- İstatistik kartları 2x2 -->
+                    
                     <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*"
                           ColumnSpacing="15" RowSpacing="15" Margin="20,5,20,5">
 
@@ -93,7 +91,7 @@
                         </Border>
                     </Grid>
 
-                    <!-- Filo Durum Analizi -->
+                    
                     <Border BackgroundColor="White" Padding="20" Margin="20,5,20,5" StrokeThickness="0">
                         <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
                         <Border.Shadow><Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.1"/></Border.Shadow>
@@ -127,7 +125,7 @@
                         </VerticalStackLayout>
                     </Border>
 
-                    <!-- En Çok Talep Gören Modeller -->
+                    
                     <Border BackgroundColor="White" Padding="20" Margin="20,5,20,10" StrokeThickness="0">
                         <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
                         <Border.Shadow><Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.1"/></Border.Shadow>
@@ -161,18 +159,15 @@
 
                 </VerticalStackLayout>
 
-                <!-- ═══════════════════════════════════════════════════
-                     İSKELET EKRAN  (IsLoading=true iken görünür)
-                     API veri gelene kadar 6 adet gri kutu canlandırma yaptırır
-                ═══════════════════════════════════════════════════════ -->
+                
                 <VerticalStackLayout Padding="20,10,20,20" Spacing="15"
                                      IsVisible="{Binding IsLoading}">
 
-                    <!-- Toplam 4 iskelet kart (2x2 grid taklidi) -->
+                    
                     <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*"
                           ColumnSpacing="15" RowSpacing="15">
 
-                        <!-- Kart 1 -->
+                        
                         <Border Grid.Row="0" Grid.Column="0" BackgroundColor="White" Padding="15" StrokeThickness="0" HeightRequest="80">
                             <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
                             <VerticalStackLayout Spacing="10">
@@ -180,7 +175,7 @@
                                 <BoxView HeightRequest="24" WidthRequest="50" BackgroundColor="#D1D5DB" HorizontalOptions="Start" CornerRadius="6"/>
                             </VerticalStackLayout>
                         </Border>
-                        <!-- Kart 2 -->
+                        
                         <Border Grid.Row="0" Grid.Column="1" BackgroundColor="White" Padding="15" StrokeThickness="0" HeightRequest="80">
                             <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
                             <VerticalStackLayout Spacing="10">
@@ -188,7 +183,7 @@
                                 <BoxView HeightRequest="24" WidthRequest="50" BackgroundColor="#D1D5DB" HorizontalOptions="Start" CornerRadius="6"/>
                             </VerticalStackLayout>
                         </Border>
-                        <!-- Kart 3 -->
+                        
                         <Border Grid.Row="1" Grid.Column="0" BackgroundColor="White" Padding="15" StrokeThickness="0" HeightRequest="80">
                             <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
                             <VerticalStackLayout Spacing="10">
@@ -196,7 +191,7 @@
                                 <BoxView HeightRequest="24" WidthRequest="50" BackgroundColor="#D1D5DB" HorizontalOptions="Start" CornerRadius="6"/>
                             </VerticalStackLayout>
                         </Border>
-                        <!-- Kart 4 -->
+                        
                         <Border Grid.Row="1" Grid.Column="1" BackgroundColor="White" Padding="15" StrokeThickness="0" HeightRequest="80">
                             <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
                             <VerticalStackLayout Spacing="10">
@@ -206,7 +201,7 @@
                         </Border>
                     </Grid>
 
-                    <!-- İskelet grafik kutusu -->
+                    
                     <Border BackgroundColor="White" Padding="20" StrokeThickness="0" HeightRequest="120">
                         <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
                         <VerticalStackLayout Spacing="15">
@@ -216,7 +211,7 @@
                         </VerticalStackLayout>
                     </Border>
 
-                    <!-- İskelet model listesi kutusu -->
+                    
                     <Border BackgroundColor="White" Padding="20" StrokeThickness="0" HeightRequest="130">
                         <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
                         <VerticalStackLayout Spacing="18">

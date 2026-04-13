@@ -43,7 +43,7 @@ namespace CarFleetPro.Mobile.Views
 
         private async Task VerileriDoldur()
         {
-            // Marka, Renk ve Durum listelerini paralel olarak veritabanından çek
+            
             var brandsTask = _apiService.GetBrandsAsync();
             var colorsTask = _apiService.GetColorsAsync();
             var statusesTask = _apiService.GetStatusesAsync();
@@ -54,7 +54,7 @@ namespace CarFleetPro.Mobile.Views
             RenkPicker.ItemsSource = colorsTask.Result;
             DurumPicker.ItemsSource = statusesTask.Result;
 
-            // Marka seçilince modelleri veritabanından çek
+            
             BrandPicker.SelectedIndexChanged += async (s, e) =>
             {
                 ModelPicker.ItemsSource = null;
@@ -66,7 +66,7 @@ namespace CarFleetPro.Mobile.Views
                 }
             };
 
-            // Düzenleme modunda picker'lara mevcut değerleri set et
+            
             if (_duzenlenenArac != null)
             {
                 BrandPicker.SelectedItem = _duzenlenenArac.Marka;
@@ -121,7 +121,7 @@ namespace CarFleetPro.Mobile.Views
 
         private async void OnSaveClicked(object? sender, EventArgs e)
         {
-            // ── 1. Form Validasyonu ──────────────────────────────────────────
+            
             if (string.IsNullOrWhiteSpace(PlakaEntry.Text))
             {
                 await DisplayAlertAsync("Eksik Bilgi", "Lütfen araç plakasını girin.", "Tamam");
@@ -143,14 +143,14 @@ namespace CarFleetPro.Mobile.Views
                 return;
             }
 
-            // Durum ataması: 0=Müsait, 1=Kirada(Dolu), 2=Bakımda
-            int durumId = 0; // Varsayılan Müsait
+            
+            int durumId = 0; 
             var selectedDurum = DurumPicker.SelectedItem?.ToString();
             if (string.Equals(selectedDurum, "DOLU", StringComparison.OrdinalIgnoreCase) || 
                 string.Equals(selectedDurum, "KİRADA", StringComparison.OrdinalIgnoreCase)) durumId = 1;
             else if (string.Equals(selectedDurum, "BAKIMDA", StringComparison.OrdinalIgnoreCase)) durumId = 2;
 
-            // Alper'in API'sine gidecek ortak paket
+            
             var request = new CreateVehicleRequest
             {
                 PlateNumber = PlakaEntry.Text.Trim().ToUpper(),
@@ -164,14 +164,14 @@ namespace CarFleetPro.Mobile.Views
                 Status = durumId
             };
 
-            // Kaydet butonunu pasif yap - çift tıklamayı önle
+            
             Button? saveBtn = sender as Button;
             if (saveBtn != null) saveBtn.IsEnabled = false;
 
-            // ── 2. Düzenleme (PUT) mi Yeni Araç (POST) mu? ─────────────────────
+            
             if (_duzenlenenArac != null)
             {
-                // VAR OLAN ARACI GÜNCELLE
+                
                 var (success, message) = await _apiService.UpdateVehicleAsync(_duzenlenenArac.Id, request);
 
                 if (saveBtn != null) saveBtn.IsEnabled = true;
@@ -189,7 +189,7 @@ namespace CarFleetPro.Mobile.Views
             }
             else
             {
-                // YENİ ARAÇ EKLE
+                
                 var (success, message) = await _apiService.CreateVehicleAsync(request);
 
                 if (saveBtn != null) saveBtn.IsEnabled = true;

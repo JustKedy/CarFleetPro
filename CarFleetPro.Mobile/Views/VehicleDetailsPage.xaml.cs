@@ -10,7 +10,7 @@ public partial class VehicleDetailsPage : ContentPage
     private readonly ApiService _apiService;
     private readonly Vehicle _selectedVehicle;
 
-    // Sayfaya hangi aracın detayına bakacağımızı söylüyoruz
+    
     public VehicleDetailsPage(Vehicle selectedVehicle)
     {
         InitializeComponent();
@@ -30,7 +30,7 @@ public partial class VehicleDetailsPage : ContentPage
         var detail = await _apiService.GetVehicleDetailsAsync(_selectedVehicle.Id);
         if (detail != null)
         {
-            // UI alanlarını güncelle
+            
             StatusBadge.Text = detail.Status;
             StatusBadge.BackgroundColor = detail.Status switch
             {
@@ -43,7 +43,7 @@ public partial class VehicleDetailsPage : ContentPage
             FuelLabel.Text = detail.FuelType;
             GearLabel.Text = detail.TransmissionType;
 
-            // Geçmiş timeline
+            
             if (detail.History.Count > 0)
             {
                 HistoryList.ItemsSource = detail.History;

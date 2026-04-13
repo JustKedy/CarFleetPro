@@ -36,7 +36,6 @@
 
             <CollectionView x:Name="StatsList" VerticalScrollBarVisibility="Never" SelectionMode="Single" SelectionChanged="OnStatSelected">
 
-
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Border BackgroundColor="White" Margin="0,5" Padding="15" StrokeThickness="0">

@@ -13,11 +13,8 @@ namespace CarFleetPro.Mobile.Services
     {
         private readonly HttpClient _httpClient;
 
-        // KRİTİK BİLGİ: Android emülatöründe kendi bilgisayarının localhost'una 
-        // bağlanmak için "localhost" yerine "10.0.2.2" yazmalısın!
-        private static readonly string BaseUrl = Microsoft.Maui.Devices.DeviceInfo.Platform == Microsoft.Maui.Devices.DevicePlatform.Android
-            ? "http://10.0.2.2:5161/api/"
-            : "http://localhost:5161/api/";
+        
+        private static readonly string BaseUrl = "https://carfleetpro-hcf2f6hua6f2h5f0.westeurope-01.azurewebsites.net/api/";
 
         private static HttpMessageHandler GetInsecureHandler()
         {
@@ -26,7 +23,7 @@ namespace CarFleetPro.Mobile.Services
             {
                 return true;
             };
-            // 🚀 PERFORMANS: GZip/Brotli decompress otomatik açıldı
+            
             handler.AutomaticDecompression = System.Net.DecompressionMethods.GZip | System.Net.DecompressionMethods.Deflate;
             return handler;
         }
@@ -47,9 +44,9 @@ namespace CarFleetPro.Mobile.Services
             }
         }
 
-        // ==========================================
-        //  LOOKUP API'leri
-        // ==========================================
+        
+        
+        
 
         public async Task<List<string>> GetBrandsAsync()
         {
@@ -75,9 +72,9 @@ namespace CarFleetPro.Mobile.Services
             catch { return new List<string> { "MÜSAİT", "DOLU", "BAKIMDA" }; }
         }
 
-        // ==========================================
-        //  ARAÇ CRUD
-        // ==========================================
+        
+        
+        
 
         public async Task<(bool Success, string Message)> CreateVehicleAsync(CreateVehicleRequest request)
         {
@@ -156,9 +153,9 @@ namespace CarFleetPro.Mobile.Services
             }
         }
 
-        // ==========================================
-        //  ARAÇ LİSTESİ (ETag Destekli)
-        // ==========================================
+        
+        
+        
 
         private static List<Vehicle>? _cachedVehicles = null;
         private static string? _cachedETag = null;
@@ -201,9 +198,9 @@ namespace CarFleetPro.Mobile.Services
             return new List<Vehicle>();
         }
 
-        /// <summary>
-        /// GET /api/Vehicle/{id}/details — Araç detayı + geçmiş
-        /// </summary>
+        
+        
+        
         public async Task<VehicleDetail?> GetVehicleDetailsAsync(int id)
         {
             try
@@ -218,9 +215,9 @@ namespace CarFleetPro.Mobile.Services
             }
         }
 
-        /// <summary>
-        /// PUT /api/Vehicle/{id}/maintenance/start — Bakıma gönder
-        /// </summary>
+        
+        
+        
         public async Task<(bool Success, string Message)> SendToMaintenanceAsync(int id)
         {
             try
@@ -269,9 +266,9 @@ namespace CarFleetPro.Mobile.Services
             catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
         }
 
-        /// <summary>
-        /// POST /api/Auth/register — Yeni admin/agent kaydı
-        /// </summary>
+        
+        
+        
         public async Task<(bool Success, string Message)> RegisterAdminAsync(string fullName, string email, string password)
         {
             try
@@ -322,9 +319,9 @@ namespace CarFleetPro.Mobile.Services
             catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
         }
 
-        /// <summary>
-        /// POST /api/Auth/change-password — Şifre değiştir
-        /// </summary>
+        
+        
+        
         public async Task<(bool Success, string Message)> ChangePasswordAsync(string oldPassword, string newPassword)
         {
             try
@@ -363,9 +360,9 @@ namespace CarFleetPro.Mobile.Services
             catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}", null); }
         }
 
-        /// <summary>
-        /// POST /api/Auth/reset-password — Token ile şifre sıfırla
-        /// </summary>
+        
+        
+        
         public async Task<(bool Success, string Message)> ResetPasswordAsync(string email, string token, string newPassword)
         {
             try
@@ -457,13 +454,13 @@ namespace CarFleetPro.Mobile.Services
             catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
         }
 
-        // ==========================================
-        //  BİLDİRİMLER
-        // ==========================================
+        
+        
+        
 
-        /// <summary>
-        /// GET /api/Alert — Bildirimleri getir
-        /// </summary>
+        
+        
+        
         public async Task<List<AlertInfo>> GetAlertsAsync()
         {
             try
@@ -479,9 +476,9 @@ namespace CarFleetPro.Mobile.Services
         }
     }
 
-    // ==========================================
-    //  RESPONSE MODELLERİ
-    // ==========================================
+    
+    
+    
 
     public class AuthResponse
     {

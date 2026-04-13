@@ -8,7 +8,7 @@ public partial class HomePage : ContentPage
 {
     private readonly HomeViewModel _viewModel;
 
-    // DI: MauiProgram singleton olarak kayıt ettiği için her seferinde aynı VM gelir
+    
     public HomePage(HomeViewModel viewModel)
     {
         InitializeComponent();
@@ -20,11 +20,11 @@ public partial class HomePage : ContentPage
     {
         base.OnAppearing();
 
-        // SAYFA AÇILIŞ ANİMASYONU
+        
         this.Opacity = 0;
         await this.FadeToAsync(1, 300, Easing.CubicOut);
 
-        // Eski kodun
+        
         await _viewModel.LoadDataAsync();
     }
 }

@@ -8,22 +8,22 @@ public partial class StatsDetailPage : ContentPage
     private readonly ApiService _apiService;
     private string _filterStatus;
 
-    /// <summary>
-    /// Filtrelenmiş araç listesi gösterir.
-    /// filterStatus: "MÜSAİT", "DOLU", "BAKIMDA" veya "TÜM"
-    /// </summary>
+    
+    
+    
+    
     public StatsDetailPage(string filterStatus = "BAKIMDA", string title = "Bakımda Olan Araçlar", int count = 0)
     {
         InitializeComponent();
         _apiService = new ApiService();
         _filterStatus = filterStatus;
 
-        // Header bilgisini güncelle
+        
         HeaderTitle.Text = $"Şu Anda {title}";
         HeaderCount.Text = count.ToString();
     }
 
-    /// Parametresiz constructor (eski uyumluluk)
+    
     public StatsDetailPage() : this("BAKIMDA", "Bakımda Olan Araçlar", 0)
     {
     }

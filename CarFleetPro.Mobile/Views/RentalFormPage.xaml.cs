@@ -9,19 +9,19 @@ public partial class RentalFormPage : ContentPage
     private readonly Vehicle? _vehicle;
     private List<CustomerName> _customers = new();
 
-    // Parametreli constructor: VehicleDetailsPage'den geliyor
+    
     public RentalFormPage(Vehicle vehicle)
     {
         InitializeComponent();
         _apiService = new ApiService();
         _vehicle = vehicle;
 
-        // Araç bilgisini header'a yaz
+        
         VehicleNameLabel.Text = $"{vehicle.Marka} {vehicle.Model}";
         VehiclePlateLabel.Text = vehicle.Plaka;
     }
 
-    // Parametresiz constructor (eski uyumluluk)
+    
     public RentalFormPage()
     {
         InitializeComponent();
@@ -59,7 +59,7 @@ public partial class RentalFormPage : ContentPage
             return;
         }
 
-        // Müşteri seçildi mi?
+        
         if (CustomerPicker.SelectedIndex < 0)
         {
             await DisplayAlertAsync("Uyarı", "Lütfen bir müşteri seçin.", "Tamam");
@@ -76,7 +76,7 @@ public partial class RentalFormPage : ContentPage
             return;
         }
 
-        // Opsiyonel: depozito
+        
         decimal.TryParse(DepositEntry.Text, out var deposit);
 
         var notes = NotesEditor.Text ?? "";
@@ -93,7 +93,7 @@ public partial class RentalFormPage : ContentPage
 
         if (success)
         {
-            // Ana sayfaya geri dön
+            
             await Navigation.PopToRootAsync();
         }
     }

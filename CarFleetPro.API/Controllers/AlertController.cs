@@ -19,17 +19,17 @@ namespace CarFleetPro.API.Controllers
             _context = context;
         }
 
-        /// <summary>
-        /// GET /api/Alert — Tüm bildirimleri getir (gecikmiş iadeler + bakım uyarıları)
-        /// Ayrı bir Alert tablosu yok — Rentals + Vehicles + Maintenances'dan türetiliyor
-        /// </summary>
+        
+        
+        
+        
         [HttpGet]
         public async Task<IActionResult> GetAlerts()
         {
             var today = DateTime.UtcNow;
             var alerts = new List<AlertDto>();
 
-            // 1. GECİKMİŞ İADELER — PlannedEndDate geçmiş ama hâlâ aktif olan kiralamalar
+            
             var overdueRentals = await _context.Rentals
                 .Where(r => r.Status == RentalStatus.Active && r.PlannedEndDate < today)
                 .Join(_context.Vehicles, r => r.VehicleId, v => v.VehicleId,
@@ -47,14 +47,14 @@ namespace CarFleetPro.API.Controllers
                     Title = $"{item.Vehicle.PlateNumber} - {item.Vehicle.Brand} {item.Vehicle.Model}",
                     Subtitle = $"Müşteri: {item.Customer.FirstName} {item.Customer.LastName}",
                     Detail = $"{delayDays} Gündür Gecikmede",
-                    AlertColor = "#EF4444", // Kırmızı
+                    AlertColor = "#EF4444", 
                     RelatedVehicleId = item.Vehicle.VehicleId,
                     RelatedRentalId = item.Rental.RentalId,
                     CreatedAt = item.Rental.PlannedEndDate
                 });
             }
 
-            // 2. YAKIN TARİHLİ İADELER — 2 gün içinde iade tarihi dolacak aktif kiralamalar
+            
             var upcomingReturns = await _context.Rentals
                 .Where(r => r.Status == RentalStatus.Active
                          && r.PlannedEndDate >= today
@@ -74,14 +74,14 @@ namespace CarFleetPro.API.Controllers
                     Title = $"{item.Vehicle.PlateNumber} - {item.Vehicle.Brand} {item.Vehicle.Model}",
                     Subtitle = $"Müşteri: {item.Customer.FirstName} {item.Customer.LastName}",
                     Detail = daysLeft == 0 ? "Bugün İade Edilmeli" : $"{daysLeft} Gün Kaldı",
-                    AlertColor = "#F59E0B", // Sarı/Turuncu
+                    AlertColor = "#F59E0B", 
                     RelatedVehicleId = item.Vehicle.VehicleId,
                     RelatedRentalId = item.Rental.RentalId,
                     CreatedAt = today
                 });
             }
 
-            // 3. BAKIM UYARILARI — Bakımda olan araçlar
+            
             var maintenanceVehicles = await _context.Vehicles
                 .Where(v => v.Status == VehicleStatus.Maintenance)
                 .ToListAsync();
@@ -100,7 +100,7 @@ namespace CarFleetPro.API.Controllers
                 });
             }
 
-            // Önce gecikmiş iadeler, sonra yaklaşan iadeler, sonra bakımlar
+            
             var sortedAlerts = alerts
                 .OrderByDescending(a => a.AlertType == "GECİKMİŞ İADE")
                 .ThenByDescending(a => a.AlertType == "İADE YAKLASTI")

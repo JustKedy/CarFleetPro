@@ -115,14 +115,14 @@
                                         <Label Text="{Binding Durum}" FontSize="12" TextColor="#9CA3AF"/>
                                     </VerticalStackLayout>
 
-                                    <!-- Aksiyon butonları -->
-                                    <!-- AŞAĞIDAKİ ALANDAN BUTON ve İKON BOYUTLARINI KONTROL EDEBİLİRSİNİZ -->
-                                    <!-- Border altındaki 'WidthRequest/HeightRequest' (örn: 32) kapsülün dış boyutudur.     -->
-                                    <!-- ImageButton altındaki 'WidthRequest/HeightRequest' (örn: 14) içteki ikon boyutudur. -->
+                                    
+                                    
+                                    
+                                    
                                     <HorizontalStackLayout Grid.Column="2" Spacing="10" VerticalOptions="Center">
                                         
-                                        <!-- DÜZENLE BUTONU KAPSÜLÜ -->
-                                        <!-- Araç kutusuyla uyumlu: Yükseklik 70px, köşe ovallığı 8px -->
+                                        
+                                        
                                         <Border BackgroundColor="#F3F4F6" StrokeThickness="0" WidthRequest="50" HeightRequest="70" VerticalOptions="Center">
                                             <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
                                             <ImageButton Source="edit.svg"
@@ -133,7 +133,7 @@
                                                          CommandParameter="{Binding .}"/>
                                         </Border>
 
-                                        <!-- SİL BUTONU KAPSÜLÜ -->
+                                        
                                         <Border BackgroundColor="#FEE2E2" StrokeThickness="0" WidthRequest="50" HeightRequest="70" VerticalOptions="Center">
                                             <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
                                             <ImageButton Source="trash.svg"

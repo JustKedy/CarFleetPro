@@ -37,12 +37,12 @@ public partial class LoginPage : ContentPage
         {
             try
             {
-                // DI container'dan singleton HomePage'i al — state korunur
+                
                 var homePage = Handler?.MauiContext?.Services.GetService<HomePage>();
                 
                 if (homePage == null)
                 {
-                    // Fallback
+                    
                     var api = Handler?.MauiContext?.Services.GetService<ApiService>() ?? new ApiService();
                     homePage = new HomePage(new HomeViewModel(api));
                 }
@@ -60,7 +60,7 @@ public partial class LoginPage : ContentPage
         }
     }
 
-    // BURASI EKLENDİ: Şifremi Unuttum Tıklama Olayı
+    
     private async void OnForgotPasswordTapped(object? sender, EventArgs e)
     {
         if (Navigation != null)

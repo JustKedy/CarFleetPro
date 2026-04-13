@@ -1,20 +1,20 @@
-﻿namespace CarFleetPro.API.Models
+namespace CarFleetPro.API.Models
 {
     public class Rental
     {
         public int RentalId { get; set; }
 
-        // İlişkiler (Foreign Keys)
+        
         public int CustomerId { get; set; }
         public Customer? Customer { get; set; }
 
         public int VehicleId { get; set; }
         public Vehicle? Vehicle { get; set; }
 
-        public string UserId { get; set; } = string.Empty; // Agent (Kullanıcı) ID'si
+        public string UserId { get; set; } = string.Empty; 
         public AppUser? User { get; set; }
 
-        // Kiralama Detayları
+        
         public DateTime StartDate { get; set; }
         public DateTime PlannedEndDate { get; set; }
         public DateTime? ActualEndDate { get; set; }

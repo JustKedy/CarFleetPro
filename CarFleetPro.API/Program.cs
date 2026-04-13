@@ -11,21 +11,18 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Veritabanı Bağlantısı (Kopmalara ve Batch çakışmalarına karşı tam koruma)
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
     npgsqlOptions => 
     {
         npgsqlOptions.EnableRetryOnFailure();
-        npgsqlOptions.MaxBatchSize(1); // İŞTE GERÇEK YERİ BURASI!
+        npgsqlOptions.MaxBatchSize(1); 
     }));
 
-// 2. ASP.NET Identity Kurulumu
 builder.Services.AddIdentity<AppUser, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
-// 3. JWT Kimlik Doğrulama Ayarları
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secretKey = Encoding.UTF8.GetBytes(jwtSettings["Secret"]!);
 
@@ -48,35 +45,31 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// 🔧 E-posta Servisi (Şifre sıfırlama için)
 builder.Services.AddScoped<CarFleetPro.API.Services.IEmailService, CarFleetPro.API.Services.SmtpEmailService>();
 
 builder.Services.AddMemoryCache();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-// 🚀 PERFORMANS: Response Compression (GZip + Brotli)
-// JSON payload'ları %60-70 küçülür → Mobil ağ'da ciddi hız artışı
 builder.Services.AddResponseCompression(options =>
 {
-    options.EnableForHttps = true; // HTTPS üzerinden de sıkıştır
-    options.Providers.Add<BrotliCompressionProvider>();  // Modern tarayıcılar için (daha iyi oran)
-    options.Providers.Add<GzipCompressionProvider>();    // Eski cihazlar için fallback
+    options.EnableForHttps = true; 
+    options.Providers.Add<BrotliCompressionProvider>();  
+    options.Providers.Add<GzipCompressionProvider>();    
     options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
-        new[] { "application/json" }); // JSON response'ları da sıkıştır
+        new[] { "application/json" }); 
 });
 
 builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
 {
-    options.Level = CompressionLevel.Fastest; // Hız/sıkıştırma dengesi — mobil için ideal
+    options.Level = CompressionLevel.Fastest; 
 });
 
 builder.Services.Configure<GzipCompressionProviderOptions>(options =>
 {
-    options.Level = CompressionLevel.SmallestSize; // GZip fallback'te max sıkıştırma
+    options.Level = CompressionLevel.SmallestSize; 
 });
 
-// 4. Swagger Ayarları (Senin bizzat çözdüğün, tam uyumlu versiyon)
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "CarFleetPro API", Version = "v1" });
@@ -101,19 +94,14 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// app.UseHttpsRedirection(); // Mobil test için kapalı — Android emülatörü dev sertifikasına güvenmez
-
-// 🚀 PERFORMANS: Response Compression middleware'i — routing'den ÖNCE olmalı!
 app.UseResponseCompression();
 
-// Sıralama çok önemli: Önce kimlik sor, sonra yetkiye bak
 app.UseAuthentication();
 app.UseAuthorization();
 

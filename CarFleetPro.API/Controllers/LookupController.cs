@@ -12,10 +12,10 @@ namespace CarFleetPro.API.Controllers
         private readonly AppDbContext _context;
         private readonly IMemoryCache _cache;
 
-        // 🚀 Cache key'leri — lookup verisi neredeyse hiç değişmez, 24 saat cache'lenecek
+        
         private const string BrandsCacheKey = "lookup_brands";
         private const string ColorsCacheKey = "lookup_colors";
-        private const string ModelsCacheKey = "lookup_models_"; // + brandId eklenir
+        private const string ModelsCacheKey = "lookup_models_"; 
         private static readonly TimeSpan LookupCacheDuration = TimeSpan.FromHours(24);
 
         public LookupController(AppDbContext context, IMemoryCache cache)
@@ -24,7 +24,7 @@ namespace CarFleetPro.API.Controllers
             _cache = cache;
         }
 
-        // 1. Markaları Getir (ID + Name nesnesi döndürür)
+        
         [HttpGet("brands")]
         public async Task<IActionResult> GetBrands()
         {
@@ -36,7 +36,7 @@ namespace CarFleetPro.API.Controllers
             return Ok(brands);
         }
 
-        // 2. Seçilen Markanın Modellerini Getir (brandId ile)
+        
         [HttpGet("models/{brandId:int}")]
         public async Task<IActionResult> GetModelsByBrandId(int brandId)
         {
@@ -52,7 +52,7 @@ namespace CarFleetPro.API.Controllers
             return Ok(models);
         }
 
-        // 3. Renkleri Getir (ID + Name nesnesi döndürür)
+        
         [HttpGet("colors")]
         public async Task<IActionResult> GetColors()
         {
@@ -64,7 +64,7 @@ namespace CarFleetPro.API.Controllers
             return Ok(colors);
         }
 
-        // 4. Mevcut Durumları Getir (Enum'dan sabit liste)
+        
         [HttpGet("statuses")]
         public IActionResult GetStatuses()
         {
@@ -81,13 +81,13 @@ namespace CarFleetPro.API.Controllers
 
 namespace CarFleetPro.API.Controllers
 {
-    // ======================================================
-    // === MOBİL UYGULAMA İÇİN ALIAS CONTROLLER'LAR ========
-    // ======================================================
+    
+    
+    
 
-    /// <summary>
-    /// GET api/CarBrands → Tüm markaları döndürür (string listesi)
-    /// </summary>
+    
+    
+    
     [Route("api/CarBrands")]
     [ApiController]
     public class CarBrandsController : ControllerBase
@@ -117,9 +117,9 @@ namespace CarFleetPro.API.Controllers
         }
     }
 
-    /// <summary>
-    /// GET api/CarModels/{brandName} → Marka adına göre modelleri döndürür (string listesi)
-    /// </summary>
+    
+    
+    
     [Route("api/CarModels")]
     [ApiController]
     public class CarModelsController : ControllerBase
@@ -157,9 +157,9 @@ namespace CarFleetPro.API.Controllers
         }
     }
 
-    /// <summary>
-    /// GET api/CarColors → Tüm renkleri döndürür (string listesi)
-    /// </summary>
+    
+    
+    
     [Route("api/CarColors")]
     [ApiController]
     public class CarColorsController : ControllerBase
@@ -189,9 +189,9 @@ namespace CarFleetPro.API.Controllers
         }
     }
 
-    /// <summary>
-    /// GET api/VehicleStatuses → Araç durum listesini döndürür (string listesi)
-    /// </summary>
+    
+    
+    
     [Route("api/VehicleStatuses")]
     [ApiController]
     public class VehicleStatusesController : ControllerBase

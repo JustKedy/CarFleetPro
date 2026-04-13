@@ -105,9 +105,9 @@ namespace CarFleetPro.API.Controllers
             });
         }
 
-        /// <summary>
-        /// PUT /api/Auth/profile — Profil bilgilerini güncelle
-        /// </summary>
+        
+        
+        
         [HttpPut("profile")]
         [Authorize]
         public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileDto dto)
@@ -121,7 +121,7 @@ namespace CarFleetPro.API.Controllers
             user.FullName = dto.FullName;
             user.PhoneNumber = dto.PhoneNumber;
 
-            // Email değiştiyse
+            
             if (!string.IsNullOrEmpty(dto.Email) && dto.Email != user.Email)
             {
                 var emailExists = await _userManager.FindByEmailAsync(dto.Email);
@@ -180,30 +180,30 @@ namespace CarFleetPro.API.Controllers
             return Ok(new { message = "Bildirim tercihleri kaydedildi." });
         }
 
-        /// <summary>
-        /// POST /api/Auth/forgot-password — Şifre sıfırlama kodu e-posta ile gönder
-        /// </summary>
+        
+        
+        
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
         {
             var user = await _userManager.FindByEmailAsync(dto.Email);
             
-            // Güvenlik: Kullanıcı bulunamasa bile aynı mesajı dön (e-posta mining engellemek için)
+            
             if (user == null)
                 return Ok(new { message = "Eğer bu e-posta adresi kayıtlıysa, şifre sıfırlama kodu gönderildi." });
 
-            // ASP.NET Identity token üret
+            
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-            // 6 haneli basit kod oluştur (token çok uzun, kullanıcıya kodu göndereceğiz)
+            
             var resetCode = new Random().Next(100000, 999999).ToString();
 
-            // Token'ı geçici olarak Purpose alanına kaydet (basit yaklaşım)
-            // Production'da Redis veya ayrı bir tablo kullanılmalı
-            user.SecurityStamp = token; // Identity security stamp olarak sakla
+            
+            
+            user.SecurityStamp = token; 
             await _userManager.UpdateAsync(user);
 
-            // E-posta gönder
+            
             var emailBody = $@"
                 <h2>CarFleetPro — Şifre Sıfırlama</h2>
                 <p>Merhaba {user.FullName},</p>
@@ -221,15 +221,15 @@ namespace CarFleetPro.API.Controllers
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"[EMAIL] Gönderim hatası: {ex.Message}");
-                // E-posta gönderilemese bile token üretildi, logla ve devam et
+                
             }
 
             return Ok(new { message = "Eğer bu e-posta adresi kayıtlıysa, şifre sıfırlama kodu gönderildi.", token = token });
         }
 
-        /// <summary>
-        /// POST /api/Auth/reset-password — Token ile yeni şifre belirle
-        /// </summary>
+        
+        
+        
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
         {

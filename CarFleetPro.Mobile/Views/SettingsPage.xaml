@@ -27,7 +27,7 @@
         <ScrollView Grid.Row="1" VerticalScrollBarVisibility="Never">
             <VerticalStackLayout Padding="0, 10, 0, 10">
 
-                <!-- PROFILE SECTION -->
+                
                 <Border BackgroundColor="White" Padding="15" Margin="20, 10, 20, 10" Stroke="Transparent" StrokeThickness="0">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="12" />
@@ -136,7 +136,7 @@
                     </Grid>
                 </Border>
 
-                <!-- ADD ADMIN SECTION -->
+                
                 <Border BackgroundColor="White" Padding="15" Margin="20, 10, 20, 10" Stroke="Transparent" StrokeThickness="0">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="12" />

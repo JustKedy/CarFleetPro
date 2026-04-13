@@ -11,14 +11,14 @@ namespace CarFleetPro.Mobile.Models
         public int Hp { get; set; }
         public int Yas { get; set; }
         public int Km { get; set; }
-        public string Durum { get; set; } = string.Empty; // "MÜSAİT", "DOLU", "BAKIMDA"
+        public string Durum { get; set; } = string.Empty; 
         public string? KiralayanKisi { get; set; }
         public decimal? KiralamaFiyati { get; set; }
         public string? KiralamaSuresi { get; set; }
-        public string? KiralamaTarihi { get; set; }  // API "dd.MM.yyyy" formatında string döndürüyor
+        public string? KiralamaTarihi { get; set; }  
         public string? ResimUrl { get; set; }
 
-        // Akordeon animasyonu için UI tetikleyicisi
+        
         [ObservableProperty]
         public partial bool IsExpanded { get; set; }
     }
