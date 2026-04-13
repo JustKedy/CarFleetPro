@@ -1,18 +1,38 @@
-using Microsoft.Maui.Controls;
-using System;
+using CarFleetPro.Mobile.Models;
+using CarFleetPro.Mobile.ViewModels;
+using CommunityToolkit.Mvvm.Messaging;
 
-namespace CarFleetPro.Mobile.Views;
-
-public partial class FleetManagementPage : ContentPage
+namespace CarFleetPro.Mobile.Views
 {
-    public FleetManagementPage()
+    public partial class FleetManagementPage : ContentPage
     {
-        InitializeComponent();
-    }
+        private readonly FleetManagementViewModel _viewModel;
 
-    // YENİ ARAÇ EKLE butonuna tıklandığında çalışır
-    private async void OnAddNewVehicleClicked(object? sender, EventArgs e)
-    {
-        await Navigation.PushAsync(new AddNewVehiclePage());
+        // DI: Singleton VM ile liste state'ini korur
+        public FleetManagementPage(FleetManagementViewModel viewModel)
+        {
+            InitializeComponent();
+            _viewModel     = viewModel;
+            BindingContext = _viewModel;
+        }
+
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
+            // Sayfa her ekrana geldiğinde yenilenmeyi tetikle
+            await _viewModel.VerileriYenileCommand.ExecuteAsync(null);
+        }
+
+        public async void OnAddNewVehicleClicked(object? sender, EventArgs e)
+        {
+            try
+            {
+                await Navigation.PushAsync(new AddNewVehiclePage());
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"HATA: {ex.Message}");
+            }
+        }
     }
 }

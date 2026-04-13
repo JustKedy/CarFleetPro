@@ -4,6 +4,7 @@ using CarFleetPro.API.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace CarFleetPro.API.Controllers
 {
@@ -13,20 +14,33 @@ namespace CarFleetPro.API.Controllers
     public class VehicleController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IMemoryCache _cache; // Cache servisini tanımladık
+        private const string VehicleCacheKey = "vehicleList"; // Hafızadaki adımız
 
-        public VehicleController(AppDbContext context)
+        public VehicleController(AppDbContext context, IMemoryCache cache)
         {
             _context = context;
+            _cache = cache;
         }
 
         [HttpGet]
         [AllowAnonymous] 
         public async Task<IActionResult> GetAllVehicles([FromQuery] string? status)
         {
-            // Önce tüm araçları veritabanından çekmek için hazırlık yap
-            var query = _context.Vehicles.AsQueryable();
+            // 1. Önce listeyi Cache'den (Hafızadan) almayı deniyoruz
+            if (!_cache.TryGetValue(VehicleCacheKey, out List<Vehicle> vehicles))
+            {
+                // 2. Eğer hafızada yoksa (ilk defa çalışıyorsa veya yeni araç eklendiyse) DB'den çek
+                vehicles = await _context.Vehicles.ToListAsync();
 
-            // Eğer Yunus parametre gönderdiyse (örn: ?status=müsait), ona göre filtrele
+                // 3. Çektiğin bu veriyi hafızaya kaydet (Ömrü: Biz silene kadar veya uygulama kapanana kadar)
+                var cacheOptions = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromHours(1));
+                _cache.Set(VehicleCacheKey, vehicles, cacheOptions);
+            }
+
+            // 4. Hafızadaki liste üzerinden Yunus'un filtrelerini (Müsait, Dolu vs.) uygula
+            var query = vehicles.AsQueryable();
+
             if (!string.IsNullOrEmpty(status))
             {
                 if (status.ToLower() == "müsait") 
@@ -37,8 +51,7 @@ namespace CarFleetPro.API.Controllers
                     query = query.Where(v => v.Status == VehicleStatus.Maintenance);
             }
 
-            var vehicles = await query.ToListAsync();
-            return Ok(vehicles);
+            return Ok(query.ToList());
         }
 
         [HttpPost]
@@ -61,12 +74,14 @@ namespace CarFleetPro.API.Controllers
                 HorsePower = dto.HorsePower,
                 ImageUrl = dto.ImageUrl,
                 Color = dto.Color,
-                Status = VehicleStatus.Available,
+                Branch = dto.Branch ?? "Merkez Şube", // Şube bilgisi ekleniyor
+                Status = dto.Status, // Kullanıcının seçtiği durumu kaydet
                 CreatedAt = DateTime.UtcNow
             };
 
             _context.Vehicles.Add(newVehicle);
             await _context.SaveChangesAsync();
+            _cache.Remove(VehicleCacheKey); // Veritabanı değişti, eski hafızayı sil!
 
             return Ok(new { message = "Araç filoya başarıyla eklendi!", vehicle = newVehicle });
         }
@@ -89,8 +104,13 @@ namespace CarFleetPro.API.Controllers
             vehicle.HorsePower = dto.HorsePower;
             vehicle.ImageUrl = dto.ImageUrl;
             vehicle.Color = dto.Color;
+            vehicle.Branch = dto.Branch ?? "Merkez Şube"; // Şube bilgisi güncelleniyor
+            vehicle.Status = dto.Status;
+            vehicle.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
+            _cache.Remove(VehicleCacheKey); // Veritabanı değişti, eski hafızayı sil!
+            
             return Ok(new { message = "Araç başarıyla güncellendi!", vehicle });
         }
 
@@ -106,9 +126,42 @@ namespace CarFleetPro.API.Controllers
 
             _context.Vehicles.Remove(vehicle);
             await _context.SaveChangesAsync();
+            _cache.Remove(VehicleCacheKey); // Veritabanı değişti, eski hafızayı sil!
 
             return Ok(new { message = $"{vehicle.PlateNumber} plakalı araç filodan silindi." });
         }
+
+        [HttpPost("upload-image")]
+        public IActionResult UploadVehicleImage(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("Lütfen bir görsel seçin.");
+
+            // TODO: İleride resmi buluta (Supabase Storage vb.) yükleme kodlarını buraya yazacağız.
+            // Şimdilik Yunus hata almasın diye ona başarılı bir sahte link dönüyoruz.
+            var fakeImageUrl = "https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg";
+
+            return Ok(new { message = "Görsel başarıyla yüklendi", imageUrl = fakeImageUrl });
+        }
+
+        [HttpGet("last-updated")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetLastUpdated()
+        {
+            var maxVehicleCreatedAt = await _context.Vehicles.MaxAsync(v => (DateTime?)v.CreatedAt);
+            var maxVehicleUpdatedAt = await _context.Vehicles.MaxAsync(v => v.UpdatedAt); // Already nullable
+            var maxRentalCreatedAt = await _context.Rentals.MaxAsync(r => (DateTime?)r.CreatedAt);
+
+            var lastUpdated = new[] 
+            { 
+                maxVehicleCreatedAt ?? DateTime.MinValue, 
+                maxVehicleUpdatedAt ?? DateTime.MinValue, 
+                maxRentalCreatedAt ?? DateTime.MinValue 
+            }.Max();
+
+            return Ok(lastUpdated);
+        }
+
         [HttpGet("cards")]
         [AllowAnonymous]
         public async Task<IActionResult> GetVehicleCardsForFrontend()

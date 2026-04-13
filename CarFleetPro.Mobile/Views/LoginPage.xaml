@@ -54,7 +54,9 @@
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="8" />
                             </Border.StrokeShape>
-                            <Entry Placeholder="HOŞ GELDİNİZ" 
+                            <Entry x:Name="EmailEntry"
+                                   Placeholder="E-posta adresiniz"
+                                   Keyboard="Email"
                                    TextColor="#1F2937"
                                    PlaceholderColor="#9CA3AF"
                                    VerticalOptions="Center" />
@@ -64,21 +66,23 @@
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="8" />
                             </Border.StrokeShape>
-                            <Entry Placeholder="********" 
-                                   IsPassword="True" 
+                            <Entry x:Name="PasswordEntry"
+                                   Placeholder="Şifreniz"
+                                   IsPassword="True"
                                    TextColor="#1F2937"
                                    PlaceholderColor="#9CA3AF"
                                    VerticalOptions="Center" />
                         </Border>
 
-                        <Button Text="GİRİŞ" 
+                        <Button x:Name="LoginButton"
+                                Text="GİRİŞ YAP"
                                 Clicked="OnLoginClicked"
-                                BackgroundColor="#3B82F6" 
-                                TextColor="White" 
-                                FontAttributes="Bold" 
+                                BackgroundColor="#3B82F6"
+                                TextColor="White"
+                                FontAttributes="Bold"
                                 FontSize="16"
-                                CornerRadius="8" 
-                                HeightRequest="50" 
+                                CornerRadius="8"
+                                HeightRequest="50"
                                 Margin="0, 10, 0, 0"/>
 
                     </VerticalStackLayout>

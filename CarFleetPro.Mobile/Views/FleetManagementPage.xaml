@@ -2,113 +2,171 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:CarFleetPro.Mobile.Controls"
+             xmlns:vm="clr-namespace:CarFleetPro.Mobile.ViewModels"
+             xmlns:models="clr-namespace:CarFleetPro.Mobile.Models"
+             x:DataType="vm:FleetManagementViewModel"
              x:Class="CarFleetPro.Mobile.Views.FleetManagementPage"
              BackgroundColor="#F3F4F6"
              Shell.NavBarIsVisible="False">
 
     <Grid RowDefinitions="Auto, Auto, *, Auto, Auto">
 
-        <Border Grid.Row="0"
-                BackgroundColor="#0A1128" 
-                StrokeThickness="0"
-                HeightRequest="110">
+        <!-- ─── HEADER ─────────────────────────────────────────────── -->
+        <Border Grid.Row="0" BackgroundColor="#0A1128" StrokeThickness="0" HeightRequest="110">
             <Border.StrokeShape>
-                <RoundRectangle CornerRadius="0, 0, 20, 20" />
+                <RoundRectangle CornerRadius="0,0,20,20"/>
             </Border.StrokeShape>
-
             <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="5">
                 <HorizontalStackLayout HorizontalOptions="Center" Spacing="0">
-                    <Label Text="CARFLEET" FontSize="14" TextColor="White" FontAttributes="Bold" />
-                    <Label Text="PRO" FontSize="14" TextColor="#3B82F6" FontAttributes="Bold" />
+                    <Label Text="CARFLEET" FontSize="14" TextColor="White" FontAttributes="Bold"/>
+                    <Label Text="PRO"      FontSize="14" TextColor="#3B82F6" FontAttributes="Bold"/>
                 </HorizontalStackLayout>
-                <Label Text="FİLO DÜZENLE" FontSize="26" TextColor="White" HorizontalOptions="Center" Margin="0,5,0,0"/>
+                <Label Text="FİLO DÜZENLE" FontSize="26" TextColor="White"
+                       HorizontalOptions="Center" Margin="0,5,0,0"/>
             </VerticalStackLayout>
         </Border>
 
+        <!-- ─── FİLTRE BUTONLARI ───────────────────────────────────── -->
         <ScrollView Grid.Row="1" Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Margin="15,15,0,5">
             <HorizontalStackLayout Spacing="10">
-                <Button Text="Tümü" BackgroundColor="#0A1128" TextColor="White" CornerRadius="20" HeightRequest="40" Padding="15,0" />
-                <Button Text="Müsait" BackgroundColor="White" TextColor="#1F2937" BorderColor="#D1D5DB" BorderWidth="1" CornerRadius="20" HeightRequest="40" Padding="15,0" />
-                <Button Text="Bakımda" BackgroundColor="White" TextColor="#1F2937" BorderColor="#D1D5DB" BorderWidth="1" CornerRadius="20" HeightRequest="40" Padding="15,0" />
-                <Button Text="Dolu" BackgroundColor="White" TextColor="#1F2937" BorderColor="#D1D5DB" BorderWidth="1" CornerRadius="20" HeightRequest="40" Padding="15,0" />
+                <Button Text="Tümü"    Command="{Binding FiltreleCommand}" CommandParameter="Tümü"
+                        BackgroundColor="#0A1128" TextColor="White" CornerRadius="20" HeightRequest="40" Padding="15,0"/>
+                <Button Text="Müsait"  Command="{Binding FiltreleCommand}" CommandParameter="MÜSAİT"
+                        BackgroundColor="White" TextColor="#1F2937" BorderColor="#D1D5DB" BorderWidth="1" CornerRadius="20" HeightRequest="40" Padding="15,0"/>
+                <Button Text="Bakımda" Command="{Binding FiltreleCommand}" CommandParameter="BAKIMDA"
+                        BackgroundColor="White" TextColor="#1F2937" BorderColor="#D1D5DB" BorderWidth="1" CornerRadius="20" HeightRequest="40" Padding="15,0"/>
+                <Button Text="Dolu"    Command="{Binding FiltreleCommand}" CommandParameter="DOLU"
+                        BackgroundColor="White" TextColor="#1F2937" BorderColor="#D1D5DB" BorderWidth="1" CornerRadius="20" HeightRequest="40" Padding="15,0"/>
             </HorizontalStackLayout>
         </ScrollView>
 
-        <ScrollView Grid.Row="2" VerticalScrollBarVisibility="Never">
-            <VerticalStackLayout Spacing="0">
+        <!-- ─── ORTA ALAN (Skeleton veya Gerçek Liste) ─────────────── -->
+        <Grid Grid.Row="2">
 
-                <Border BackgroundColor="White" Padding="15" Margin="20, 10, 20, 10" Stroke="Transparent" StrokeThickness="0">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="12" />
-                    </Border.StrokeShape>
-                    <Border.Shadow>
-                        <Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.15"/>
-                    </Border.Shadow>
+            <!-- ═══════════════════════════════════════════════════════
+                 GERÇEK İÇERİK  (IsLoading=false olunca görünür)
+            ════════════════════════════════════════════════════════════ -->
+            <ScrollView VerticalScrollBarVisibility="Never"
+                        IsVisible="{Binding IsLoading, Converter={StaticResource InverseBoolConverter}}">
+                <VerticalStackLayout Spacing="0" BindableLayout.ItemsSource="{Binding AracListesi}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="models:Vehicle">
+                            <Border BackgroundColor="White" Padding="15" Margin="20,10,20,10"
+                                    Stroke="Transparent" StrokeThickness="0">
+                                <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                                <Border.Shadow><Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.15"/></Border.Shadow>
 
-                    <Grid ColumnDefinitions="Auto, *, Auto">
-                        <Border Grid.Column="0" WidthRequest="70" HeightRequest="70" BackgroundColor="#F3F4F6" StrokeThickness="0" VerticalOptions="Center">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="8" />
-                            </Border.StrokeShape>
-                            <Image Source="car.svg" HeightRequest="35" WidthRequest="35" HorizontalOptions="Center" VerticalOptions="Center"/>
-                        </Border>
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <!-- Küçük araç ikonu -->
+                                    <Border Grid.Column="0" WidthRequest="70" HeightRequest="70"
+                                            BackgroundColor="#F3F4F6" StrokeThickness="0" VerticalOptions="Center">
+                                        <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
+                                        <Image Source="car.svg" HeightRequest="35" WidthRequest="35"
+                                               HorizontalOptions="Center" VerticalOptions="Center"/>
+                                    </Border>
 
-                        <VerticalStackLayout Grid.Column="1" Margin="15,0,0,0" VerticalOptions="Center" Spacing="2">
-                            <Label Text="RENAULT CLIO" FontAttributes="Bold" FontSize="16" TextColor="#1F2937" />
-                            <Label Text="55 5MS 34" FontSize="14" TextColor="#4B5563" />
-                            <Label Text="Araç Marka" FontSize="12" TextColor="#9CA3AF" />
+                                    <!-- Araç bilgileri -->
+                                    <VerticalStackLayout Grid.Column="1" Margin="15,0,0,0" VerticalOptions="Center" Spacing="2">
+                                        <Label FontAttributes="Bold" FontSize="16" TextColor="#1F2937">
+                                            <Label.FormattedText>
+                                                <FormattedString>
+                                                    <Span Text="{Binding Marka}"/>
+                                                    <Span Text=" "/>
+                                                    <Span Text="{Binding Model}"/>
+                                                </FormattedString>
+                                            </Label.FormattedText>
+                                        </Label>
+                                        <Label Text="{Binding Plaka}" FontSize="14" TextColor="#4B5563"/>
+                                        <Label Text="{Binding Durum}" FontSize="12" TextColor="#9CA3AF"/>
+                                    </VerticalStackLayout>
+
+                                    <!-- Aksiyon butonları -->
+                                    <HorizontalStackLayout Grid.Column="2" Spacing="15" VerticalOptions="Center">
+                                        <ImageButton Source="edit.svg"
+                                                     HeightRequest="22" WidthRequest="22" BackgroundColor="Transparent"
+                                                     Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FleetManagementViewModel}}, Path=DuzenleCommand}"
+                                                     CommandParameter="{Binding .}"/>
+                                        <ImageButton Source="trash.svg"
+                                                     HeightRequest="22" WidthRequest="22" BackgroundColor="Transparent"
+                                                     Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FleetManagementViewModel}}, Path=SilCommand}"
+                                                     CommandParameter="{Binding .}"/>
+                                    </HorizontalStackLayout>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </ScrollView>
+
+            <!-- ═══════════════════════════════════════════════════════
+                 İSKELET EKRAN  (IsLoading=true iken görünür)
+                 4 adet araç satırı taklidi
+            ════════════════════════════════════════════════════════════ -->
+            <VerticalStackLayout Padding="20,10,20,20" Spacing="15"
+                                 IsVisible="{Binding IsLoading}">
+
+                <Border BackgroundColor="White" Padding="15" StrokeThickness="0">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                    <Grid ColumnDefinitions="70,*,Auto" ColumnSpacing="15">
+                        <BoxView Grid.Column="0" HeightRequest="70" WidthRequest="70" BackgroundColor="#E5E7EB" CornerRadius="8"/>
+                        <VerticalStackLayout Grid.Column="1" Spacing="8" VerticalOptions="Center">
+                            <BoxView HeightRequest="14" WidthRequest="120" BackgroundColor="#D1D5DB" HorizontalOptions="Start" CornerRadius="6"/>
+                            <BoxView HeightRequest="11" WidthRequest="80"  BackgroundColor="#E5E7EB" HorizontalOptions="Start" CornerRadius="5"/>
+                            <BoxView HeightRequest="10" WidthRequest="60"  BackgroundColor="#E5E7EB" HorizontalOptions="Start" CornerRadius="5"/>
                         </VerticalStackLayout>
-
-                        <HorizontalStackLayout Grid.Column="2" Spacing="15" VerticalOptions="Center">
-                            <Image Source="edit.svg" HeightRequest="22" WidthRequest="22" />
-                            <Image Source="trash.svg" HeightRequest="22" WidthRequest="22" />
-                        </HorizontalStackLayout>
                     </Grid>
                 </Border>
 
-                <Border BackgroundColor="White" Padding="15" Margin="20, 10, 20, 10" Stroke="Transparent" StrokeThickness="0">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="12" />
-                    </Border.StrokeShape>
-                    <Border.Shadow>
-                        <Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.15"/>
-                    </Border.Shadow>
-
-                    <Grid ColumnDefinitions="Auto, *, Auto">
-                        <Border Grid.Column="0" WidthRequest="70" HeightRequest="70" BackgroundColor="#F3F4F6" StrokeThickness="0" VerticalOptions="Center">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="8" />
-                            </Border.StrokeShape>
-                            <Image Source="car.svg" HeightRequest="35" WidthRequest="35" HorizontalOptions="Center" VerticalOptions="Center"/>
-                        </Border>
-
-                        <VerticalStackLayout Grid.Column="1" Margin="15,0,0,0" VerticalOptions="Center" Spacing="2">
-                            <Label Text="FORD FOCUS" FontAttributes="Bold" FontSize="16" TextColor="#1F2937" />
-                            <Label Text="34 ABC 123" FontSize="14" TextColor="#4B5563" />
-                            <Label Text="Araç Marka" FontSize="12" TextColor="#9CA3AF" />
+                <Border BackgroundColor="White" Padding="15" StrokeThickness="0">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                    <Grid ColumnDefinitions="70,*,Auto" ColumnSpacing="15">
+                        <BoxView Grid.Column="0" HeightRequest="70" WidthRequest="70" BackgroundColor="#E5E7EB" CornerRadius="8"/>
+                        <VerticalStackLayout Grid.Column="1" Spacing="8" VerticalOptions="Center">
+                            <BoxView HeightRequest="14" WidthRequest="120" BackgroundColor="#D1D5DB" HorizontalOptions="Start" CornerRadius="6"/>
+                            <BoxView HeightRequest="11" WidthRequest="80"  BackgroundColor="#E5E7EB" HorizontalOptions="Start" CornerRadius="5"/>
+                            <BoxView HeightRequest="10" WidthRequest="60"  BackgroundColor="#E5E7EB" HorizontalOptions="Start" CornerRadius="5"/>
                         </VerticalStackLayout>
+                    </Grid>
+                </Border>
 
-                        <HorizontalStackLayout Grid.Column="2" Spacing="15" VerticalOptions="Center">
-                            <Image Source="edit.svg" HeightRequest="22" WidthRequest="22" />
-                            <Image Source="trash.svg" HeightRequest="22" WidthRequest="22" />
-                        </HorizontalStackLayout>
+                <Border BackgroundColor="White" Padding="15" StrokeThickness="0">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                    <Grid ColumnDefinitions="70,*,Auto" ColumnSpacing="15">
+                        <BoxView Grid.Column="0" HeightRequest="70" WidthRequest="70" BackgroundColor="#E5E7EB" CornerRadius="8"/>
+                        <VerticalStackLayout Grid.Column="1" Spacing="8" VerticalOptions="Center">
+                            <BoxView HeightRequest="14" WidthRequest="120" BackgroundColor="#D1D5DB" HorizontalOptions="Start" CornerRadius="6"/>
+                            <BoxView HeightRequest="11" WidthRequest="80"  BackgroundColor="#E5E7EB" HorizontalOptions="Start" CornerRadius="5"/>
+                            <BoxView HeightRequest="10" WidthRequest="60"  BackgroundColor="#E5E7EB" HorizontalOptions="Start" CornerRadius="5"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+                <Border BackgroundColor="White" Padding="15" StrokeThickness="0">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                    <Grid ColumnDefinitions="70,*,Auto" ColumnSpacing="15">
+                        <BoxView Grid.Column="0" HeightRequest="70" WidthRequest="70" BackgroundColor="#E5E7EB" CornerRadius="8"/>
+                        <VerticalStackLayout Grid.Column="1" Spacing="8" VerticalOptions="Center">
+                            <BoxView HeightRequest="14" WidthRequest="120" BackgroundColor="#D1D5DB" HorizontalOptions="Start" CornerRadius="6"/>
+                            <BoxView HeightRequest="11" WidthRequest="80"  BackgroundColor="#E5E7EB" HorizontalOptions="Start" CornerRadius="5"/>
+                            <BoxView HeightRequest="10" WidthRequest="60"  BackgroundColor="#E5E7EB" HorizontalOptions="Start" CornerRadius="5"/>
+                        </VerticalStackLayout>
                     </Grid>
                 </Border>
 
             </VerticalStackLayout>
-        </ScrollView>
+        </Grid>
 
-        <Button Grid.Row="3" 
-                Text="YENİ ARAÇ EKLE" 
+        <Button Grid.Row="3"
+                Text="YENİ ARAÇ EKLE"
                 Clicked="OnAddNewVehicleClicked"
-                BackgroundColor="#3B82F6" 
-                TextColor="White" 
-                FontAttributes="Bold" 
-                CornerRadius="12" 
+                BackgroundColor="#3B82F6"
+                TextColor="White"
+                FontAttributes="Bold"
+                CornerRadius="12"
                 HeightRequest="55"
-                Margin="20,10,20,15" />
+                Margin="20,10,20,15"/>
 
-        <controls:BottomNavBar Grid.Row="4" SelectedTab="List" />
+        <controls:BottomNavBar Grid.Row="4" SelectedTab="List"/>
 
     </Grid>
 </ContentPage>
