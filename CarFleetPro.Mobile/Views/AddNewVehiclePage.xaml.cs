@@ -12,7 +12,6 @@ namespace CarFleetPro.Mobile.Views
 {
     public partial class AddNewVehiclePage : ContentPage
     {
-        // ÇÖZÜM: Null uyarısı için ? eklendi
         private Vehicle? _duzenlenenArac;
         private readonly ApiService _apiService = new ApiService();
 
@@ -63,7 +62,6 @@ namespace CarFleetPro.Mobile.Views
             if (_duzenlenenArac != null)
             {
                 BrandPicker.SelectedItem = _duzenlenenArac.Marka;
-                // Model, marka seçilince yukarıdaki event ile otomatik yüklenip seçilecek
                 DurumPicker.SelectedItem = _duzenlenenArac.Durum;
             }
         }
@@ -81,14 +79,12 @@ namespace CarFleetPro.Mobile.Views
             }
         }
 
-        // ÇÖZÜM: object? sender yapıldı
         public async void OnUploadImageTapped(object? sender, EventArgs e)
         {
             try
             {
                 if (MediaPicker.Default.IsCaptureSupported)
                 {
-                    // ÇÖZÜM: Yeni .NET 10 formatı (PickPhotosAsync)
                     var photos = await MediaPicker.Default.PickPhotosAsync();
                     var photo = photos?.FirstOrDefault();
 
@@ -139,53 +135,66 @@ namespace CarFleetPro.Mobile.Views
                 return;
             }
 
-            // ── 2. Düzenleme Modu ──────────────────────────────────────────
-            if (_duzenlenenArac != null)
-            {
-                // TODO: PUT endpoint'i hazır olunca burası doldurulacak
-                await ShowSuccessToast("Araç başarıyla güncellendi!");
-                await Navigation.PopAsync();
-                return;
-            }
-
             // Durum ataması: 0=Müsait, 1=Kirada(Dolu), 2=Bakımda
             int durumId = 0; // Varsayılan Müsait
             var selectedDurum = DurumPicker.SelectedItem?.ToString()?.ToUpper();
             if (selectedDurum == "DOLU" || selectedDurum == "KİRADA") durumId = 1;
             else if (selectedDurum == "BAKIMDA") durumId = 2;
 
-            // ── 3. Yeni Araç Oluştur ve API'ye Gönder ─────────────────────
+            // Alper'in API'sine gidecek ortak paket
             var request = new CreateVehicleRequest
             {
-                PlateNumber  = PlakaEntry.Text.Trim().ToUpper(),
-                Brand        = BrandPicker.SelectedItem.ToString()!,
-                Model        = ModelPicker.SelectedItem.ToString()!,
-                Year         = yil,
-                Mileage      = int.TryParse(KmEntry.Text, out int km)  ? km  : 0,
-                HorsePower   = int.TryParse(HpEntry.Text, out int hp)  ? hp  : 0,
-                Color        = RenkPicker.SelectedItem?.ToString(),
-                Branch       = "Merkez Şube",
-                Status       = durumId
+                PlateNumber = PlakaEntry.Text.Trim().ToUpper(),
+                Brand = BrandPicker.SelectedItem.ToString()!,
+                Model = ModelPicker.SelectedItem.ToString()!,
+                Year = yil,
+                Mileage = int.TryParse(KmEntry.Text, out int km) ? km : 0,
+                HorsePower = int.TryParse(HpEntry.Text, out int hp) ? hp : 0,
+                Color = RenkPicker.SelectedItem?.ToString(),
+                Branch = "Merkez Şube",
+                Status = durumId
             };
 
             // Kaydet butonunu pasif yap - çift tıklamayı önle
             var saveButton = sender as Button;
             if (saveButton != null) saveButton.IsEnabled = false;
 
-            var (success, message) = await _apiService.CreateVehicleAsync(request);
-
-            if (saveButton != null) saveButton.IsEnabled = true;
-
-            if (success)
+            // ── 2. Düzenleme (PUT) mi Yeni Araç (POST) mu? ─────────────────────
+            if (_duzenlenenArac != null)
             {
-                await ShowSuccessToast("Araç filoya başarıyla eklendi! 🚗");
-                // FleetManagementPage'e geri dönünce yenilemesi için mesaj gönder
-                WeakReferenceMessenger.Default.Send(new VehicleAddedMessage());
-                await Navigation.PopAsync();
+                // VAR OLAN ARACI GÜNCELLE
+                var (success, message) = await _apiService.UpdateVehicleAsync(_duzenlenenArac.Id, request);
+
+                if (saveButton != null) saveButton.IsEnabled = true;
+
+                if (success)
+                {
+                    await ShowSuccessToast("Araç başarıyla güncellendi kiral! 🛠️");
+                    WeakReferenceMessenger.Default.Send(new VehicleAddedMessage());
+                    await Navigation.PopAsync();
+                }
+                else
+                {
+                    await DisplayAlertAsync("Hata", message, "Tamam");
+                }
             }
             else
             {
-                await DisplayAlertAsync("Hata", message, "Tamam");
+                // YENİ ARAÇ EKLE
+                var (success, message) = await _apiService.CreateVehicleAsync(request);
+
+                if (saveButton != null) saveButton.IsEnabled = true;
+
+                if (success)
+                {
+                    await ShowSuccessToast("Araç filoya başarıyla eklendi! 🚗");
+                    WeakReferenceMessenger.Default.Send(new VehicleAddedMessage());
+                    await Navigation.PopAsync();
+                }
+                else
+                {
+                    await DisplayAlertAsync("Hata", message, "Tamam");
+                }
             }
         }
 
@@ -214,7 +223,6 @@ namespace CarFleetPro.Mobile.Views
                 mainLayout.Children.Add(toastGrid);
                 toastGrid.Scale = 0.8;
 
-                // ÇÖZÜM: Eski FadeTo yerine yeni FadeToAsync ve ScaleToAsync
                 await Task.WhenAll(toastGrid.FadeToAsync(1, 250, Easing.CubicOut), toastGrid.ScaleToAsync(1, 250, Easing.CubicOut));
                 await Task.Delay(2000);
                 await toastGrid.FadeToAsync(0, 300, Easing.CubicIn);

@@ -19,8 +19,12 @@ public partial class HomePage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        // Sayfa her açıldığında (Bottom Nav bar geçişleri veya form dönüşleri dahil) 
-        // verileri yenile. API tarafı eğer veri değişmemişse anında cache döner, ekran titremez.
+
+        // SAYFA AÇILIŞ ANİMASYONU
+        this.Opacity = 0;
+        await this.FadeTo(1, 300, Easing.CubicOut);
+
+        // Eski kodun
         await _viewModel.LoadDataAsync();
     }
 }

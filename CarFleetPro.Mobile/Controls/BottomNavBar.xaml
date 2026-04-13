@@ -3,50 +3,47 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="CarFleetPro.Mobile.Controls.BottomNavBar">
 
-    <Border BackgroundColor="#0A1128" StrokeThickness="0" HeightRequest="75">
+    <Border BackgroundColor="#0A1128" StrokeThickness="0" HeightRequest="75" Padding="10,0">
         <Border.StrokeShape>
             <RoundRectangle CornerRadius="20,20,0,0" />
         </Border.StrokeShape>
 
-        <Grid ColumnDefinitions="*, *, *, *" Padding="10,0">
+        <Grid x:Name="NavGrid" ColumnDefinitions="*, *, *, *" SizeChanged="OnNavGridSizeChanged">
 
-            <Border x:Name="HomeBorder" Grid.Column="0" BackgroundColor="Transparent" Stroke="Transparent" StrokeThickness="1" Padding="12, 8" HorizontalOptions="Center" VerticalOptions="Center">
+            <Border x:Name="SlidingIndicator" Grid.Column="0" 
+                    BackgroundColor="Transparent" Stroke="#3B82F6" StrokeThickness="1.5" 
+                    WidthRequest="50" HeightRequest="42"
+                    HorizontalOptions="Center" VerticalOptions="Center" ZIndex="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+            </Border>
+
+            <Border x:Name="HomeBorder" Grid.Column="0" BackgroundColor="Transparent" StrokeThickness="0" Padding="12, 8" HorizontalOptions="Center" VerticalOptions="Center" ZIndex="1">
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnHomeTapped" />
                 </Border.GestureRecognizers>
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="12" />
-                </Border.StrokeShape>
                 <Image x:Name="HomeImg" Source="homenegatif.svg" HeightRequest="26" />
             </Border>
 
-            <Border x:Name="GarageBorder" Grid.Column="1" BackgroundColor="Transparent" Stroke="Transparent" StrokeThickness="1" Padding="12, 8" HorizontalOptions="Center" VerticalOptions="Center">
+            <Border x:Name="GarageBorder" Grid.Column="1" BackgroundColor="Transparent" StrokeThickness="0" Padding="12, 8" HorizontalOptions="Center" VerticalOptions="Center" ZIndex="1">
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnGarageTapped" />
                 </Border.GestureRecognizers>
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="12" />
-                </Border.StrokeShape>
                 <Image x:Name="GarageImg" Source="garagenegatif.svg" HeightRequest="26" />
             </Border>
 
-            <Border x:Name="ListBorder" Grid.Column="2" BackgroundColor="Transparent" Stroke="Transparent" StrokeThickness="1" Padding="12, 8" HorizontalOptions="Center" VerticalOptions="Center">
+            <Border x:Name="ListBorder" Grid.Column="2" BackgroundColor="Transparent" StrokeThickness="0" Padding="12, 8" HorizontalOptions="Center" VerticalOptions="Center" ZIndex="1">
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnListTapped" />
                 </Border.GestureRecognizers>
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="12" />
-                </Border.StrokeShape>
                 <Image x:Name="ListImg" Source="listnegatif.svg" HeightRequest="26" />
             </Border>
 
-            <Border x:Name="SettingsBorder" Grid.Column="3" BackgroundColor="Transparent" Stroke="Transparent" StrokeThickness="1" Padding="12, 8" HorizontalOptions="Center" VerticalOptions="Center">
+            <Border x:Name="SettingsBorder" Grid.Column="3" BackgroundColor="Transparent" StrokeThickness="0" Padding="12, 8" HorizontalOptions="Center" VerticalOptions="Center" ZIndex="1">
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnSettingsTapped" />
                 </Border.GestureRecognizers>
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="12" />
-                </Border.StrokeShape>
                 <Image x:Name="SettingsImg" Source="settingsnegatif.svg" HeightRequest="26" />
             </Border>
 

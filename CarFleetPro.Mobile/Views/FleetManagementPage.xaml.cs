@@ -19,7 +19,12 @@ namespace CarFleetPro.Mobile.Views
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            // Sayfa her ekrana geldiğinde yenilenmeyi tetikle
+
+            // SAYFA AÇILIŞ ANİMASYONU
+            this.Opacity = 0;
+            await this.FadeTo(1, 300, Easing.CubicOut);
+
+            // Eski kodun
             await _viewModel.VerileriYenileCommand.ExecuteAsync(null);
         }
 

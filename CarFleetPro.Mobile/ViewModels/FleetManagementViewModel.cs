@@ -19,7 +19,12 @@ namespace CarFleetPro.Mobile.ViewModels
         public ObservableCollection<Vehicle> AracListesi { get; set; } = new();
 
         // AOT UYARISI ÇÖZÜMÜ
-        [ObservableProperty] public partial bool IsLoading { get; set; } = true;
+        [ObservableProperty]
+        public partial bool IsLoading { get; set; } = true;
+
+        // Seçili filtrenin rengini XAML tarafında değiştirmek için hafıza
+        [ObservableProperty]
+        public partial string SeciliFiltre { get; set; } = "Tümü";
 
         public FleetManagementViewModel(ApiService apiService)
         {
@@ -51,6 +56,9 @@ namespace CarFleetPro.Mobile.ViewModels
         [RelayCommand]
         public void Filtrele(string durum)
         {
+            // Hangi butona basıldıysa hafızaya alıyoruz ki arayüz bilsin
+            SeciliFiltre = durum;
+
             AracListesi.Clear();
 
             if (string.Equals(durum, "Tümü", StringComparison.OrdinalIgnoreCase))
@@ -65,28 +73,42 @@ namespace CarFleetPro.Mobile.ViewModels
             }
         }
 
-        // STATİC UYARISI VE NULL CHECK ÇÖZÜMÜ
         [RelayCommand]
-        public static async Task Duzenle(Vehicle? secilenArac)
+        public async Task Duzenle(Vehicle? secilenArac)
         {
             if (secilenArac is not null && Shell.Current is not null)
             {
-                await Shell.Current.DisplayAlertAsync("Düzenle", $"{secilenArac.Marka} {secilenArac.Model} düzenleme sayfasına gidilecek.", "Tamam");
+                // Kadir'in hazırladığı arayüze (Düzenleme Moduyla) geçiş yapıyoruz
+                await Shell.Current.Navigation.PushAsync(new Views.AddNewVehiclePage(secilenArac));
             }
         }
 
-        // NULL CHECK ÇÖZÜMÜ
+        // =========================================================================
+        // [GÜNCELLENDİ] API BAĞLANTILI SİLME İŞLEMİ
+        // =========================================================================
         [RelayCommand]
         public async Task Sil(Vehicle? secilenArac)
         {
             if (secilenArac is not null && Shell.Current is not null)
             {
-                bool cevap = await Shell.Current.DisplayAlertAsync("Emin Misin?", $"{secilenArac.Plaka} plakalı aracı silmek istediğine emin misin?", "Evet, Sil", "İptal");
+                bool cevap = await Shell.Current.DisplayAlertAsync("Emin Misin?", $"{secilenArac.Plaka} plakalı aracı kalıcı olarak silmek istediğine emin misin?", "Evet, Sil", "İptal");
 
                 if (cevap)
                 {
-                    _tumAraclar.Remove(secilenArac);
-                    AracListesi.Remove(secilenArac);
+                    // 1. API üzerinden Alper'in veritabanından siliyoruz (Id propertysini kullanıyoruz)
+                    bool apiBasarili = await _apiService.DeleteVehicleAsync(secilenArac.Id);
+
+                    if (apiBasarili)
+                    {
+                        // 2. Veritabanından başarıyla silindiyse, ekrandaki listeden de uçur!
+                        _tumAraclar.Remove(secilenArac);
+                        AracListesi.Remove(secilenArac);
+                    }
+                    else
+                    {
+                        // Silerken hata çıkarsa kullanıcıyı uyar
+                        await Shell.Current.DisplayAlertAsync("Hata", "Araç silinirken veritabanı tarafında bir sorun oluştu.", "Tamam");
+                    }
                 }
             }
         }

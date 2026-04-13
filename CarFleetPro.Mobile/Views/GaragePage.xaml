@@ -69,9 +69,7 @@
                                 <!-- Durum satırı  -->
                                 <Grid ColumnDefinitions="Auto,*,Auto" Padding="5,0" Margin="0,5">
                                     <Grid.GestureRecognizers>
-                                        <TapGestureRecognizer
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:GarageViewModel}}, Path=DetayAcKapaCommand}"
-                                            CommandParameter="{Binding .}" />
+                                        <TapGestureRecognizer Tapped="OnAracTapped" />
                                     </Grid.GestureRecognizers>
 
                                     <HorizontalStackLayout Grid.Column="0" Spacing="6" VerticalOptions="Center">
