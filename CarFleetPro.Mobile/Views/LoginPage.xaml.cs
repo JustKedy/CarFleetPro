@@ -2,6 +2,7 @@ using Microsoft.Maui.Controls;
 using System;
 using System.Threading.Tasks;
 using CarFleetPro.Mobile.Services;
+using CarFleetPro.Mobile.ViewModels;
 
 namespace CarFleetPro.Mobile.Views;
 
@@ -36,9 +37,16 @@ public partial class LoginPage : ContentPage
         {
             try
             {
-                // Başarılı olursa anasayfaya yönlendir
                 // DI container'dan singleton HomePage'i al — state korunur
-                var homePage = IPlatformApplication.Current!.Services.GetRequiredService<HomePage>();
+                var homePage = Handler?.MauiContext?.Services.GetService<HomePage>();
+                
+                if (homePage == null)
+                {
+                    // Fallback
+                    var api = Handler?.MauiContext?.Services.GetService<ApiService>() ?? new ApiService();
+                    homePage = new HomePage(new HomeViewModel(api));
+                }
+
                 await Navigation.PushAsync(homePage);
             }
             catch (Exception ex)

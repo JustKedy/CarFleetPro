@@ -11,14 +11,13 @@ public partial class VehicleDetailsPage : ContentPage
     {
         InitializeComponent();
         // Aracın bilgilerini sayfaya bağla
-        [cite_start] BindingContext = selectedVehicle; [cite: 3]
+        BindingContext = selectedVehicle; 
     }
 
     private async void OnBackClicked(object? sender, EventArgs e)
     {
-        [cite_start] if (Navigation is not null) await Navigation.PopAsync(); [cite: 3]
+        if (Navigation is not null) await Navigation.PopAsync();
     }
-}
 
     private async void OnMaintenanceClicked(object? sender, EventArgs e)
     {

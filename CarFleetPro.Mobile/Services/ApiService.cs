@@ -16,7 +16,9 @@ namespace CarFleetPro.Mobile.Services
         // KRİTİK BİLGİ: Android emülatöründe kendi bilgisayarının localhost'una 
         // bağlanmak için "localhost" yerine "10.0.2.2" yazmalısın!
         // Alper'in API portu kaçsa (örn: 5001) onu buraya yazın.
-        private const string BaseUrl = "http://192.168.1.116:5161/api/";
+        private static readonly string BaseUrl = Microsoft.Maui.Devices.DeviceInfo.Platform == Microsoft.Maui.Devices.DevicePlatform.Android 
+            ? "http://10.0.2.2:5161/api/" 
+            : "http://localhost:5161/api/";
 
         // Sertifika hatalarını yok sayan köprü (Sadece geliştirme aşaması için!)
         private static HttpMessageHandler GetInsecureHandler()
