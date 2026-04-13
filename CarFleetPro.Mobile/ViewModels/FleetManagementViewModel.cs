@@ -76,10 +76,10 @@ namespace CarFleetPro.Mobile.ViewModels
         [RelayCommand]
         public async Task Duzenle(Vehicle? secilenArac)
         {
-            if (secilenArac is not null && Shell.Current is not null)
+            if (secilenArac is not null && Application.Current?.Windows.Count > 0)
             {
                 // Kadir'in hazırladığı arayüze (Düzenleme Moduyla) geçiş yapıyoruz
-                await Shell.Current.Navigation.PushAsync(new Views.AddNewVehiclePage(secilenArac));
+                await Application.Current.Windows[0].Page!.Navigation.PushAsync(new Views.AddNewVehiclePage(secilenArac));
             }
         }
 
@@ -89,9 +89,10 @@ namespace CarFleetPro.Mobile.ViewModels
         [RelayCommand]
         public async Task Sil(Vehicle? secilenArac)
         {
-            if (secilenArac is not null && Shell.Current is not null)
+            if (secilenArac is not null && Application.Current?.Windows.Count > 0)
             {
-                bool cevap = await Shell.Current.DisplayAlertAsync("Emin Misin?", $"{secilenArac.Plaka} plakalı aracı kalıcı olarak silmek istediğine emin misin?", "Evet, Sil", "İptal");
+                var page = Application.Current.Windows[0].Page!;
+                bool cevap = await page.DisplayAlertAsync("Emin Misin?", $"{secilenArac.Plaka} plakalı aracı kalıcı olarak silmek istediğine emin misin?", "Evet, Sil", "İptal");
 
                 if (cevap)
                 {
@@ -103,11 +104,13 @@ namespace CarFleetPro.Mobile.ViewModels
                         // 2. Veritabanından başarıyla silindiyse, ekrandaki listeden de uçur!
                         _tumAraclar.Remove(secilenArac);
                         AracListesi.Remove(secilenArac);
+                        
+                        await page.DisplayAlertAsync("Başarılı", "Araç başarıyla filodan silindi.", "Tamam");
                     }
                     else
                     {
                         // Silerken hata çıkarsa kullanıcıyı uyar
-                        await Shell.Current.DisplayAlertAsync("Hata", "Araç silinirken veritabanı tarafında bir sorun oluştu.", "Tamam");
+                        await page.DisplayAlertAsync("Hata", "Araç silinirken veritabanı tarafında bir sorun oluştu.", "Tamam");
                     }
                 }
             }

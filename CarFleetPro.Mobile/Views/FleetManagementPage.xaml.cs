@@ -22,7 +22,7 @@ namespace CarFleetPro.Mobile.Views
 
             // SAYFA AÇILIŞ ANİMASYONU
             this.Opacity = 0;
-            await this.FadeTo(1, 300, Easing.CubicOut);
+            await this.FadeToAsync(1, 300, Easing.CubicOut);
 
             // Eski kodun
             await _viewModel.VerileriYenileCommand.ExecuteAsync(null);
@@ -37,6 +37,27 @@ namespace CarFleetPro.Mobile.Views
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"HATA: {ex.Message}");
+            }
+        }
+
+        // ==========================================================
+        // KESİN ÇÖZÜM: MAUI BindableLayout Hata Giderme
+        // Görsel ağaçtan (XAML) bağlamak yerine, Border'ın kendi arka 
+        // planındaki nesneyi C# ile ViewModel'e yönlendiriyoruz.
+        // ==========================================================
+        private void OnDuzenleTapped(object? sender, TappedEventArgs e)
+        {
+            if (sender is BindableObject bindable && bindable.BindingContext is Vehicle secilenArac)
+            {
+                _viewModel.DuzenleCommand.Execute(secilenArac);
+            }
+        }
+
+        private void OnSilTapped(object? sender, TappedEventArgs e)
+        {
+            if (sender is BindableObject bindable && bindable.BindingContext is Vehicle secilenArac)
+            {
+                _viewModel.SilCommand.Execute(secilenArac);
             }
         }
     }

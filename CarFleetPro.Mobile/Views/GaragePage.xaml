@@ -58,12 +58,11 @@
                             <VerticalStackLayout Spacing="10">
 
                                 <!-- Araç Resmi -->
-                                <Border Padding="0" Stroke="#D1D5DB" StrokeThickness="1" BackgroundColor="White">
-                                    <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                                <Border Padding="0" StrokeThickness="0" BackgroundColor="#E5E7EB" HeightRequest="180">
+                                    <Border.StrokeShape><RoundRectangle CornerRadius="10" /></Border.StrokeShape>
                                     <Image Source="{Binding ResimUrl}"
-                                           HeightRequest="150"
-                                           Aspect="AspectFit"
-                                           Margin="10"/>
+                                           Aspect="AspectFill"
+                                           VerticalOptions="Fill" HorizontalOptions="Fill" />
                                 </Border>
 
                                 <!-- Durum satırı  -->

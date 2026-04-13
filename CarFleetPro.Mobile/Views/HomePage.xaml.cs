@@ -22,7 +22,7 @@ public partial class HomePage : ContentPage
 
         // SAYFA AÇILIŞ ANİMASYONU
         this.Opacity = 0;
-        await this.FadeTo(1, 300, Easing.CubicOut);
+        await this.FadeToAsync(1, 300, Easing.CubicOut);
 
         // Eski kodun
         await _viewModel.LoadDataAsync();

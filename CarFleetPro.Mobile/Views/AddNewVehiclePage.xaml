@@ -130,7 +130,7 @@
 
                 <Grid ColumnDefinitions="*, *" ColumnSpacing="15" Margin="20, 10, 20, 10">
                     <Button Grid.Column="0" Text="İPTAL ET" Clicked="OnCancelClicked" BackgroundColor="White" TextColor="#EF4444" BorderColor="#EF4444" BorderWidth="1" FontAttributes="Bold" CornerRadius="8" HeightRequest="50" />
-                    <Button Grid.Column="1" Text="KAYDET" Clicked="OnSaveClicked" BackgroundColor="#3B82F6" TextColor="White" FontAttributes="Bold" CornerRadius="8" HeightRequest="50" />
+                    <Button x:Name="SubmitButton" Grid.Column="1" Text="EKLE" Clicked="OnSaveClicked" BackgroundColor="#3B82F6" TextColor="White" FontAttributes="Bold" CornerRadius="8" HeightRequest="50" />
                 </Grid>
 
             </VerticalStackLayout>

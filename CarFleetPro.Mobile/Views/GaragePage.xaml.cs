@@ -24,7 +24,7 @@ namespace CarFleetPro.Mobile.Views
 
             // SAYFA AÇILIŞ ANİMASYONU
             this.Opacity = 0;
-            await this.FadeTo(1, 300, Easing.CubicOut);
+            await this.FadeToAsync(1, 300, Easing.CubicOut);
 
             // Eski kodun
             await _viewModel.VerileriYenileCommand.ExecuteAsync(null);
