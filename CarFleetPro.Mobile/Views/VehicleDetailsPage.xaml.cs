@@ -21,11 +21,7 @@ public partial class VehicleDetailsPage : ContentPage
 
     private async void OnMaintenanceClicked(object? sender, EventArgs e)
     {
-        if (Shell.Current is not null)
-        {
-            // DisplayAlert yerine DisplayAlertAsync kullanıldı!
-            await Shell.Current.DisplayAlertAsync("Bakım", "Araç bakım moduna alınıyor...", "Tamam");
-        }
+        // YUNUS NOT: Bakıma gönderme API entegrasyonu buraya yazılacak.
     }
 
     private async void OnRentClicked(object? sender, EventArgs e)

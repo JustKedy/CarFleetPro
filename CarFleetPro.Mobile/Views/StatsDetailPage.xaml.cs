@@ -11,4 +11,9 @@ public partial class StatsDetailPage : ContentPage
     {
         await Navigation.PopAsync();
     }
+
+    private async void OnStatSelected(object? sender, SelectionChangedEventArgs e)
+    {
+        // YUNUS NOT: Seçilen istatistik detaylarına gitme entegrasyonu buraya yazılacak.
+    }
 }

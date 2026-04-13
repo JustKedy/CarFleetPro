@@ -1,8 +1,8 @@
 namespace CarFleetPro.Mobile.Views;
 
-public partial class AdminRegistrationPage : ContentPage
+public partial class ChangePasswordPage : ContentPage
 {
-    public AdminRegistrationPage()
+    public ChangePasswordPage()
     {
         InitializeComponent();
     }
@@ -15,8 +15,8 @@ public partial class AdminRegistrationPage : ContentPage
         }
     }
 
-    private async void OnCreateAdminClicked(object? sender, EventArgs e)
+    private async void OnChangePasswordClicked(object? sender, EventArgs e)
     {
-        // YUNUS NOT: Yeni admin oluşturma API entegrasyonu buraya yazılacak.
+        // YUNUS NOT: Şifre değiştirme API entegrasyonu buraya yazılacak.
     }
 }

@@ -12,16 +12,19 @@
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="0, 0, 20, 20" />
             </Border.StrokeShape>
-            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="5">
-                <HorizontalStackLayout HorizontalOptions="Center" Spacing="0">
-                    <Label Text="CARFLEET" FontSize="14" TextColor="White" FontAttributes="Bold" />
-                    <Label Text="PRO" FontSize="14" TextColor="#3B82F6" FontAttributes="Bold" />
-                </HorizontalStackLayout>
-                <Label Text="BİLDİRİM MERKEZİ" FontSize="26" TextColor="White" HorizontalOptions="Center" Margin="0,5,0,0"/>
-            </VerticalStackLayout>
+            <Grid ColumnDefinitions="30, *, 30" Padding="20,0">
+                <ImageButton Grid.Column="0" Source="arrow_left_white.svg" Clicked="OnBackClicked" HeightRequest="25" WidthRequest="25" VerticalOptions="Center"/>
+                <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center" Spacing="5">
+                    <HorizontalStackLayout HorizontalOptions="Center" Spacing="0">
+                        <Label Text="CARFLEET" FontSize="14" TextColor="White" FontAttributes="Bold" />
+                        <Label Text="PRO" FontSize="14" TextColor="#3B82F6" FontAttributes="Bold" />
+                    </HorizontalStackLayout>
+                    <Label Text="BİLDİRİM MERKEZİ" FontSize="26" TextColor="White" HorizontalOptions="Center" Margin="0,5,0,0"/>
+                </VerticalStackLayout>
+            </Grid>
         </Border>
 
-        <CollectionView Grid.Row="1" Margin="20,10" VerticalScrollBarVisibility="Never">
+        <CollectionView x:Name="AlertsList" Grid.Row="1" Margin="20,10" VerticalScrollBarVisibility="Never" SelectionMode="Single" SelectionChanged="OnAlertSelected">
             <CollectionView.Header>
                 <Label Text="Bugün İlgi Bekleyenler" FontAttributes="Bold" TextColor="#1F2937" Margin="5,10" />
             </CollectionView.Header>

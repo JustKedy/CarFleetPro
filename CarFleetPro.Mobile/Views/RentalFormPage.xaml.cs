@@ -5,12 +5,27 @@ public partial class RentalFormPage : ContentPage
     public RentalFormPage()
     {
         InitializeComponent();
+        
+
+    }
+
+    private async void OnBackClicked(object? sender, EventArgs e)
+    {
+        if (Navigation != null)
+        {
+            await Navigation.PopAsync();
+        }
     }
 
     private async void OnCancelClicked(object? sender, EventArgs e)
     {
         // Bir önceki sayfaya (Detay Sayfası) geri fırlat
         await Navigation.PopAsync();
+    }
+
+    private async void OnRentCompleteClicked(object? sender, EventArgs e)
+    {
+        // YUNUS NOT: Kiralama tamamlama işlemi API entegrasyonu buraya gerçekleştirilecek.
     }
 
     // YUNUS NOT: "TAMAMLA" butonu tetiklendiğinde;

@@ -28,6 +28,14 @@ namespace CarFleetPro.Mobile.Views
             SayfayiDuzenlemeModunaGecir();
         }
 
+        private async void OnBackClicked(object? sender, EventArgs e)
+        {
+            if (Navigation != null)
+            {
+                await Navigation.PopAsync();
+            }
+        }
+
         protected override async void OnAppearing()
         {
             base.OnAppearing();
@@ -150,9 +158,10 @@ namespace CarFleetPro.Mobile.Views
 
             // Durum ataması: 0=Müsait, 1=Kirada(Dolu), 2=Bakımda
             int durumId = 0; // Varsayılan Müsait
-            var selectedDurum = DurumPicker.SelectedItem?.ToString()?.ToUpper();
-            if (selectedDurum == "DOLU" || selectedDurum == "KİRADA") durumId = 1;
-            else if (selectedDurum == "BAKIMDA") durumId = 2;
+            var selectedDurum = DurumPicker.SelectedItem?.ToString();
+            if (string.Equals(selectedDurum, "DOLU", StringComparison.OrdinalIgnoreCase) || 
+                string.Equals(selectedDurum, "KİRADA", StringComparison.OrdinalIgnoreCase)) durumId = 1;
+            else if (string.Equals(selectedDurum, "BAKIMDA", StringComparison.OrdinalIgnoreCase)) durumId = 2;
 
             // ── 3. Yeni Araç Oluştur ve API'ye Gönder ─────────────────────
             var request = new CreateVehicleRequest
@@ -169,12 +178,11 @@ namespace CarFleetPro.Mobile.Views
             };
 
             // Kaydet butonunu pasif yap - çift tıklamayı önle
-            var saveButton = sender as Button;
-            if (saveButton != null) saveButton.IsEnabled = false;
+            if (sender is Button saveBtn) saveBtn.IsEnabled = false;
 
             var (success, message) = await _apiService.CreateVehicleAsync(request);
 
-            if (saveButton != null) saveButton.IsEnabled = true;
+            if (sender is Button enableBtn) enableBtn.IsEnabled = true;
 
             if (success)
             {

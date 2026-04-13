@@ -81,15 +81,34 @@
                                     </VerticalStackLayout>
 
                                     <!-- Aksiyon butonları -->
-                                    <HorizontalStackLayout Grid.Column="2" Spacing="15" VerticalOptions="Center">
-                                        <ImageButton Source="edit.svg"
-                                                     HeightRequest="22" WidthRequest="22" BackgroundColor="Transparent"
-                                                     Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FleetManagementViewModel}}, Path=DuzenleCommand}"
-                                                     CommandParameter="{Binding .}"/>
-                                        <ImageButton Source="trash.svg"
-                                                     HeightRequest="22" WidthRequest="22" BackgroundColor="Transparent"
-                                                     Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FleetManagementViewModel}}, Path=SilCommand}"
-                                                     CommandParameter="{Binding .}"/>
+                                    <!-- AŞAĞIDAKİ ALANDAN BUTON ve İKON BOYUTLARINI KONTROL EDEBİLİRSİNİZ -->
+                                    <!-- Border altındaki 'WidthRequest/HeightRequest' (örn: 32) kapsülün dış boyutudur.     -->
+                                    <!-- ImageButton altındaki 'WidthRequest/HeightRequest' (örn: 14) içteki ikon boyutudur. -->
+                                    <HorizontalStackLayout Grid.Column="2" Spacing="10" VerticalOptions="Center">
+                                        
+                                        <!-- DÜZENLE BUTONU KAPSÜLÜ -->
+                                        <!-- Araç kutusuyla uyumlu: Yükseklik 70px, köşe ovallığı 8px -->
+                                        <Border BackgroundColor="#F3F4F6" StrokeThickness="0" WidthRequest="50" HeightRequest="70" VerticalOptions="Center">
+                                            <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
+                                            <ImageButton Source="edit.svg"
+                                                         HeightRequest="24" WidthRequest="24" BackgroundColor="Transparent"
+                                                         HorizontalOptions="Center" VerticalOptions="Center"
+                                                         Aspect="AspectFit"
+                                                         Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FleetManagementViewModel}}, Path=DuzenleCommand}"
+                                                         CommandParameter="{Binding .}"/>
+                                        </Border>
+
+                                        <!-- SİL BUTONU KAPSÜLÜ -->
+                                        <Border BackgroundColor="#FEE2E2" StrokeThickness="0" WidthRequest="50" HeightRequest="70" VerticalOptions="Center">
+                                            <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
+                                            <ImageButton Source="trash.svg"
+                                                         HeightRequest="24" WidthRequest="24" BackgroundColor="Transparent"
+                                                         HorizontalOptions="Center" VerticalOptions="Center"
+                                                         Aspect="AspectFit"
+                                                         Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FleetManagementViewModel}}, Path=SilCommand}"
+                                                         CommandParameter="{Binding .}"/>
+                                        </Border>
+
                                     </HorizontalStackLayout>
                                 </Grid>
                             </Border>

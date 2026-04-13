@@ -1,0 +1,13 @@
+[*.cs]
+# Visual Studio MAUI Analyzer Suppression
+# C# 12 Primary constructor önerilerini kapat (MAUI InitializeComponent ile çakışıyor)
+dotnet_diagnostic.IDE0290.severity = none
+# Koleksiyon stili uyarılarını hafiflet
+dotnet_diagnostic.IDE0028.severity = none
+# Null kontrol tavsiyelerini hafiflet
+dotnet_diagnostic.IDE0041.severity = none
+dotnet_diagnostic.IDE0270.severity = none
+# Case-insensitive metod tavsiyelerini hafiflet
+dotnet_diagnostic.CA1862.severity = none
+# Metot statik olabilir uyarılarını hafiflet
+dotnet_diagnostic.CA1822.severity = none

@@ -10,9 +10,15 @@
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="0, 0, 20, 20" />
             </Border.StrokeShape>
-            <Grid ColumnDefinitions="Auto, *, Auto" Padding="20,40,20,0">
+            <Grid ColumnDefinitions="30, *, 30" Padding="20,0">
                 <ImageButton Grid.Column="0" Source="arrow_left_white.svg" Clicked="OnBackClicked" HeightRequest="25" WidthRequest="25" VerticalOptions="Center"/>
-                <Label Grid.Column="1" Text="DETAYLI LİSTE" FontSize="20" TextColor="White" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
+                <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center" Spacing="5">
+                    <HorizontalStackLayout HorizontalOptions="Center" Spacing="0">
+                        <Label Text="CARFLEET" FontSize="14" TextColor="White" FontAttributes="Bold" />
+                        <Label Text="PRO" FontSize="14" TextColor="#3B82F6" FontAttributes="Bold" />
+                    </HorizontalStackLayout>
+                    <Label Text="DETAYLI LİSTE" FontSize="26" TextColor="White" HorizontalOptions="Center" Margin="0,5,0,0"/>
+                </VerticalStackLayout>
             </Grid>
         </Border>
 
@@ -28,7 +34,7 @@
                 </VerticalStackLayout>
             </Border>
 
-            <CollectionView VerticalScrollBarVisibility="Never">
+            <CollectionView x:Name="StatsList" VerticalScrollBarVisibility="Never" SelectionMode="Single" SelectionChanged="OnStatSelected">
                 <CollectionView.ItemsSource>
                     <x:Array Type="{x:Type x:String}">
                         <x:String>Mock1</x:String>
