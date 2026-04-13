@@ -13,7 +13,7 @@ namespace CarFleetPro.Mobile.Views
     public partial class AddNewVehiclePage : ContentPage
     {
         private Vehicle? _duzenlenenArac;
-        private readonly ApiService _apiService = new ApiService();
+        private readonly ApiService _apiService = new();
 
         public AddNewVehiclePage()
         {
@@ -146,7 +146,7 @@ namespace CarFleetPro.Mobile.Views
             
             int durumId = 0; 
             var selectedDurum = DurumPicker.SelectedItem?.ToString();
-            if (string.Equals(selectedDurum, "DOLU", StringComparison.OrdinalIgnoreCase) || 
+            if (string.Equals(selectedDurum, "DOLU", StringComparison.OrdinalIgnoreCase) ||
                 string.Equals(selectedDurum, "KİRADA", StringComparison.OrdinalIgnoreCase)) durumId = 1;
             else if (string.Equals(selectedDurum, "BAKIMDA", StringComparison.OrdinalIgnoreCase)) durumId = 2;
 
