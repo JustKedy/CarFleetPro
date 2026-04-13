@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="CarFleetPro.Mobile.Views.StatsDetailPage"
+             BackgroundColor="#F3F4F6"
+             Shell.NavBarIsVisible="False">
+    <Grid RowDefinitions="110, *">
+
+        <Border Grid.Row="0" BackgroundColor="#0A1128" StrokeThickness="0">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="0, 0, 20, 20" />
+            </Border.StrokeShape>
+            <Grid ColumnDefinitions="Auto, *, Auto" Padding="20,40,20,0">
+                <ImageButton Grid.Column="0" Source="arrow_left_white.svg" Clicked="OnBackClicked" HeightRequest="25" WidthRequest="25" VerticalOptions="Center"/>
+                <Label Grid.Column="1" Text="DETAYLI LİSTE" FontSize="20" TextColor="White" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
+            </Grid>
+        </Border>
+
+        <VerticalStackLayout Grid.Row="1" Margin="20,15,20,0" Spacing="15">
+
+            <Border BackgroundColor="#E0F2FE" Padding="20" Stroke="#3B82F6" StrokeThickness="1">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout HorizontalOptions="Center" Spacing="5">
+                    <Label Text="Şu Anda Bakımda Olan Araçlar" FontSize="14" TextColor="#0369A1" HorizontalOptions="Center"/>
+                    <Label Text="15" FontSize="32" FontAttributes="Bold" TextColor="#0369A1" HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <CollectionView VerticalScrollBarVisibility="Never">
+                <CollectionView.ItemsSource>
+                    <x:Array Type="{x:Type x:String}">
+                        <x:String>Mock1</x:String>
+                        <x:String>Mock2</x:String>
+                    </x:Array>
+                </CollectionView.ItemsSource>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border BackgroundColor="White" Margin="0,5" Padding="15" StrokeThickness="0">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="12" />
+                            </Border.StrokeShape>
+                            <Border.Shadow>
+                                <Shadow Brush="Black" Offset="0,2" Radius="3" Opacity="0.1"/>
+                            </Border.Shadow>
+
+                            <Grid ColumnDefinitions="Auto, *, Auto">
+                                <Border Grid.Column="0" WidthRequest="50" HeightRequest="50" BackgroundColor="#F3F4F6" StrokeThickness="0" VerticalOptions="Center">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="8" />
+                                    </Border.StrokeShape>
+                                    <Image Source="car.svg" HeightRequest="25" WidthRequest="25" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                </Border>
+
+                                <VerticalStackLayout Grid.Column="1" Margin="15,0,0,0" VerticalOptions="Center">
+                                    <Label Text="55 MS 061" FontAttributes="Bold" FontSize="16" TextColor="#1F2937" />
+                                    <Label Text="Renault Clio - Merkez Şube" FontSize="12" TextColor="#6B7280" />
+                                </VerticalStackLayout>
+
+                                <Border Grid.Column="2" BackgroundColor="#FEF3C7" Padding="10,5" VerticalOptions="Center" StrokeThickness="0">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="8" />
+                                    </Border.StrokeShape>
+                                    <Label Text="Periyodik Bakım" FontSize="11" TextColor="#D97706" FontAttributes="Bold"/>
+                                </Border>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

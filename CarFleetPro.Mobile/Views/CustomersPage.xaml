@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:CarFleetPro.Mobile.Controls"
+             x:Class="CarFleetPro.Mobile.Views.CustomersPage"
+             BackgroundColor="#F3F4F6"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="110, Auto, *, 75">
+
+        <Border Grid.Row="0" BackgroundColor="#0A1128" StrokeThickness="0">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="0, 0, 20, 20" />
+            </Border.StrokeShape>
+            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="5">
+                <HorizontalStackLayout HorizontalOptions="Center" Spacing="0">
+                    <Label Text="CARFLEET" FontSize="14" TextColor="White" FontAttributes="Bold" />
+                    <Label Text="PRO" FontSize="14" TextColor="#3B82F6" FontAttributes="Bold" />
+                </HorizontalStackLayout>
+                <Label Text="MÜŞTERİ YÖNETİMİ" FontSize="26" TextColor="White" HorizontalOptions="Center" Margin="0,5,0,0"/>
+            </VerticalStackLayout>
+        </Border>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*, 60" Padding="20,15" ColumnSpacing="10">
+            <Border Grid.Column="0" Stroke="#D1D5DB" StrokeThickness="1" BackgroundColor="White" HeightRequest="50">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <Entry Placeholder="Müşteri Ara (İsim, TC, Tel)..." TextColor="#1F2937" PlaceholderColor="#9CA3AF" Margin="15,0" VerticalOptions="Center" />
+            </Border>
+
+            <Button Grid.Column="1" Text="+" BackgroundColor="#3B82F6" TextColor="White" FontSize="24" FontAttributes="Bold" CornerRadius="12" HeightRequest="50" />
+        </Grid>
+
+        <CollectionView Grid.Row="2" Margin="20,0" VerticalScrollBarVisibility="Never">
+            <CollectionView.ItemsSource>
+            </CollectionView.ItemsSource>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border BackgroundColor="White" Margin="0,5" Padding="15">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="15" />
+                        </Border.StrokeShape>
+                        <Grid ColumnDefinitions="Auto, *, Auto">
+                            <Border Grid.Column="0" WidthRequest="45" HeightRequest="45" BackgroundColor="#DBEAFE" VerticalOptions="Center">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="22.5" />
+                                </Border.StrokeShape>
+                                <Label Text="AT" TextColor="#1E40AF" HorizontalOptions="Center" VerticalOptions="Center" FontAttributes="Bold" />
+                            </Border>
+
+                            <VerticalStackLayout Grid.Column="1" Margin="15,0" VerticalOptions="Center">
+                                <Label Text="Abdulkadir Toksöz" FontAttributes="Bold" TextColor="#1F2937" FontSize="16" />
+                                <Label Text="0555 123 45 67" FontSize="12" TextColor="#6B7280" />
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Grid.Column="2" VerticalOptions="Center" HorizontalOptions="End">
+                                <Label Text="Aktif Kirada" TextColor="#10B981" FontSize="11" HorizontalOptions="End" FontAttributes="Bold" />
+                                <Label Text="Bakiye: 0 TL" FontSize="11" TextColor="#9CA3AF" HorizontalOptions="End" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <controls:BottomNavBar Grid.Row="3" SelectedTab="Home" />
+
+    </Grid>
+</ContentPage>
