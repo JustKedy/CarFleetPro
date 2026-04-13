@@ -33,10 +33,19 @@
                         <RoundRectangle CornerRadius="20" />
                     </Border.StrokeShape>
                     <VerticalStackLayout Spacing="5">
-                        <Label Text="RENAULT CLIO" FontSize="24" FontAttributes="Bold" TextColor="#1F2937"/>
-                        <Label Text="55 MS 061 | 2023 Model" FontSize="16" TextColor="#6B7280"/>
+                        <Label Text="{Binding MarkaModel}" FontSize="24" FontAttributes="Bold" TextColor="#1F2937"/>
+                        <Label Text="{Binding PlakaYil}" FontSize="16" TextColor="#6B7280"/>
                     </VerticalStackLayout>
                 </Border>
+
+                <Grid ColumnDefinitions="*, *, *" ColumnSpacing="10">
+                    <Border Grid.Column="0" BackgroundColor="White" Padding="10" HeightRequest="80">
+                        <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
+                            <Label Text="KM" FontSize="12" HorizontalOptions="Center" TextColor="#9CA3AF"/>
+                            <Label Text="{Binding Km}" FontAttributes="Bold" FontSize="16" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
 
                 <Grid ColumnDefinitions="*, *, *" ColumnSpacing="10">
                     <Border Grid.Column="0" BackgroundColor="White" Padding="10" HeightRequest="80">
