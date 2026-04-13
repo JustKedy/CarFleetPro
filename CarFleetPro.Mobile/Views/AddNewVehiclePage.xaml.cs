@@ -13,7 +13,7 @@ namespace CarFleetPro.Mobile.Views
     public partial class AddNewVehiclePage : ContentPage
     {
         private Vehicle? _duzenlenenArac;
-        private readonly ApiService _apiService = new ApiService();
+        private readonly ApiService _apiService = new();
 
         public AddNewVehiclePage()
         {
@@ -43,7 +43,6 @@ namespace CarFleetPro.Mobile.Views
 
         private async Task VerileriDoldur()
         {
-            // Marka, Renk ve Durum listelerini paralel olarak veritabanından çek
             var brandsTask = _apiService.GetBrandsAsync();
             var colorsTask = _apiService.GetColorsAsync();
             var statusesTask = _apiService.GetStatusesAsync();
@@ -54,7 +53,6 @@ namespace CarFleetPro.Mobile.Views
             RenkPicker.ItemsSource = colorsTask.Result;
             DurumPicker.ItemsSource = statusesTask.Result;
 
-            // Marka seçilince modelleri veritabanından çek
             BrandPicker.SelectedIndexChanged += async (s, e) =>
             {
                 ModelPicker.ItemsSource = null;
@@ -66,7 +64,6 @@ namespace CarFleetPro.Mobile.Views
                 }
             };
 
-            // Düzenleme modunda picker'lara mevcut değerleri set et
             if (_duzenlenenArac != null)
             {
                 BrandPicker.SelectedItem = _duzenlenenArac.Marka;
@@ -144,13 +141,12 @@ namespace CarFleetPro.Mobile.Views
             }
 
             // Durum ataması: 0=Müsait, 1=Kirada(Dolu), 2=Bakımda
-            int durumId = 0; // Varsayılan Müsait
+            int durumId = 0;
             var selectedDurum = DurumPicker.SelectedItem?.ToString();
-            if (string.Equals(selectedDurum, "DOLU", StringComparison.OrdinalIgnoreCase) || 
+            if (string.Equals(selectedDurum, "DOLU", StringComparison.OrdinalIgnoreCase) ||
                 string.Equals(selectedDurum, "KİRADA", StringComparison.OrdinalIgnoreCase)) durumId = 1;
             else if (string.Equals(selectedDurum, "BAKIMDA", StringComparison.OrdinalIgnoreCase)) durumId = 2;
 
-            // Alper'in API'sine gidecek ortak paket
             var request = new CreateVehicleRequest
             {
                 PlateNumber = PlakaEntry.Text.Trim().ToUpper(),
@@ -164,45 +160,53 @@ namespace CarFleetPro.Mobile.Views
                 Status = durumId
             };
 
-            // Kaydet butonunu pasif yap - çift tıklamayı önle
-            if (sender is Button saveBtn) saveBtn.IsEnabled = false;
+            // Butonu yakala ve kilitle
+            var currentSaveButton = sender as Button;
+            if (currentSaveButton != null) currentSaveButton.IsEnabled = false;
 
-            // ── 2. Düzenleme (PUT) mi Yeni Araç (POST) mu? ─────────────────────
-            if (_duzenlenenArac != null)
+            try
             {
-                // VAR OLAN ARACI GÜNCELLE
-                var (success, message) = await _apiService.UpdateVehicleAsync(_duzenlenenArac.Id, request);
-
-                if (saveButton != null) saveButton.IsEnabled = true;
-
-                if (success)
+                if (_duzenlenenArac != null)
                 {
-                    await ShowSuccessToast("Araç başarıyla güncellendi kiral! 🛠️");
-                    WeakReferenceMessenger.Default.Send(new VehicleAddedMessage());
-                    await Navigation.PopAsync();
+                    // VAR OLAN ARACI GÜNCELLE (PUT)
+                    var (success, message) = await _apiService.UpdateVehicleAsync(_duzenlenenArac.Id, request);
+
+                    if (success)
+                    {
+                        await ShowSuccessToast("Araç başarıyla güncellendi kiral! 🛠️");
+                        WeakReferenceMessenger.Default.Send(new VehicleAddedMessage());
+                        await Navigation.PopAsync();
+                    }
+                    else
+                    {
+                        await DisplayAlertAsync("Hata", message, "Tamam");
+                    }
                 }
                 else
                 {
-                    await DisplayAlertAsync("Hata", message, "Tamam");
+                    // YENİ ARAÇ EKLE (POST)
+                    var (success, message) = await _apiService.CreateVehicleAsync(request);
+
+                    if (success)
+                    {
+                        await ShowSuccessToast("Araç filoya başarıyla eklendi! 🚗");
+                        WeakReferenceMessenger.Default.Send(new VehicleAddedMessage());
+                        await Navigation.PopAsync();
+                    }
+                    else
+                    {
+                        await DisplayAlertAsync("Hata", message, "Tamam");
+                    }
                 }
             }
-            else
+            catch (Exception ex)
             {
-                // YENİ ARAÇ EKLE
-                var (success, message) = await _apiService.CreateVehicleAsync(request);
-
-            if (sender is Button enableBtn) enableBtn.IsEnabled = true;
-
-                if (success)
-                {
-                    await ShowSuccessToast("Araç filoya başarıyla eklendi! 🚗");
-                    WeakReferenceMessenger.Default.Send(new VehicleAddedMessage());
-                    await Navigation.PopAsync();
-                }
-                else
-                {
-                    await DisplayAlertAsync("Hata", message, "Tamam");
-                }
+                await DisplayAlertAsync("Bağlantı Hatası", ex.Message, "Tamam");
+            }
+            finally
+            {
+                // İşlem bitince (başarılı veya başarısız) butonu geri aç
+                if (currentSaveButton != null) currentSaveButton.IsEnabled = true;
             }
         }
 
