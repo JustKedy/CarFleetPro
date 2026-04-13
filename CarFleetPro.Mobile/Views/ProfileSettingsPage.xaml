@@ -62,21 +62,21 @@
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="8" />
                             </Border.StrokeShape>
-                            <Entry Placeholder="Ad Soyad" Text="Kadir Gürbüz" TextColor="#1F2937" PlaceholderColor="#9CA3AF" BackgroundColor="Transparent"/>
+                            <Entry x:Name="NameEntry" Placeholder="Ad Soyad" TextColor="#1F2937" PlaceholderColor="#9CA3AF" BackgroundColor="Transparent"/>
                         </Border>
 
                         <Border Stroke="#E5E7EB" StrokeThickness="1" BackgroundColor="#F9FAFB" Padding="15,0" HeightRequest="50">
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="8" />
                             </Border.StrokeShape>
-                            <Entry Placeholder="E-Posta" Text="admin@carfleet.com" Keyboard="Email" TextColor="#1F2937" PlaceholderColor="#9CA3AF" BackgroundColor="Transparent"/>
+                            <Entry x:Name="EmailEntry" Placeholder="E-Posta" Keyboard="Email" TextColor="#1F2937" PlaceholderColor="#9CA3AF" BackgroundColor="Transparent"/>
                         </Border>
 
                         <Border Stroke="#E5E7EB" StrokeThickness="1" BackgroundColor="#F9FAFB" Padding="15,0" HeightRequest="50">
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="8" />
                             </Border.StrokeShape>
-                            <Entry Placeholder="Telefon" Keyboard="Telephone" TextColor="#1F2937" PlaceholderColor="#9CA3AF" BackgroundColor="Transparent"/>
+                            <Entry x:Name="PhoneEntry" Placeholder="Telefon" Keyboard="Telephone" TextColor="#1F2937" PlaceholderColor="#9CA3AF" BackgroundColor="Transparent"/>
                         </Border>
                     </VerticalStackLayout>
                 </Border>

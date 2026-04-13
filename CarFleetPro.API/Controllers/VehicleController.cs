@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
 
 namespace CarFleetPro.API.Controllers
 {
@@ -16,6 +19,8 @@ namespace CarFleetPro.API.Controllers
         private readonly AppDbContext _context;
         private readonly IMemoryCache _cache; // Cache servisini tanımladık
         private const string VehicleCacheKey = "vehicleList"; // Hafızadaki adımız
+        private const string CardsCacheKey = "vehicleCards"; // Kartlar için cache key
+        private const string CardsETagKey = "vehicleCardsETag"; // ETag cache key
 
         public VehicleController(AppDbContext context, IMemoryCache cache)
         {
@@ -78,7 +83,7 @@ namespace CarFleetPro.API.Controllers
 
             _context.Vehicles.Add(newVehicle);
             await _context.SaveChangesAsync();
-            _cache.Remove(VehicleCacheKey); // Veritabanı değişti, eski hafızayı sil!
+            InvalidateAllCaches(); // 🚀 Tüm cache'leri temizle
 
             return Ok(new { message = "Araç filoya başarıyla eklendi!", vehicle = newVehicle });
         }
@@ -88,6 +93,9 @@ namespace CarFleetPro.API.Controllers
         {
             var vehicle = await _context.Vehicles.FindAsync(id);
             if (vehicle == null) return NotFound("Araç bulunamadı.");
+
+            // 🚀 Global NoTracking aktif olduğu için Update'te entity'yi attach etmemiz gerekiyor
+            _context.Attach(vehicle);
 
             vehicle.PlateNumber = dto.PlateNumber;
             vehicle.Brand = dto.Brand;
@@ -105,8 +113,9 @@ namespace CarFleetPro.API.Controllers
             vehicle.Status = dto.Status;
             vehicle.UpdatedAt = DateTime.UtcNow;
 
+            _context.Entry(vehicle).State = EntityState.Modified;
             await _context.SaveChangesAsync();
-            _cache.Remove(VehicleCacheKey); // Veritabanı değişti, eski hafızayı sil!
+            InvalidateAllCaches(); // 🚀 Tüm cache'leri temizle
             
             return Ok(new { message = "Araç başarıyla güncellendi!", vehicle });
         }
@@ -121,9 +130,11 @@ namespace CarFleetPro.API.Controllers
             if (vehicle.Status == VehicleStatus.Rented)
                 return BadRequest("Bu araç şu anda kirada olduğu için sistemden silinemez!");
 
+            // 🚀 Global NoTracking aktif → silmeden önce attach et
+            _context.Attach(vehicle);
             _context.Vehicles.Remove(vehicle);
             await _context.SaveChangesAsync();
-            _cache.Remove(VehicleCacheKey); // Veritabanı değişti, eski hafızayı sil!
+            InvalidateAllCaches(); // 🚀 Tüm cache'leri temizle
 
             return Ok(new { message = $"{vehicle.PlateNumber} plakalı araç filodan silindi." });
         }
@@ -143,64 +154,103 @@ namespace CarFleetPro.API.Controllers
 
         [HttpGet("last-updated")]
         [AllowAnonymous]
+        [ResponseCache(Duration = 30, Location = ResponseCacheLocation.Any)] // 30sn cache (eskisi 60sn idi)
         public async Task<IActionResult> GetLastUpdated()
         {
-            var maxVehicleCreatedAt = await _context.Vehicles.MaxAsync(v => (DateTime?)v.CreatedAt);
-            var maxVehicleUpdatedAt = await _context.Vehicles.MaxAsync(v => v.UpdatedAt); // Already nullable
-            var maxRentalCreatedAt = await _context.Rentals.MaxAsync(r => (DateTime?)r.CreatedAt);
+            // 🚀 OPTİMİZASYON: GREATEST ile en büyük tarihi tek seferde bul
+            // Eski kod: COALESCE mantığı yanlıştı — ilk non-null'u buluyordu, en büyüğü değil
+            var lastUpdated = await _context.Database
+                .SqlQueryRaw<DateTime?>(
+                    @"SELECT GREATEST(
+                        (SELECT MAX(GREATEST(""CreatedAt"", COALESCE(""UpdatedAt"", ""CreatedAt""))) FROM ""Vehicles""),
+                        (SELECT MAX(""CreatedAt"") FROM ""Rentals"")
+                    ) AS ""Value"""
+                )
+                .FirstOrDefaultAsync();
 
-            var lastUpdated = new[] 
-            { 
-                maxVehicleCreatedAt ?? DateTime.MinValue, 
-                maxVehicleUpdatedAt ?? DateTime.MinValue, 
-                maxRentalCreatedAt ?? DateTime.MinValue 
-            }.Max();
-
-            return Ok(lastUpdated);
+            return Ok(lastUpdated ?? DateTime.MinValue);
         }
 
         [HttpGet("cards")]
         [AllowAnonymous]
         public async Task<IActionResult> GetVehicleCardsForFrontend()
         {
+            // 🚀 ETag DESTEĞİ: İstemci daha önce aldığı veriyi cache'leyip
+            // If-None-Match header'ı ile gönderiyor. Veri değişmediyse 304 dönüyor → Sıfır transfer!
+            var requestETag = Request.Headers.IfNoneMatch.FirstOrDefault();
+
+            // Cache'den kontrol et — veri değişmediyse 304 dön
+            if (!string.IsNullOrEmpty(requestETag) && 
+                _cache.TryGetValue(CardsETagKey, out string? cachedETag) && 
+                requestETag == cachedETag)
+            {
+                return StatusCode(304); // Not Modified — body boş, bant genişliği sıfır!
+            }
+
             var currentYear = DateTime.UtcNow.Year;
 
-            // Tüm arabaları, aktif kiralamaları ve müşterileri alıyoruz
-            var vehicles = await _context.Vehicles.ToListAsync();
-            var activeRentals = await _context.Rentals.Where(r => r.Status == RentalStatus.Active).ToListAsync();
-            var customers = await _context.Customers.ToListAsync();
-
-            var cardList = new List<VehicleCardDto>();
-
-            foreach (var v in vehicles)
-            {
-                // Bu araç şu an kirada mı diye bakıyoruz
-                var rental = activeRentals.FirstOrDefault(r => r.VehicleId == v.VehicleId);
-                var customer = rental != null ? customers.FirstOrDefault(c => c.CustomerId == rental.CustomerId) : null;
-
-                cardList.Add(new VehicleCardDto
+            // 🚀 PgBouncer-SAFE: 2 basit sorgu (GroupJoin+SelectMany PgBouncer'da disposed connection hatası veriyordu)
+            // Sorgu 1: Araç kartlarını çek (basit SELECT + projection)
+            var cardList = await _context.Vehicles
+                .Select(v => new VehicleCardDto
                 {
                     Id = v.VehicleId,
                     Plaka = v.PlateNumber,
                     Marka = v.Brand,
                     Model = v.Model,
                     Hp = v.HorsePower,
-                    Yas = currentYear - v.Year, // Yaşı otomatik hesaplıyoruz!
+                    Yas = currentYear - v.Year,
                     Km = v.Mileage,
                     Durum = v.Status == VehicleStatus.Available ? "MÜSAİT" :
                             v.Status == VehicleStatus.Rented ? "DOLU" : "BAKIMDA",
+                    ResimUrl = v.ImageUrl ?? "https://via.placeholder.com/300"
+                })
+                .ToListAsync();
 
-                    // Eğer kiralıysa bilgileri doldur, değilse null bırak
-                    KiralayanKisi = customer != null ? $"{customer.FirstName} {customer.LastName}" : null,
-                    KiralamaFiyati = rental?.TotalAmount,
-                    KiralamaSuresi = rental != null ? $"{(rental.PlannedEndDate - rental.StartDate).Days} Gün" : null,
-                    KiralamaTarihi = rental?.StartDate.ToString("dd.MM.yyyy"),
+            // Sorgu 2: Aktif kiralamaları müşteri bilgisiyle çek (basit JOIN)
+            var activeRentals = await _context.Rentals
+                .Where(r => r.Status == RentalStatus.Active)
+                .Join(_context.Customers,
+                    r => r.CustomerId,
+                    c => c.CustomerId,
+                    (r, c) => new
+                    {
+                        r.VehicleId,
+                        r.TotalAmount,
+                        r.StartDate,
+                        r.PlannedEndDate,
+                        KiralayanKisi = c.FirstName + " " + c.LastName
+                    })
+                .ToListAsync();
 
-                    ResimUrl = v.ImageUrl ?? "https://via.placeholder.com/300" // Resim yoksa boş gri bir resim koyar
-                });
+            // C# tarafında hızlı eşleme (Dictionary lookup = O(1))
+            var rentalMap = activeRentals.ToDictionary(r => r.VehicleId);
+            foreach (var card in cardList)
+            {
+                if (rentalMap.TryGetValue(card.Id, out var rental))
+                {
+                    card.KiralayanKisi = rental.KiralayanKisi;
+                    card.KiralamaFiyati = rental.TotalAmount;
+                    card.KiralamaSuresi = $"{(rental.PlannedEndDate - rental.StartDate).Days} Gün";
+                    card.KiralamaTarihi = rental.StartDate.ToString("dd.MM.yyyy");
+                }
             }
 
-            return Ok(cardList); // Kadir'in istediği o kusursuz JSON paketini yolla!
+
+
+            // 🚀 ETag oluştur: Veri hash'lenerek unique bir parmak izi üretiliyor
+            var json = JsonSerializer.Serialize(cardList);
+            var hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(json)));
+            var etag = $"\"{hash[..16]}\""; // İlk 16 karakter yeterli
+
+            // Cache'e kaydet
+            _cache.Set(CardsETagKey, etag, new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(10)));
+
+            // Response'a ETag header'ı ekle
+            Response.Headers.ETag = etag;
+            Response.Headers.CacheControl = "private, max-age=60"; // Client 60sn cache'lesin
+
+            return Ok(cardList);
         }
 
         [HttpPut("{id}/maintenance/start")]
@@ -213,8 +263,12 @@ namespace CarFleetPro.API.Controllers
             if (vehicle.Status != VehicleStatus.Available) 
                 return BadRequest("Sadece müsait durumdaki araçlar bakıma alınabilir.");
 
+            // 🚀 Global NoTracking aktif → güncelleme için attach et
+            _context.Attach(vehicle);
             vehicle.Status = VehicleStatus.Maintenance;
+            _context.Entry(vehicle).Property(v => v.Status).IsModified = true;
             await _context.SaveChangesAsync();
+            InvalidateAllCaches();
 
             return Ok(new { message = $"{vehicle.PlateNumber} plakalı araç bakıma alındı." });
         }
@@ -228,10 +282,96 @@ namespace CarFleetPro.API.Controllers
             if (vehicle.Status != VehicleStatus.Maintenance) 
                 return BadRequest("Bu araç zaten bakımda değil.");
 
+            // 🚀 Global NoTracking aktif → güncelleme için attach et
+            _context.Attach(vehicle);
             vehicle.Status = VehicleStatus.Available;
+            _context.Entry(vehicle).Property(v => v.Status).IsModified = true;
             await _context.SaveChangesAsync();
+            InvalidateAllCaches();
 
             return Ok(new { message = $"{vehicle.PlateNumber} plakalı aracın bakımı bitti, tekrar müsait." });
+        }
+
+        /// <summary>
+        /// GET /api/Vehicle/{id}/details — Araç detayı + kiralama ve bakım geçmişi
+        /// </summary>
+        [HttpGet("{id}/details")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetVehicleDetails(int id)
+        {
+            var vehicle = await _context.Vehicles.FirstOrDefaultAsync(v => v.VehicleId == id);
+            if (vehicle == null) return NotFound("Araç bulunamadı.");
+
+            // Kiralama geçmişi
+            var rentals = await _context.Rentals
+                .Where(r => r.VehicleId == id)
+                .Join(_context.Customers, r => r.CustomerId, c => c.CustomerId,
+                    (r, c) => new VehicleHistoryItemDto
+                    {
+                        Type = "Kiralama",
+                        Title = $"Kiralandı: {c.FirstName} {c.LastName}",
+                        DateRange = $"{r.StartDate:dd.MM.yyyy} - {r.PlannedEndDate:dd.MM.yyyy}",
+                        Status = r.Status == RentalStatus.Active ? "Aktif" :
+                                 r.Status == RentalStatus.Completed ? "Tamamlandı" : "İptal",
+                        Amount = $"{r.TotalAmount:N0} TL",
+                        Color = "#3B82F6"
+                    })
+                .ToListAsync();
+
+            // Bakım geçmişi
+            var maintenances = await _context.Maintenances
+                .Where(m => m.VehicleId == id)
+                .Select(m => new VehicleHistoryItemDto
+                {
+                    Type = "Bakım",
+                    Title = m.Description,
+                    DateRange = $"{m.StartDate:dd.MM.yyyy}",
+                    Status = m.Status == MaintenanceStatus.Done ? "Tamamlandı" :
+                             m.Status == MaintenanceStatus.InProgress ? "Devam Ediyor" : "Planlandı",
+                    Amount = $"{m.Cost:N0} TL",
+                    Color = "#F59E0B"
+                })
+                .ToListAsync();
+
+            // Timeline birleştir ve sırala
+            var history = rentals.Concat(maintenances)
+                .OrderByDescending(h => h.DateRange)
+                .Take(10) // Son 10 hareket
+                .ToList();
+
+            var detail = new VehicleDetailDto
+            {
+                VehicleId = vehicle.VehicleId,
+                PlateNumber = vehicle.PlateNumber,
+                Brand = vehicle.Brand,
+                Model = vehicle.Model,
+                Year = vehicle.Year,
+                VehicleType = vehicle.VehicleType.ToString(),
+                FuelType = vehicle.FuelType.ToString(),
+                TransmissionType = vehicle.TransmissionType.ToString(),
+                DailyRate = vehicle.DailyRate,
+                Status = vehicle.Status == VehicleStatus.Available ? "MÜSAİT" :
+                         vehicle.Status == VehicleStatus.Rented ? "DOLU" : "BAKIMDA",
+                Mileage = vehicle.Mileage,
+                HorsePower = vehicle.HorsePower,
+                Color = vehicle.Color,
+                ImageUrl = vehicle.ImageUrl,
+                Branch = vehicle.Branch,
+                History = history
+            };
+
+            return Ok(detail);
+        }
+
+        /// <summary>
+        /// 🚀 Tüm araç cache'lerini tek seferde temizle
+        /// Veritabanı değiştiğinde hem liste cache'i hem kart cache'i hem ETag sıfırlanacak
+        /// </summary>
+        private void InvalidateAllCaches()
+        {
+            _cache.Remove(VehicleCacheKey);
+            _cache.Remove(CardsCacheKey);
+            _cache.Remove(CardsETagKey);
         }
     }
 }

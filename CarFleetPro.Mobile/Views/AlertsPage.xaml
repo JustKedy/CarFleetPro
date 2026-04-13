@@ -52,16 +52,16 @@
                             </Border>
 
                             <VerticalStackLayout Grid.Column="1" Margin="15,0" VerticalOptions="Center">
-                                <Label Text="GECİKMİŞ İADE" FontSize="12" FontAttributes="Bold" TextColor="#EF4444" />
-                                <Label Text="55 MS 061 - Renault Clio" FontAttributes="Bold" TextColor="#1F2937" />
-                                <Label Text="Müşteri: Abdulkadir Toksöz" FontSize="12" TextColor="#6B7280" />
+                                <Label Text="{Binding AlertType}" FontSize="12" FontAttributes="Bold" TextColor="{Binding AlertColor}" />
+                                <Label Text="{Binding Title}" FontAttributes="Bold" TextColor="#1F2937" />
+                                <Label Text="{Binding Subtitle}" FontSize="12" TextColor="#6B7280" />
                             </VerticalStackLayout>
 
                             <ImageButton Grid.Column="2" Grid.RowSpan="2" Source="arrow_right_black.svg" 
                                          HeightRequest="25" WidthRequest="25" VerticalOptions="Center" />
 
-                            <Label Grid.Row="1" Grid.Column="1" Text="2 Gündür Gecikmede" 
-                                   FontSize="11" TextColor="#EF4444" Margin="15,2,0,0" />
+                            <Label Grid.Row="1" Grid.Column="1" Text="{Binding Detail}" 
+                                   FontSize="11" TextColor="{Binding AlertColor}" Margin="15,2,0,0" />
                         </Grid>
                     </Border>
                 </DataTemplate>

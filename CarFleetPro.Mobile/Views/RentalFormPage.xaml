@@ -33,8 +33,8 @@
                     <HorizontalStackLayout Spacing="15" VerticalOptions="Center">
                         <Image Source="car.svg" HeightRequest="30" WidthRequest="30" />
                         <VerticalStackLayout>
-                            <Label Text="RENAULT CLIO" FontAttributes="Bold" TextColor="#0369A1"/>
-                            <Label Text="55 MS 061" FontSize="12" TextColor="#0369A1"/>
+                            <Label x:Name="VehicleNameLabel" Text="RENAULT CLIO" FontAttributes="Bold" TextColor="#0369A1"/>
+                            <Label x:Name="VehiclePlateLabel" Text="55 MS 061" FontSize="12" TextColor="#0369A1"/>
                         </VerticalStackLayout>
                     </HorizontalStackLayout>
                 </Border>
@@ -57,7 +57,7 @@
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="12" />
                             </Border.StrokeShape>
-                            <DatePicker Format="dd/MM/yyyy" TextColor="#1F2937" />
+                            <DatePicker x:Name="StartDatePicker" Format="dd/MM/yyyy" TextColor="#1F2937" />
                         </Border>
                     </VerticalStackLayout>
 
@@ -67,7 +67,7 @@
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="12" />
                             </Border.StrokeShape>
-                            <DatePicker Format="dd/MM/yyyy" TextColor="#1F2937" />
+                            <DatePicker x:Name="EndDatePicker" Format="dd/MM/yyyy" TextColor="#1F2937" />
                         </Border>
                     </VerticalStackLayout>
                 </Grid>
@@ -78,7 +78,7 @@
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="12" />
                         </Border.StrokeShape>
-                        <Entry Keyboard="Numeric" Placeholder="0.00" TextColor="#1F2937" VerticalOptions="Center"/>
+                        <Entry x:Name="DepositEntry" Keyboard="Numeric" Placeholder="0.00" TextColor="#1F2937" VerticalOptions="Center"/>
                     </Border>
                 </VerticalStackLayout>
 
@@ -88,7 +88,7 @@
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="12" />
                         </Border.StrokeShape>
-                        <Editor Placeholder="Hasar kaydı, özel istekler vb..." TextColor="#1F2937" AutoSize="Disabled"/>
+                        <Editor x:Name="NotesEditor" Placeholder="Hasar kaydı, özel istekler vb..." TextColor="#1F2937" AutoSize="Disabled"/>
                     </Border>
                 </VerticalStackLayout>
 

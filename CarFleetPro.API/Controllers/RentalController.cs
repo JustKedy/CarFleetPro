@@ -67,7 +67,10 @@ namespace CarFleetPro.API.Controllers
             await _context.SaveChangesAsync();
 
             // 2. HAMLE: Sonra arabanın durumunu güncelleyip onu da AYRI olarak gönderiyoruz
+            // 🚀 Global NoTracking aktif → entity'yi tekrar attach edip güncelliyoruz
+            _context.Attach(vehicle);
             vehicle.Status = VehicleStatus.Rented;
+            _context.Entry(vehicle).Property(v => v.Status).IsModified = true;
             await _context.SaveChangesAsync();
 
             // Ve Mutlu Son...

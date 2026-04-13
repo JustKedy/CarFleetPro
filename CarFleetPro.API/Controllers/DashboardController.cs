@@ -35,11 +35,24 @@ namespace CarFleetPro.API.Controllers
                 rentalsQuery = rentalsQuery.Where(r => branchVehicleIds.Contains(r.VehicleId));
             }
 
-            // 2. KART VERİLERİ (Toplam, Kirada, Müsait)
-            var totalVehicles = await vehiclesQuery.CountAsync();
-            var rentedVehicles = await vehiclesQuery.CountAsync(v => v.Status == VehicleStatus.Rented);
-            var availableVehicles = await vehiclesQuery.CountAsync(v => v.Status == VehicleStatus.Available);
-            var maintenanceVehicles = await vehiclesQuery.CountAsync(v => v.Status == VehicleStatus.Maintenance);
+            // 🚀 OPTİMİZASYON: 6 ayrı DB sorgusu → TEK SORGU!
+            // Eskiden: 4x CountAsync + 1x SumAsync + 1x GroupBy = 6 round-trip
+            // Şimdi: Tek Group + Conditional Aggregation = 1 round-trip
+            var fleetStats = await vehiclesQuery
+                .GroupBy(v => 1) // Tüm araçları tek bir gruba topla
+                .Select(g => new
+                {
+                    Total = g.Count(),
+                    Rented = g.Count(v => v.Status == VehicleStatus.Rented),
+                    Available = g.Count(v => v.Status == VehicleStatus.Available),
+                    Maintenance = g.Count(v => v.Status == VehicleStatus.Maintenance)
+                })
+                .FirstOrDefaultAsync();
+
+            int totalVehicles = fleetStats?.Total ?? 0;
+            int rentedVehicles = fleetStats?.Rented ?? 0;
+            int availableVehicles = fleetStats?.Available ?? 0;
+            int maintenanceVehicles = fleetStats?.Maintenance ?? 0;
 
             // 3. AYLIK CİRO HESAPLAMA (Tüm zamanlar değil, sadece içinde bulunduğumuz ay)
             var currentMonth = DateTime.UtcNow.Month;

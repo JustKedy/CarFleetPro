@@ -9,6 +9,10 @@ namespace CarFleetPro.API.Data
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
+            // 🚀 PERFORMANS: Tüm SELECT sorguları varsayılan olarak tracking KAPALI
+            // EF her entity'yi izlemek için bellek harcar → Sadece okuma yapan endpoint'lerde bu gereksiz.
+            // Yazma işlemleri (Add, Update, Remove) kendi tracking'lerini otomatik yapar, buradan etkilenmez.
+            ChangeTracker.QueryTrackingBehavior = Microsoft.EntityFrameworkCore.QueryTrackingBehavior.NoTracking;
         }
 
         // Veritabanında oluşacak tablolarımız

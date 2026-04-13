@@ -2,9 +2,11 @@ using CarFleetPro.API.Data;
 using CarFleetPro.API.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using System.IO.Compression;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -46,9 +48,33 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+// 🔧 E-posta Servisi (Şifre sıfırlama için)
+builder.Services.AddScoped<CarFleetPro.API.Services.IEmailService, CarFleetPro.API.Services.SmtpEmailService>();
+
 builder.Services.AddMemoryCache();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
+// 🚀 PERFORMANS: Response Compression (GZip + Brotli)
+// JSON payload'ları %60-70 küçülür → Mobil ağ'da ciddi hız artışı
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true; // HTTPS üzerinden de sıkıştır
+    options.Providers.Add<BrotliCompressionProvider>();  // Modern tarayıcılar için (daha iyi oran)
+    options.Providers.Add<GzipCompressionProvider>();    // Eski cihazlar için fallback
+    options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+        new[] { "application/json" }); // JSON response'ları da sıkıştır
+});
+
+builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
+{
+    options.Level = CompressionLevel.Fastest; // Hız/sıkıştırma dengesi — mobil için ideal
+});
+
+builder.Services.Configure<GzipCompressionProviderOptions>(options =>
+{
+    options.Level = CompressionLevel.SmallestSize; // GZip fallback'te max sıkıştırma
+});
 
 // 4. Swagger Ayarları (Senin bizzat çözdüğün, tam uyumlu versiyon)
 builder.Services.AddSwaggerGen(c =>
@@ -83,6 +109,9 @@ if (app.Environment.IsDevelopment())
 }
 
 // app.UseHttpsRedirection(); // Mobil test için kapalı — Android emülatörü dev sertifikasına güvenmez
+
+// 🚀 PERFORMANS: Response Compression middleware'i — routing'den ÖNCE olmalı!
+app.UseResponseCompression();
 
 // Sıralama çok önemli: Önce kimlik sor, sonra yetkiye bak
 app.UseAuthentication();

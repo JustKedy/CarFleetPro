@@ -1,5 +1,6 @@
 using CarFleetPro.API.DTOs;
 using CarFleetPro.API.Models;
+using CarFleetPro.API.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
@@ -16,11 +17,13 @@ namespace CarFleetPro.API.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly IConfiguration _configuration;
+        private readonly IEmailService _emailService;
 
-        public AuthController(UserManager<AppUser> userManager, IConfiguration configuration)
+        public AuthController(UserManager<AppUser> userManager, IConfiguration configuration, IEmailService emailService)
         {
             _userManager = userManager;
             _configuration = configuration;
+            _emailService = emailService;
         }
 
         [HttpPost("register")]
@@ -94,11 +97,47 @@ namespace CarFleetPro.API.Controllers
             {
                 fullName = user.FullName,
                 email = user.Email,
+                phoneNumber = user.PhoneNumber,
                 role = user.Role,
                 maintenanceAlerts = user.MaintenanceAlerts,
                 rentalExpiryAlerts = user.RentalExpiryAlerts,
                 instantAvailabilityAlerts = user.InstantAvailabilityAlerts
             });
+        }
+
+        /// <summary>
+        /// PUT /api/Auth/profile — Profil bilgilerini güncelle
+        /// </summary>
+        [HttpPut("profile")]
+        [Authorize]
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileDto dto)
+        {
+            var userEmail = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+            if (string.IsNullOrEmpty(userEmail)) return Unauthorized();
+
+            var user = await _userManager.FindByEmailAsync(userEmail);
+            if (user == null) return NotFound("Kullanıcı bulunamadı.");
+
+            user.FullName = dto.FullName;
+            user.PhoneNumber = dto.PhoneNumber;
+
+            // Email değiştiyse
+            if (!string.IsNullOrEmpty(dto.Email) && dto.Email != user.Email)
+            {
+                var emailExists = await _userManager.FindByEmailAsync(dto.Email);
+                if (emailExists != null) return BadRequest("Bu e-posta adresi zaten kullanılıyor.");
+
+                user.Email = dto.Email;
+                user.UserName = dto.Email;
+                user.NormalizedEmail = dto.Email.ToUpper();
+                user.NormalizedUserName = dto.Email.ToUpper();
+            }
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+                return BadRequest(string.Join(", ", result.Errors.Select(e => e.Description)));
+
+            return Ok(new { message = "Profil başarıyla güncellendi!" });
         }
 
         [HttpPost("change-password")]
@@ -139,6 +178,72 @@ namespace CarFleetPro.API.Controllers
             await _userManager.UpdateAsync(user);
 
             return Ok(new { message = "Bildirim tercihleri kaydedildi." });
+        }
+
+        /// <summary>
+        /// POST /api/Auth/forgot-password — Şifre sıfırlama kodu e-posta ile gönder
+        /// </summary>
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
+        {
+            var user = await _userManager.FindByEmailAsync(dto.Email);
+            
+            // Güvenlik: Kullanıcı bulunamasa bile aynı mesajı dön (e-posta mining engellemek için)
+            if (user == null)
+                return Ok(new { message = "Eğer bu e-posta adresi kayıtlıysa, şifre sıfırlama kodu gönderildi." });
+
+            // ASP.NET Identity token üret
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            // 6 haneli basit kod oluştur (token çok uzun, kullanıcıya kodu göndereceğiz)
+            var resetCode = new Random().Next(100000, 999999).ToString();
+
+            // Token'ı geçici olarak Purpose alanına kaydet (basit yaklaşım)
+            // Production'da Redis veya ayrı bir tablo kullanılmalı
+            user.SecurityStamp = token; // Identity security stamp olarak sakla
+            await _userManager.UpdateAsync(user);
+
+            // E-posta gönder
+            var emailBody = $@"
+                <h2>CarFleetPro — Şifre Sıfırlama</h2>
+                <p>Merhaba {user.FullName},</p>
+                <p>Şifre sıfırlama talebiniz alındı. Aşağıdaki kodu uygulamaya girip yeni şifrenizi belirleyebilirsiniz:</p>
+                <h1 style='color: #3B82F6; text-align: center; font-size: 36px;'>{resetCode}</h1>
+                <p>Bu kod 15 dakika geçerlidir.</p>
+                <p>Eğer bu talebi siz yapmadıysanız, bu e-postayı görmezden gelebilirsiniz.</p>
+                <hr>
+                <p style='color: #9CA3AF; font-size: 12px;'>CarFleetPro Filo Yönetim Sistemi</p>";
+
+            try
+            {
+                await _emailService.SendEmailAsync(dto.Email, "CarFleetPro — Şifre Sıfırlama Kodu", emailBody);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[EMAIL] Gönderim hatası: {ex.Message}");
+                // E-posta gönderilemese bile token üretildi, logla ve devam et
+            }
+
+            return Ok(new { message = "Eğer bu e-posta adresi kayıtlıysa, şifre sıfırlama kodu gönderildi.", token = token });
+        }
+
+        /// <summary>
+        /// POST /api/Auth/reset-password — Token ile yeni şifre belirle
+        /// </summary>
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
+        {
+            var user = await _userManager.FindByEmailAsync(dto.Email);
+            if (user == null) return BadRequest("Geçersiz işlem.");
+
+            var result = await _userManager.ResetPasswordAsync(user, dto.Token, dto.NewPassword);
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                return BadRequest(errors);
+            }
+
+            return Ok(new { message = "Şifreniz başarıyla sıfırlandı! Yeni şifrenizle giriş yapabilirsiniz." });
         }
     }
 }

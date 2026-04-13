@@ -1,35 +1,100 @@
+using CarFleetPro.Mobile.Models;
+using CarFleetPro.Mobile.Services;
+
 namespace CarFleetPro.Mobile.Views;
 
 public partial class RentalFormPage : ContentPage
 {
+    private readonly ApiService _apiService;
+    private readonly Vehicle? _vehicle;
+    private List<CustomerName> _customers = new();
+
+    // Parametreli constructor: VehicleDetailsPage'den geliyor
+    public RentalFormPage(Vehicle vehicle)
+    {
+        InitializeComponent();
+        _apiService = new ApiService();
+        _vehicle = vehicle;
+
+        // Araç bilgisini header'a yaz
+        VehicleNameLabel.Text = $"{vehicle.Marka} {vehicle.Model}";
+        VehiclePlateLabel.Text = vehicle.Plaka;
+    }
+
+    // Parametresiz constructor (eski uyumluluk)
     public RentalFormPage()
     {
         InitializeComponent();
-        
+        _apiService = new ApiService();
+        _vehicle = null;
+    }
 
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        await LoadCustomers();
+    }
+
+    private async Task LoadCustomers()
+    {
+        _customers = await _apiService.GetCustomerNamesAsync();
+        CustomerPicker.ItemsSource = _customers.Select(c => c.FullName).ToList();
     }
 
     private async void OnBackClicked(object? sender, EventArgs e)
     {
-        if (Navigation != null)
-        {
-            await Navigation.PopAsync();
-        }
+        if (Navigation != null) await Navigation.PopAsync();
     }
 
     private async void OnCancelClicked(object? sender, EventArgs e)
     {
-        // Bir önceki sayfaya (Detay Sayfası) geri fırlat
         await Navigation.PopAsync();
     }
 
     private async void OnRentCompleteClicked(object? sender, EventArgs e)
     {
-        // YUNUS NOT: Kiralama tamamlama işlemi API entegrasyonu buraya gerçekleştirilecek.
-    }
+        if (_vehicle == null)
+        {
+            await DisplayAlertAsync("Hata", "Araç bilgisi bulunamadı.", "Tamam");
+            return;
+        }
 
-    // YUNUS NOT: "TAMAMLA" butonu tetiklendiğinde;
-    // 1. Kiralama kaydı oluşturulacak (POST /Rentals)
-    // 2. Aracın durumu 'Dolu' (StatusId = 2) olarak güncellenecek
-    // 3. Başarılı ise ana ekrana yönlendirilecek.
+        // Müşteri seçildi mi?
+        if (CustomerPicker.SelectedIndex < 0)
+        {
+            await DisplayAlertAsync("Uyarı", "Lütfen bir müşteri seçin.", "Tamam");
+            return;
+        }
+
+        var selectedCustomer = _customers[CustomerPicker.SelectedIndex];
+        var startDate = StartDatePicker.Date ?? DateTime.Today;
+        var endDate = EndDatePicker.Date ?? DateTime.Today.AddDays(1);
+
+        if (endDate <= startDate)
+        {
+            await DisplayAlertAsync("Uyarı", "Dönüş tarihi, teslim tarihinden sonra olmalıdır.", "Tamam");
+            return;
+        }
+
+        // Opsiyonel: depozito
+        decimal.TryParse(DepositEntry.Text, out var deposit);
+
+        var notes = NotesEditor.Text ?? "";
+
+        (bool success, string message) = await _apiService.CreateRentalAsync(
+            selectedCustomer.CustomerId,
+            _vehicle.Id,
+            startDate,
+            endDate,
+            deposit,
+            notes);
+
+        await DisplayAlertAsync(success ? "Başarılı ✅" : "Hata ❌", message, "Tamam");
+
+        if (success)
+        {
+            // Ana sayfaya geri dön
+            await Navigation.PopToRootAsync();
+        }
+    }
 }

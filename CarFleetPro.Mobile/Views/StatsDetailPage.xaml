@@ -29,18 +29,13 @@
                     <RoundRectangle CornerRadius="12" />
                 </Border.StrokeShape>
                 <VerticalStackLayout HorizontalOptions="Center" Spacing="5">
-                    <Label Text="Şu Anda Bakımda Olan Araçlar" FontSize="14" TextColor="#0369A1" HorizontalOptions="Center"/>
-                    <Label Text="15" FontSize="32" FontAttributes="Bold" TextColor="#0369A1" HorizontalOptions="Center"/>
+                    <Label x:Name="HeaderTitle" Text="Şu Anda Bakımda Olan Araçlar" FontSize="14" TextColor="#0369A1" HorizontalOptions="Center"/>
+                    <Label x:Name="HeaderCount" Text="0" FontSize="32" FontAttributes="Bold" TextColor="#0369A1" HorizontalOptions="Center"/>
                 </VerticalStackLayout>
             </Border>
 
             <CollectionView x:Name="StatsList" VerticalScrollBarVisibility="Never" SelectionMode="Single" SelectionChanged="OnStatSelected">
-                <CollectionView.ItemsSource>
-                    <x:Array Type="{x:Type x:String}">
-                        <x:String>Mock1</x:String>
-                        <x:String>Mock2</x:String>
-                    </x:Array>
-                </CollectionView.ItemsSource>
+
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
@@ -61,15 +56,15 @@
                                 </Border>
 
                                 <VerticalStackLayout Grid.Column="1" Margin="15,0,0,0" VerticalOptions="Center">
-                                    <Label Text="55 MS 061" FontAttributes="Bold" FontSize="16" TextColor="#1F2937" />
-                                    <Label Text="Renault Clio - Merkez Şube" FontSize="12" TextColor="#6B7280" />
+                                    <Label Text="{Binding Plaka}" FontAttributes="Bold" FontSize="16" TextColor="#1F2937" />
+                                    <Label Text="{Binding Marka, StringFormat='{0}'}" FontSize="12" TextColor="#6B7280" />
                                 </VerticalStackLayout>
 
                                 <Border Grid.Column="2" BackgroundColor="#FEF3C7" Padding="10,5" VerticalOptions="Center" StrokeThickness="0">
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="8" />
                                     </Border.StrokeShape>
-                                    <Label Text="Periyodik Bakım" FontSize="11" TextColor="#D97706" FontAttributes="Bold"/>
+                                    <Label Text="{Binding Durum}" FontSize="11" TextColor="#D97706" FontAttributes="Bold"/>
                                 </Border>
                             </Grid>
                         </Border>

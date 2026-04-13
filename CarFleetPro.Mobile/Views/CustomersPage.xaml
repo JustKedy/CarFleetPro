@@ -29,7 +29,7 @@
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="12" />
                 </Border.StrokeShape>
-                <Entry Placeholder="Müşteri Ara (İsim, TC, Tel)..." TextColor="#1F2937" PlaceholderColor="#9CA3AF" Margin="15,0" VerticalOptions="Center" />
+                <Entry x:Name="SearchEntry" Placeholder="Müşteri Ara (İsim, TC, Tel)..." TextColor="#1F2937" PlaceholderColor="#9CA3AF" Margin="15,0" VerticalOptions="Center" TextChanged="OnSearchTextChanged" />
             </Border>
 
             <Button Grid.Column="1" Text="+" BackgroundColor="#3B82F6" TextColor="White" FontSize="24" FontAttributes="Bold" CornerRadius="12" HeightRequest="50" />
@@ -50,17 +50,17 @@
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="22.5" />
                                 </Border.StrokeShape>
-                                <Label Text="AT" TextColor="#1E40AF" HorizontalOptions="Center" VerticalOptions="Center" FontAttributes="Bold" />
+                                <Label Text="{Binding Initials}" TextColor="#1E40AF" HorizontalOptions="Center" VerticalOptions="Center" FontAttributes="Bold" />
                             </Border>
 
                             <VerticalStackLayout Grid.Column="1" Margin="15,0" VerticalOptions="Center">
-                                <Label Text="Abdulkadir Toksöz" FontAttributes="Bold" TextColor="#1F2937" FontSize="16" />
-                                <Label Text="0555 123 45 67" FontSize="12" TextColor="#6B7280" />
+                                <Label Text="{Binding FullName}" FontAttributes="Bold" TextColor="#1F2937" FontSize="16" />
+                                <Label Text="{Binding PhoneNumber}" FontSize="12" TextColor="#6B7280" />
                             </VerticalStackLayout>
 
                             <VerticalStackLayout Grid.Column="2" VerticalOptions="Center" HorizontalOptions="End">
-                                <Label Text="Aktif Kirada" TextColor="#10B981" FontSize="11" HorizontalOptions="End" FontAttributes="Bold" />
-                                <Label Text="Bakiye: 0 TL" FontSize="11" TextColor="#9CA3AF" HorizontalOptions="End" />
+                                <Label Text="{Binding RentalStatus}" TextColor="#10B981" FontSize="11" HorizontalOptions="End" FontAttributes="Bold" />
+                                <Label Text="{Binding TotalRentals, StringFormat='Kiralama: {0}'}" FontSize="11" TextColor="#9CA3AF" HorizontalOptions="End" />
                             </VerticalStackLayout>
                         </Grid>
                     </Border>
