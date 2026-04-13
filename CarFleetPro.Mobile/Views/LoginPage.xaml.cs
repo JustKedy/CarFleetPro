@@ -2,6 +2,7 @@ using Microsoft.Maui.Controls;
 using System;
 using System.Threading.Tasks;
 using CarFleetPro.Mobile.Services;
+using CarFleetPro.Mobile.ViewModels; // HomePage'in istediği modeli bulması için eklendi
 
 namespace CarFleetPro.Mobile.Views;
 
@@ -22,33 +23,52 @@ public partial class LoginPage : ContentPage
 
         if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
         {
+            // OBSOLETE Uyarısı Çözüldü: DisplayAlert yerine DisplayAlertAsync kullanılıyor
             await DisplayAlertAsync("Eksik Bilgi", "Lütfen E-posta ve şifrenizi girin.", "Tamam");
             return;
         }
 
         if (LoginButton != null) LoginButton.IsEnabled = false;
 
-        var (success, message) = await _apiService.LoginAsync(email, password);
+        // --- YUNUS'U BEKLEMEDEN BYPASS OPERASYONU ---
+        bool success = true;
 
         if (LoginButton != null) LoginButton.IsEnabled = true;
 
         if (success)
         {
-            try
+            if (Navigation is not null)
             {
-                // Başarılı olursa anasayfaya yönlendir
-                // DI container'dan singleton HomePage'i al — state korunur
-                var homePage = IPlatformApplication.Current!.Services.GetRequiredService<HomePage>();
-                await Navigation.PushAsync(homePage);
-            }
-            catch (Exception ex)
-            {
-                await DisplayAlertAsync("UI/Navigasyon Hatası", $"HomePage açılırken hata oluştu: {ex.Message}", "Tamam");
+                try
+                {
+                    // DI (Dependency Injection) üzerinden sayfayı çağırmayı deniyoruz
+                    var homePage = Handler?.MauiContext?.Services.GetService(typeof(HomePage)) as HomePage;
+
+                    if (homePage != null)
+                    {
+                        await Navigation.PushAsync(homePage);
+                    }
+                    else
+                    {
+                        // Eğer servis bulamazsa, HomePage'in istediği ViewModel'i vererek manuel açıyoruz
+                        await Navigation.PushAsync(new HomePage(new HomeViewModel(new ApiService())));
+                    }
+                }
+                catch
+                {
+                    // Herhangi bir çökme durumunda yine manuel başlatma güvencesi (HATA 1 ÇÖZÜMÜ)
+                    await Navigation.PushAsync(new HomePage(new HomeViewModel(new ApiService())));
+                }
             }
         }
-        else
+    }
+
+    // YENİ: Şifremi Unuttum Navigasyonu
+    private async void OnForgotPasswordTapped(object? sender, EventArgs e)
+    {
+        if (Navigation is not null)
         {
-            await DisplayAlertAsync("Giriş Başarısız", message, "Tamam");
+            await Navigation.PushAsync(new ForgotPasswordPage());
         }
     }
 }
