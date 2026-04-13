@@ -1,10 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
-using System;
 using CarFleetPro.Mobile.Models;
 using CarFleetPro.Mobile.Services;
 using Microsoft.Maui.Controls;
@@ -14,31 +10,40 @@ namespace CarFleetPro.Mobile.ViewModels
     public partial class FleetManagementViewModel : ObservableObject
     {
         private readonly ApiService _apiService;
-        private List<Vehicle> _tumAraclar = new List<Vehicle>();
+        private List<Vehicle> _tumAraclar = [];
 
-        public ObservableCollection<Vehicle> AracListesi { get; set; } = new ObservableCollection<Vehicle>();
+        public ObservableCollection<Vehicle> AracListesi { get; set; } = [];
 
-        public FleetManagementViewModel()
+        // ─── Skeleton Screen Kontrolü ──────────────────────────────────
+        [ObservableProperty] private bool isLoading = true;
+
+        // ─── Constructor (DI) ─────────────────────────────────────────
+        public FleetManagementViewModel(ApiService apiService)
         {
-            _apiService = new ApiService();
+            _apiService = apiService;
             _ = VerileriYukle();
         }
 
         private async Task VerileriYukle(bool forceRefresh = false)
         {
-            var gelenAraclar = await _apiService.GetVehiclesAsync(forceRefresh);
-            if (gelenAraclar != null)
+            IsLoading = true;
+            try
             {
-                _tumAraclar = gelenAraclar;
-                Filtrele("Tümü");
+                var gelenAraclar = await _apiService.GetVehiclesAsync(forceRefresh);
+                if (gelenAraclar != null)
+                {
+                    _tumAraclar = gelenAraclar;
+                    Filtrele("Tümü");
+                }
+            }
+            finally
+            {
+                IsLoading = false;
             }
         }
 
         [RelayCommand]
-        public async Task VerileriYenile()
-        {
-            await VerileriYukle(forceRefresh: true);
-        }
+        public async Task VerileriYenile() => await VerileriYukle(forceRefresh: true);
 
         [RelayCommand]
         public void Filtrele(string durum)
@@ -51,7 +56,8 @@ namespace CarFleetPro.Mobile.ViewModels
             }
             else
             {
-                var filtrelenmis = _tumAraclar.Where(a => string.Equals(a.Durum, durum, StringComparison.OrdinalIgnoreCase)).ToList();
+                var filtrelenmis = _tumAraclar
+                    .Where(a => string.Equals(a.Durum, durum, StringComparison.OrdinalIgnoreCase));
                 foreach (var arac in filtrelenmis) AracListesi.Add(arac);
             }
         }
@@ -59,23 +65,24 @@ namespace CarFleetPro.Mobile.ViewModels
         [RelayCommand]
         public async Task Duzenle(Vehicle secilenArac)
         {
-            if (secilenArac == null || Shell.Current == null) return;
-            // .NET 10 uyarılarını susturmak için Shell.Current kullanıyoruz
-            await Shell.Current.DisplayAlert("Düzenle", $"{secilenArac.Marka} {secilenArac.Model} düzenleme sayfasına gidilecek.", "Tamam");
+            if (secilenArac is null || Shell.Current is null) return;
+            await Shell.Current.DisplayAlertAsync("Düzenle",
+                $"{secilenArac.Marka} {secilenArac.Model} düzenleme sayfasına gidilecek.", "Tamam");
         }
 
         [RelayCommand]
         public async Task Sil(Vehicle secilenArac)
         {
-            if (secilenArac == null || Shell.Current == null) return;
+            if (secilenArac is null || Shell.Current is null) return;
 
-            bool cevap = await Shell.Current.DisplayAlert("Emin Misin?", $"{secilenArac.Plaka} plakalı aracı silmek istediğine emin misin?", "Evet, Sil", "İptal");
+            bool cevap = await Shell.Current.DisplayAlertAsync("Emin Misin?",
+                $"{secilenArac.Plaka} plakalı aracı silmek istediğine emin misin?", "Evet, Sil", "İptal");
 
             if (cevap)
             {
                 _tumAraclar.Remove(secilenArac);
                 AracListesi.Remove(secilenArac);
-            } 
+            }
         }
     }
 }

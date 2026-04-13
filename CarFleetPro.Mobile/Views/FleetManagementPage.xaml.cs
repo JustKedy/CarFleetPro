@@ -1,5 +1,3 @@
-using System;
-using Microsoft.Maui.Controls;
 using CarFleetPro.Mobile.Models;
 using CarFleetPro.Mobile.ViewModels;
 using CommunityToolkit.Mvvm.Messaging;
@@ -10,29 +8,19 @@ namespace CarFleetPro.Mobile.Views
     {
         private readonly FleetManagementViewModel _viewModel;
 
-        public FleetManagementPage()
+        // DI: Singleton VM ile liste state'ini korur
+        public FleetManagementPage(FleetManagementViewModel viewModel)
         {
             InitializeComponent();
-            _viewModel = new FleetManagementViewModel();
+            _viewModel     = viewModel;
             BindingContext = _viewModel;
         }
 
-        protected override void OnAppearing()
+        protected override async void OnAppearing()
         {
             base.OnAppearing();
-
-            // AddNewVehiclePage araç ekleyince bu mesajı alıp listeyi yenile
-            WeakReferenceMessenger.Default.Register<VehicleAddedMessage>(this, async (recipient, message) =>
-            {
-                await _viewModel.VerileriYenileCommand.ExecuteAsync(null);
-            });
-        }
-
-        protected override void OnDisappearing()
-        {
-            base.OnDisappearing();
-            // Bellek sızıntısını önlemek için aboneliği iptal et
-            WeakReferenceMessenger.Default.Unregister<VehicleAddedMessage>(this);
+            // Sayfa her ekrana geldiğinde yenilenmeyi tetikle
+            await _viewModel.VerileriYenileCommand.ExecuteAsync(null);
         }
 
         public async void OnAddNewVehicleClicked(object? sender, EventArgs e)
@@ -43,7 +31,7 @@ namespace CarFleetPro.Mobile.Views
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"YUNUS HATA: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"HATA: {ex.Message}");
             }
         }
     }

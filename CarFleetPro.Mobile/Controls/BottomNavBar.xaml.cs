@@ -76,19 +76,23 @@ public partial class BottomNavBar : ContentView
         if (SelectedTab == "Home") return;
 
         // false parametresi animasyonu kapatır, alt menü sekmesi gibi anında geçer
-        await Navigation.PushAsync(new HomePage(), false);
+        // DI container'dan singleton instance'ı al — sayfa state'i sıfırlanmaz
+        var page = IPlatformApplication.Current!.Services.GetRequiredService<HomePage>();
+        await Navigation.PushAsync(page, false);
     }
 
     private async void OnGarageTapped(object? sender, TappedEventArgs e)
     {
         if (SelectedTab == "Garage") return;
-        await Navigation.PushAsync(new GaragePage(), false);
+        var page = IPlatformApplication.Current!.Services.GetRequiredService<GaragePage>();
+        await Navigation.PushAsync(page, false);
     }
 
     private async void OnListTapped(object? sender, TappedEventArgs e)
     {
         if (SelectedTab == "List") return;
-        await Navigation.PushAsync(new FleetManagementPage(), false);
+        var page = IPlatformApplication.Current!.Services.GetRequiredService<FleetManagementPage>();
+        await Navigation.PushAsync(page, false);
     }
 
     private async void OnSettingsTapped(object? sender, TappedEventArgs e)

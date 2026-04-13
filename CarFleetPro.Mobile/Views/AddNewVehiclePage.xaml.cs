@@ -120,22 +120,22 @@ namespace CarFleetPro.Mobile.Views
             // ── 1. Form Validasyonu ──────────────────────────────────────────
             if (string.IsNullOrWhiteSpace(PlakaEntry.Text))
             {
-                await DisplayAlert("Eksik Bilgi", "Lütfen araç plakasını girin.", "Tamam");
+                await DisplayAlertAsync("Eksik Bilgi", "Lütfen araç plakasını girin.", "Tamam");
                 return;
             }
             if (BrandPicker.SelectedItem == null)
             {
-                await DisplayAlert("Eksik Bilgi", "Lütfen bir marka seçin.", "Tamam");
+                await DisplayAlertAsync("Eksik Bilgi", "Lütfen bir marka seçin.", "Tamam");
                 return;
             }
             if (ModelPicker.SelectedItem == null)
             {
-                await DisplayAlert("Eksik Bilgi", "Lütfen bir model seçin.", "Tamam");
+                await DisplayAlertAsync("Eksik Bilgi", "Lütfen bir model seçin.", "Tamam");
                 return;
             }
             if (string.IsNullOrWhiteSpace(YilEntry.Text) || !int.TryParse(YilEntry.Text, out int yil) || yil < 1950 || yil > DateTime.Now.Year)
             {
-                await DisplayAlert("Hatalı Bilgi", $"Lütfen geçerli bir yıl girin (1950 - {DateTime.Now.Year}).", "Tamam");
+                await DisplayAlertAsync("Hatalı Bilgi", $"Lütfen geçerli bir yıl girin (1950 - {DateTime.Now.Year}).", "Tamam");
                 return;
             }
 
@@ -185,7 +185,7 @@ namespace CarFleetPro.Mobile.Views
             }
             else
             {
-                await DisplayAlert("Hata", message, "Tamam");
+                await DisplayAlertAsync("Hata", message, "Tamam");
             }
         }
 

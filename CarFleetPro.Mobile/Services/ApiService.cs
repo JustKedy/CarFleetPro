@@ -16,7 +16,7 @@ namespace CarFleetPro.Mobile.Services
         // KRİTİK BİLGİ: Android emülatöründe kendi bilgisayarının localhost'una 
         // bağlanmak için "localhost" yerine "10.0.2.2" yazmalısın!
         // Alper'in API portu kaçsa (örn: 5001) onu buraya yazın.
-        private const string BaseUrl = "http://10.0.2.2:5161/api/";
+        private const string BaseUrl = "http://192.168.1.116:5161/api/";
 
         // Sertifika hatalarını yok sayan köprü (Sadece geliştirme aşaması için!)
         private static HttpMessageHandler GetInsecureHandler()
@@ -141,16 +141,21 @@ namespace CarFleetPro.Mobile.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var result = await System.Text.Json.JsonSerializer.DeserializeAsync<AuthResponse>(
-                        await response.Content.ReadAsStreamAsync(),
+                    // ÖNEMLİ: content string'i yukarıda zaten ReadAsStringAsync() ile okunduktan sonra
+                    // tekrar ReadAsStreamAsync() çağırmak token'ın null gelmesine yol açıyordu!
+                    // Çözüm: zaten elimizde olan content string'inden deserialize ediyoruz.
+                    var result = System.Text.Json.JsonSerializer.Deserialize<AuthResponse>(
+                        content,
                         new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                    System.Diagnostics.Debug.WriteLine($"[AUTH] Token: {result?.Token ?? "NULL - parse hatası!"}");
 
                     if (result?.Token != null)
                     {
                         await SecureStorage.Default.SetAsync("jwt_token", result.Token);
                         return (true, "Giriş başarılı!");
                     }
-                    return (false, "Sunucudan geçersiz yanıt alındı.");
+                    return (false, $"Sunucudan geçersiz yanıt. İçerik: {content}");
                 }
 
                 var body = content.Trim().Trim('"');

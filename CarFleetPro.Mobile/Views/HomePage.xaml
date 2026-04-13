@@ -2,12 +2,15 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:CarFleetPro.Mobile.Controls"
+             xmlns:vm="clr-namespace:CarFleetPro.Mobile.ViewModels"
+             x:DataType="vm:HomeViewModel"
              x:Class="CarFleetPro.Mobile.Views.HomePage"
              BackgroundColor="#F3F4F6"
              Shell.NavBarIsVisible="False">
 
     <Grid RowDefinitions="110, *, 75">
 
+        <!-- ─── HEADER ─────────────────────────────────────────────── -->
         <Border Grid.Row="0" BackgroundColor="#0A1128" StrokeThickness="0">
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="0, 0, 20, 20" />
@@ -15,153 +18,217 @@
             <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="5">
                 <HorizontalStackLayout HorizontalOptions="Center" Spacing="0">
                     <Label Text="CARFLEET" FontSize="14" TextColor="White" FontAttributes="Bold" />
-                    <Label Text="PRO" FontSize="14" TextColor="#3B82F6" FontAttributes="Bold" />
+                    <Label Text="PRO"      FontSize="14" TextColor="#3B82F6" FontAttributes="Bold" />
                 </HorizontalStackLayout>
-                <Label Text="GÖSTERGE PANELİ" FontSize="24" TextColor="White" HorizontalOptions="Center" Margin="0,5,0,0"/>
+                <Label Text="GÖSTERGE PANELİ" FontSize="24" TextColor="White"
+                       HorizontalOptions="Center" Margin="0,5,0,0"/>
             </VerticalStackLayout>
         </Border>
 
         <ScrollView Grid.Row="1" VerticalScrollBarVisibility="Never">
-            <VerticalStackLayout Padding="0, 10, 0, 20" Spacing="15">
+            <Grid>
 
-                <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Margin="20,5,0,5">
-                    <HorizontalStackLayout Spacing="10">
-                        <Button Text="Tümü" Command="{Binding SubeFiltreleCommand}" CommandParameter="0" BackgroundColor="#0A1128" TextColor="White" CornerRadius="20" HeightRequest="40" Padding="20,0" />
-                        <Button Text="Bafra Şube" Command="{Binding SubeFiltreleCommand}" CommandParameter="1" BackgroundColor="White" TextColor="#1F2937" BorderColor="#D1D5DB" BorderWidth="1" CornerRadius="20" HeightRequest="40" Padding="15,0" />
-                        <Button Text="Atakum Şube" Command="{Binding SubeFiltreleCommand}" CommandParameter="2" BackgroundColor="White" TextColor="#1F2937" BorderColor="#D1D5DB" BorderWidth="1" CornerRadius="20" HeightRequest="40" Padding="15,0" />
-                        <Button Text="İlkadım Şube" Command="{Binding SubeFiltreleCommand}" CommandParameter="3" BackgroundColor="White" TextColor="#1F2937" BorderColor="#D1D5DB" BorderWidth="1" CornerRadius="20" HeightRequest="40" Padding="15,0" />
-                    </HorizontalStackLayout>
-                </ScrollView>
+                <!-- ═══════════════════════════════════════════════════
+                     GERÇEK İÇERİK  (IsLoading=false olunca görünür)
+                ═══════════════════════════════════════════════════════ -->
+                <VerticalStackLayout Padding="0,10,0,20" Spacing="15"
+                                     IsVisible="{Binding IsLoading, Converter={StaticResource InverseBoolConverter}}">
 
-                <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="*, *" ColumnSpacing="15" RowSpacing="15" Margin="20, 5, 20, 5">
+                    <!-- Şube filtre butonları -->
+                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Margin="20,5,0,5">
+                        <HorizontalStackLayout Spacing="10">
+                            <Button Text="Tümü"         Command="{Binding SubeFiltreleCommand}" CommandParameter="0"
+                                    BackgroundColor="#0A1128" TextColor="White" CornerRadius="20" HeightRequest="40" Padding="20,0" />
+                            <Button Text="Bafra Şube"   Command="{Binding SubeFiltreleCommand}" CommandParameter="1"
+                                    BackgroundColor="White" TextColor="#1F2937" BorderColor="#D1D5DB" BorderWidth="1" CornerRadius="20" HeightRequest="40" Padding="15,0" />
+                            <Button Text="Atakum Şube"  Command="{Binding SubeFiltreleCommand}" CommandParameter="2"
+                                    BackgroundColor="White" TextColor="#1F2937" BorderColor="#D1D5DB" BorderWidth="1" CornerRadius="20" HeightRequest="40" Padding="15,0" />
+                            <Button Text="İlkadım Şube" Command="{Binding SubeFiltreleCommand}" CommandParameter="3"
+                                    BackgroundColor="White" TextColor="#1F2937" BorderColor="#D1D5DB" BorderWidth="1" CornerRadius="20" HeightRequest="40" Padding="15,0" />
+                        </HorizontalStackLayout>
+                    </ScrollView>
 
-                    <Border Grid.Row="0" Grid.Column="0" BackgroundColor="White" Padding="15" StrokeThickness="0">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="12" />
-                        </Border.StrokeShape>
-                        <Border.Shadow>
-                            <Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.1"/>
-                        </Border.Shadow>
-                        <VerticalStackLayout>
-                            <Label Text="Toplam Araç" FontSize="12" TextColor="#6B7280" />
-                            <Label Text="{Binding ToplamAracSayisi, FallbackValue='45'}" FontSize="24" FontAttributes="Bold" TextColor="#1F2937" Margin="0,5,0,0" />
-                        </VerticalStackLayout>
-                    </Border>
+                    <!-- İstatistik kartları 2x2 -->
+                    <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*"
+                          ColumnSpacing="15" RowSpacing="15" Margin="20,5,20,5">
 
-                    <Border Grid.Row="0" Grid.Column="1" BackgroundColor="White" Padding="15" StrokeThickness="0">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="12" />
-                        </Border.StrokeShape>
-                        <Border.Shadow>
-                            <Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.1"/>
-                        </Border.Shadow>
-                        <VerticalStackLayout>
-                            <Label Text="Aktif Kirada" FontSize="12" TextColor="#6B7280" />
-                            <Label Text="{Binding KiradakiAracSayisi, FallbackValue='28'}" FontSize="24" FontAttributes="Bold" TextColor="#3B82F6" Margin="0,5,0,0" />
-                        </VerticalStackLayout>
-                    </Border>
-
-                    <Border Grid.Row="1" Grid.Column="0" BackgroundColor="White" Padding="15" StrokeThickness="0">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="12" />
-                        </Border.StrokeShape>
-                        <Border.Shadow>
-                            <Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.1"/>
-                        </Border.Shadow>
-                        <VerticalStackLayout>
-                            <Label Text="Müsait Araç" FontSize="12" TextColor="#6B7280" />
-                            <Label Text="{Binding MusaitAracSayisi, FallbackValue='15'}" FontSize="24" FontAttributes="Bold" TextColor="#10B981" Margin="0,5,0,0" />
-                        </VerticalStackLayout>
-                    </Border>
-
-                    <Border Grid.Row="1" Grid.Column="1" BackgroundColor="White" Padding="15" StrokeThickness="0">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="12" />
-                        </Border.StrokeShape>
-                        <Border.Shadow>
-                            <Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.1"/>
-                        </Border.Shadow>
-                        <VerticalStackLayout>
-                            <Label Text="Aylık Ciro" FontSize="12" TextColor="#6B7280" />
-                            <Label Text="{Binding AylikCiro, StringFormat='{0:N0} ₺', FallbackValue='145.000 ₺'}" FontSize="24" FontAttributes="Bold" TextColor="#1F2937" Margin="0,5,0,0" />
-                        </VerticalStackLayout>
-                    </Border>
-                </Grid>
-
-                <Border BackgroundColor="White" Padding="20" Margin="20, 5, 20, 5" StrokeThickness="0">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="12" />
-                    </Border.StrokeShape>
-                    <Border.Shadow>
-                        <Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.1"/>
-                    </Border.Shadow>
-                    <VerticalStackLayout Spacing="15">
-                        <Label Text="Filo Durum Analizi" FontAttributes="Bold" FontSize="16" TextColor="#1F2937" />
-
-                        <Border HeightRequest="12" StrokeThickness="0">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="6" />
-                            </Border.StrokeShape>
-                            <Grid ColumnDefinitions="{Binding GrafikOranlari, FallbackValue='5*, 3*, 1*'}">
-                                <BoxView Grid.Column="0" BackgroundColor="#3B82F6" />
-                                <BoxView Grid.Column="1" BackgroundColor="#10B981" />
-                                <BoxView Grid.Column="2" BackgroundColor="#F59E0B" />
-                            </Grid>
+                        <Border Grid.Row="0" Grid.Column="0" BackgroundColor="White" Padding="15" StrokeThickness="0">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                            <Border.Shadow><Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.1"/></Border.Shadow>
+                            <VerticalStackLayout>
+                                <Label Text="Toplam Araç" FontSize="12" TextColor="#6B7280"/>
+                                <Label Text="{Binding ToplamAracSayisi, FallbackValue='45'}"
+                                       FontSize="24" FontAttributes="Bold" TextColor="#1F2937" Margin="0,5,0,0"/>
+                            </VerticalStackLayout>
                         </Border>
 
-                        <HorizontalStackLayout Spacing="15" HorizontalOptions="Center">
-                            <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
-                                <Ellipse Fill="#3B82F6" WidthRequest="10" HeightRequest="10" />
-                                <Label Text="{Binding KiraYuzdesi, StringFormat='Kirada ({0}%)', FallbackValue='Kirada (%60)'}" FontSize="12" TextColor="#6B7280" />
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
-                                <Ellipse Fill="#10B981" WidthRequest="10" HeightRequest="10" />
-                                <Label Text="{Binding MusaitYuzdesi, StringFormat='Müsait ({0}%)', FallbackValue='Müsait (%30)'}" FontSize="12" TextColor="#6B7280" />
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
-                                <Ellipse Fill="#F59E0B" WidthRequest="10" HeightRequest="10" />
-                                <Label Text="{Binding BakimYuzdesi, StringFormat='Bakımda ({0}%)', FallbackValue='Bakımda (%10)'}" FontSize="12" TextColor="#6B7280" />
-                            </HorizontalStackLayout>
-                        </HorizontalStackLayout>
-                    </VerticalStackLayout>
-                </Border>
+                        <Border Grid.Row="0" Grid.Column="1" BackgroundColor="White" Padding="15" StrokeThickness="0">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                            <Border.Shadow><Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.1"/></Border.Shadow>
+                            <VerticalStackLayout>
+                                <Label Text="Aktif Kirada" FontSize="12" TextColor="#6B7280"/>
+                                <Label Text="{Binding KiradakiAracSayisi, FallbackValue='28'}"
+                                       FontSize="24" FontAttributes="Bold" TextColor="#3B82F6" Margin="0,5,0,0"/>
+                            </VerticalStackLayout>
+                        </Border>
 
-                <Border BackgroundColor="White" Padding="20" Margin="20, 5, 20, 10" StrokeThickness="0">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="12" />
-                    </Border.StrokeShape>
-                    <Border.Shadow>
-                        <Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.1"/>
-                    </Border.Shadow>
-                    <VerticalStackLayout Spacing="15">
-                        <Label Text="En Çok Talep Gören Modeller" FontAttributes="Bold" FontSize="16" TextColor="#1F2937" />
+                        <Border Grid.Row="1" Grid.Column="0" BackgroundColor="White" Padding="15" StrokeThickness="0">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                            <Border.Shadow><Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.1"/></Border.Shadow>
+                            <VerticalStackLayout>
+                                <Label Text="Müsait Araç" FontSize="12" TextColor="#6B7280"/>
+                                <Label Text="{Binding MusaitAracSayisi, FallbackValue='15'}"
+                                       FontSize="24" FontAttributes="Bold" TextColor="#10B981" Margin="0,5,0,0"/>
+                            </VerticalStackLayout>
+                        </Border>
 
-                        <Grid ColumnDefinitions="80, *, 40" VerticalOptions="Center">
-                            <Label Grid.Column="0" Text="{Binding AracModelAdi, FallbackValue='R. Clio'}" FontSize="13" TextColor="#4B5563" VerticalOptions="Center" />
-                            <Border Grid.Column="1" BackgroundColor="#F3F4F6" HeightRequest="8" StrokeThickness="0" VerticalOptions="Center">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="4"/>
-                                </Border.StrokeShape>
-                                <BoxView BackgroundColor="#3B82F6" HorizontalOptions="Start" WidthRequest="{Binding BarGenisligi, FallbackValue='180'}" />
+                        <Border Grid.Row="1" Grid.Column="1" BackgroundColor="White" Padding="15" StrokeThickness="0">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                            <Border.Shadow><Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.1"/></Border.Shadow>
+                            <VerticalStackLayout>
+                                <Label Text="Aylık Ciro" FontSize="12" TextColor="#6B7280"/>
+                                <Label Text="{Binding AylikCiro, StringFormat='{0:N0} ₺', FallbackValue='145.000 ₺'}"
+                                       FontSize="24" FontAttributes="Bold" TextColor="#1F2937" Margin="0,5,0,0"/>
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+
+                    <!-- Filo Durum Analizi -->
+                    <Border BackgroundColor="White" Padding="20" Margin="20,5,20,5" StrokeThickness="0">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                        <Border.Shadow><Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.1"/></Border.Shadow>
+                        <VerticalStackLayout Spacing="15">
+                            <Label Text="Filo Durum Analizi" FontAttributes="Bold" FontSize="16" TextColor="#1F2937"/>
+                            <Border HeightRequest="12" StrokeThickness="0">
+                                <Border.StrokeShape><RoundRectangle CornerRadius="6"/></Border.StrokeShape>
+                                <Grid ColumnDefinitions="{Binding GrafikOranlari, FallbackValue='5*, 3*, 1*'}">
+                                    <BoxView Grid.Column="0" BackgroundColor="#3B82F6"/>
+                                    <BoxView Grid.Column="1" BackgroundColor="#10B981"/>
+                                    <BoxView Grid.Column="2" BackgroundColor="#F59E0B"/>
+                                </Grid>
                             </Border>
-                            <Label Grid.Column="2" Text="{Binding KiralamaSayisi, StringFormat='{0} Kez', FallbackValue='24 Kez'}" FontSize="12" FontAttributes="Bold" TextColor="#1F2937" HorizontalOptions="End" VerticalOptions="Center" />
-                        </Grid>
+                            <HorizontalStackLayout Spacing="15" HorizontalOptions="Center">
+                                <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
+                                    <Ellipse Fill="#3B82F6" WidthRequest="10" HeightRequest="10"/>
+                                    <Label Text="{Binding KiraYuzdesi, StringFormat='Kirada ({0}%)', FallbackValue='Kirada (%60)'}"
+                                           FontSize="12" TextColor="#6B7280"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
+                                    <Ellipse Fill="#10B981" WidthRequest="10" HeightRequest="10"/>
+                                    <Label Text="{Binding MusaitYuzdesi, StringFormat='Müsait ({0}%)', FallbackValue='Müsait (%30)'}"
+                                           FontSize="12" TextColor="#6B7280"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
+                                    <Ellipse Fill="#F59E0B" WidthRequest="10" HeightRequest="10"/>
+                                    <Label Text="{Binding BakimYuzdesi, StringFormat='Bakımda ({0}%)', FallbackValue='Bakımda (%10)'}"
+                                           FontSize="12" TextColor="#6B7280"/>
+                                </HorizontalStackLayout>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
 
-                        <Grid ColumnDefinitions="80, *, 40" VerticalOptions="Center">
-                            <Label Grid.Column="0" Text="F. Focus" FontSize="13" TextColor="#4B5563" VerticalOptions="Center" />
-                            <Border Grid.Column="1" BackgroundColor="#F3F4F6" HeightRequest="8" StrokeThickness="0" VerticalOptions="Center">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="4"/>
-                                </Border.StrokeShape>
-                                <BoxView BackgroundColor="#10B981" HorizontalOptions="Start" WidthRequest="130" />
-                            </Border>
-                            <Label Grid.Column="2" Text="18 Kez" FontSize="12" FontAttributes="Bold" TextColor="#1F2937" HorizontalOptions="End" VerticalOptions="Center" />
-                        </Grid>
+                    <!-- En Çok Talep Gören Modeller -->
+                    <Border BackgroundColor="White" Padding="20" Margin="20,5,20,10" StrokeThickness="0">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                        <Border.Shadow><Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.1"/></Border.Shadow>
+                        <VerticalStackLayout Spacing="15">
+                            <Label Text="En Çok Talep Gören Modeller" FontAttributes="Bold" FontSize="16" TextColor="#1F2937"/>
 
-                    </VerticalStackLayout>
-                </Border>
+                            <Grid ColumnDefinitions="80,*,40" VerticalOptions="Center">
+                                <Label Grid.Column="0" Text="{Binding AracModelAdi, FallbackValue='R. Clio'}"
+                                       FontSize="13" TextColor="#4B5563" VerticalOptions="Center"/>
+                                <Border Grid.Column="1" BackgroundColor="#F3F4F6" HeightRequest="8" StrokeThickness="0" VerticalOptions="Center">
+                                    <Border.StrokeShape><RoundRectangle CornerRadius="4"/></Border.StrokeShape>
+                                    <BoxView BackgroundColor="#3B82F6" HorizontalOptions="Start"
+                                             WidthRequest="{Binding BarGenisligi, FallbackValue='180'}"/>
+                                </Border>
+                                <Label Grid.Column="2" Text="{Binding KiralamaSayisi, StringFormat='{0} Kez', FallbackValue='24 Kez'}"
+                                       FontSize="12" FontAttributes="Bold" TextColor="#1F2937"
+                                       HorizontalOptions="End" VerticalOptions="Center"/>
+                            </Grid>
 
-            </VerticalStackLayout>
+                            <Grid ColumnDefinitions="80,*,40" VerticalOptions="Center">
+                                <Label Grid.Column="0" Text="F. Focus" FontSize="13" TextColor="#4B5563" VerticalOptions="Center"/>
+                                <Border Grid.Column="1" BackgroundColor="#F3F4F6" HeightRequest="8" StrokeThickness="0" VerticalOptions="Center">
+                                    <Border.StrokeShape><RoundRectangle CornerRadius="4"/></Border.StrokeShape>
+                                    <BoxView BackgroundColor="#10B981" HorizontalOptions="Start" WidthRequest="130"/>
+                                </Border>
+                                <Label Grid.Column="2" Text="18 Kez" FontSize="12" FontAttributes="Bold"
+                                       TextColor="#1F2937" HorizontalOptions="End" VerticalOptions="Center"/>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+
+                </VerticalStackLayout>
+
+                <!-- ═══════════════════════════════════════════════════
+                     İSKELET EKRAN  (IsLoading=true iken görünür)
+                     API veri gelene kadar 6 adet gri kutu canlandırma yaptırır
+                ═══════════════════════════════════════════════════════ -->
+                <VerticalStackLayout Padding="20,10,20,20" Spacing="15"
+                                     IsVisible="{Binding IsLoading}">
+
+                    <!-- Toplam 4 iskelet kart (2x2 grid taklidi) -->
+                    <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*"
+                          ColumnSpacing="15" RowSpacing="15">
+
+                        <!-- Kart 1 -->
+                        <Border Grid.Row="0" Grid.Column="0" BackgroundColor="White" Padding="15" StrokeThickness="0" HeightRequest="80">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                            <VerticalStackLayout Spacing="10">
+                                <BoxView HeightRequest="12" WidthRequest="80" BackgroundColor="#E5E7EB" HorizontalOptions="Start" CornerRadius="6"/>
+                                <BoxView HeightRequest="24" WidthRequest="50" BackgroundColor="#D1D5DB" HorizontalOptions="Start" CornerRadius="6"/>
+                            </VerticalStackLayout>
+                        </Border>
+                        <!-- Kart 2 -->
+                        <Border Grid.Row="0" Grid.Column="1" BackgroundColor="White" Padding="15" StrokeThickness="0" HeightRequest="80">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                            <VerticalStackLayout Spacing="10">
+                                <BoxView HeightRequest="12" WidthRequest="80" BackgroundColor="#E5E7EB" HorizontalOptions="Start" CornerRadius="6"/>
+                                <BoxView HeightRequest="24" WidthRequest="50" BackgroundColor="#D1D5DB" HorizontalOptions="Start" CornerRadius="6"/>
+                            </VerticalStackLayout>
+                        </Border>
+                        <!-- Kart 3 -->
+                        <Border Grid.Row="1" Grid.Column="0" BackgroundColor="White" Padding="15" StrokeThickness="0" HeightRequest="80">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                            <VerticalStackLayout Spacing="10">
+                                <BoxView HeightRequest="12" WidthRequest="80" BackgroundColor="#E5E7EB" HorizontalOptions="Start" CornerRadius="6"/>
+                                <BoxView HeightRequest="24" WidthRequest="50" BackgroundColor="#D1D5DB" HorizontalOptions="Start" CornerRadius="6"/>
+                            </VerticalStackLayout>
+                        </Border>
+                        <!-- Kart 4 -->
+                        <Border Grid.Row="1" Grid.Column="1" BackgroundColor="White" Padding="15" StrokeThickness="0" HeightRequest="80">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                            <VerticalStackLayout Spacing="10">
+                                <BoxView HeightRequest="12" WidthRequest="80" BackgroundColor="#E5E7EB" HorizontalOptions="Start" CornerRadius="6"/>
+                                <BoxView HeightRequest="24" WidthRequest="50" BackgroundColor="#D1D5DB" HorizontalOptions="Start" CornerRadius="6"/>
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+
+                    <!-- İskelet grafik kutusu -->
+                    <Border BackgroundColor="White" Padding="20" StrokeThickness="0" HeightRequest="120">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                        <VerticalStackLayout Spacing="15">
+                            <BoxView HeightRequest="14" WidthRequest="140" BackgroundColor="#E5E7EB" HorizontalOptions="Start" CornerRadius="6"/>
+                            <BoxView HeightRequest="12" BackgroundColor="#D1D5DB" CornerRadius="6"/>
+                            <BoxView HeightRequest="12" WidthRequest="200" BackgroundColor="#E5E7EB" HorizontalOptions="Center" CornerRadius="6"/>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- İskelet model listesi kutusu -->
+                    <Border BackgroundColor="White" Padding="20" StrokeThickness="0" HeightRequest="130">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                        <VerticalStackLayout Spacing="18">
+                            <BoxView HeightRequest="14" WidthRequest="200" BackgroundColor="#E5E7EB" HorizontalOptions="Start" CornerRadius="6"/>
+                            <BoxView HeightRequest="10" BackgroundColor="#D1D5DB" CornerRadius="5"/>
+                            <BoxView HeightRequest="10" WidthRequest="220" BackgroundColor="#E5E7EB" HorizontalOptions="Start" CornerRadius="5"/>
+                        </VerticalStackLayout>
+                    </Border>
+
+                </VerticalStackLayout>
+
+            </Grid>
         </ScrollView>
 
         <controls:BottomNavBar Grid.Row="2" SelectedTab="Home" />

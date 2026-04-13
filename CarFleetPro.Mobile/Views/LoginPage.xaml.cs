@@ -22,7 +22,7 @@ public partial class LoginPage : ContentPage
 
         if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
         {
-            await DisplayAlert("Eksik Bilgi", "Lütfen E-posta ve şifrenizi girin.", "Tamam");
+            await DisplayAlertAsync("Eksik Bilgi", "Lütfen E-posta ve şifrenizi girin.", "Tamam");
             return;
         }
 
@@ -34,12 +34,21 @@ public partial class LoginPage : ContentPage
 
         if (success)
         {
-            // Başarılı olursa anasayfaya yönlendir
-            await Navigation.PushAsync(new HomePage());
+            try
+            {
+                // Başarılı olursa anasayfaya yönlendir
+                // DI container'dan singleton HomePage'i al — state korunur
+                var homePage = IPlatformApplication.Current!.Services.GetRequiredService<HomePage>();
+                await Navigation.PushAsync(homePage);
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlertAsync("UI/Navigasyon Hatası", $"HomePage açılırken hata oluştu: {ex.Message}", "Tamam");
+            }
         }
         else
         {
-            await DisplayAlert("Giriş Başarısız", message, "Tamam");
+            await DisplayAlertAsync("Giriş Başarısız", message, "Tamam");
         }
     }
 }
