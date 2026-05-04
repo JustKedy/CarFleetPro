@@ -131,6 +131,7 @@
 
                                         <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
                                             <Button Grid.Column="0" Text="Bakım Durumu" 
+                                                    IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:GarageViewModel}}, Path=IsAdmin}"
                                                     Clicked="OnBakimClicked"
                                                     BackgroundColor="#F3F4F6" TextColor="#4B5563" FontSize="11" FontAttributes="Bold" CornerRadius="8" HeightRequest="35"/>
                                             

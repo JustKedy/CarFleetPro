@@ -53,19 +53,18 @@ public partial class BottomNavBar : ContentView
 
     private void ApplyRoleVisibility()
     {
-        // Örnek: Personel yetkisinde "List" sekmesi gizlenir.
-        // Yunus buradaki IsVisible mantığını kendi Role/Auth sistemine göre ayarlayabilir.
-        ListBorder.IsVisible = IsAdmin;
+        // Ayarlar sekmesi sadece Adminlere özeldir
+        SettingsBorder.IsVisible = IsAdmin;
         
-        // Eğer List gizlenirse grid oranları değişmeli
+        // Eğer Settings gizlenirse grid oranları değişmeli
         if (!IsAdmin)
         {
             NavGrid.ColumnDefinitions = new ColumnDefinitionCollection
             {
                 new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
                 new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
-                new ColumnDefinition { Width = new GridLength(0, GridUnitType.Absolute) },
-                new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }
+                new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                new ColumnDefinition { Width = new GridLength(0, GridUnitType.Absolute) } // Sonuncu grid kapanır
             };
         }
         else
@@ -148,12 +147,8 @@ public partial class BottomNavBar : ContentView
 
     private double GetTabXPosition(int index, double tabWidth)
     {
-        // Eğer personel ise ve list sekmesi (index 2) yoksa, 3. sekme (index 3) aslında 2. sıraya kaymıştır.
-        if (!IsAdmin)
-        {
-            if (index == 3) return 2 * tabWidth; // Settings
-            if (index == 2) return 1 * tabWidth; // List hidden, defaults to previous
-        }
+        // Eğer personel ise ve settings sekmesi (index 3) yoksa tabWidth farklı hesaplanmış olacak,
+        // geriye kalanlar normal sırasında devam ediyor. 
         return index * tabWidth;
     }
 

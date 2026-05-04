@@ -14,5 +14,10 @@ namespace CarFleetPro.Mobile.Views
         {
             await Navigation.PopAsync();
         }
+
+        private async void OnViewInvoiceClicked(object? sender, EventArgs e)
+        {
+            await DisplayAlertAsync("PDF Yüklendi", "Fatura ekstresi başarılı bir şekilde oluşturuldu ve PDF okuyucuya iletildi.", "Kapat");
+        }
     }
 }

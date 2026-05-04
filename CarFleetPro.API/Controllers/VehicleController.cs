@@ -78,6 +78,8 @@ namespace CarFleetPro.API.Controllers
                 Color = dto.Color,
                 Branch = dto.Branch ?? "Merkez Şube", 
                 Status = dto.Status, 
+                InsuranceExpiry = dto.InsuranceExpiry,
+                InspectionExpiry = dto.InspectionExpiry,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -111,6 +113,8 @@ namespace CarFleetPro.API.Controllers
             vehicle.Color = dto.Color;
             vehicle.Branch = dto.Branch ?? "Merkez Şube"; 
             vehicle.Status = dto.Status;
+            vehicle.InsuranceExpiry = dto.InsuranceExpiry;
+            vehicle.InspectionExpiry = dto.InspectionExpiry;
             vehicle.UpdatedAt = DateTime.UtcNow;
 
             _context.Entry(vehicle).State = EntityState.Modified;
@@ -201,6 +205,7 @@ namespace CarFleetPro.API.Controllers
                     Hp = v.HorsePower,
                     Yas = currentYear - v.Year,
                     Km = v.Mileage,
+                    DailyRate = v.DailyRate,
                     Durum = v.Status == VehicleStatus.Available ? "MÜSAİT" :
                             v.Status == VehicleStatus.Rented ? "DOLU" : "BAKIMDA",
                     ResimUrl = v.ImageUrl ?? "https://via.placeholder.com/300"

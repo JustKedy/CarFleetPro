@@ -7,6 +7,16 @@ public partial class SettingsPage : ContentPage
         InitializeComponent();
     }
 
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        var fullName = await Services.SessionManager.GetFullNameAsync();
+        var role = await Services.SessionManager.GetRoleAsync();
+
+        ProfileNameLabel.Text = string.IsNullOrEmpty(fullName) ? "Kullanıcı" : fullName;
+        ProfileRoleLabel.Text = $"Yetki: {role}";
+    }
+
     private async void OnProfileTapped(object? sender, EventArgs e)
     {
         if (Navigation != null)

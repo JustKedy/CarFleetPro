@@ -65,7 +65,7 @@
                                     <Label Text="Tahsilat Tarihi: 01.05.2026" FontSize="11" TextColor="#4B5563" />
                                     <Label Text="Tutar: 15.000 TL" FontSize="14" TextColor="#1F2937" FontAttributes="Bold" />
                                 </VerticalStackLayout>
-                                <Button Grid.Column="1" Text="EKSTRE GÖRÜNTÜLE" BackgroundColor="#F3F4F6" TextColor="#3B82F6" FontSize="10" FontAttributes="Bold" HeightRequest="30" Padding="10,0" CornerRadius="6" VerticalOptions="End"/>
+                                <Button Grid.Column="1" Text="EKSTRE GÖRÜNTÜLE" Clicked="OnViewInvoiceClicked" BackgroundColor="#F3F4F6" TextColor="#3B82F6" FontSize="10" FontAttributes="Bold" HeightRequest="30" Padding="10,0" CornerRadius="6" VerticalOptions="End"/>
                             </Grid>
                         </Grid>
                     </Border>

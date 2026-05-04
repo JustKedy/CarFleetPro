@@ -142,7 +142,8 @@
                                         </Border>
 
                                         <!-- DÜZENLE BUTONU KAPSÜLÜ -->
-                                        <Border BackgroundColor="#F3F4F6" StrokeThickness="0" WidthRequest="50" HeightRequest="70" VerticalOptions="Center">
+                                        <Border BackgroundColor="#F3F4F6" StrokeThickness="0" WidthRequest="50" HeightRequest="70" VerticalOptions="Center"
+                                                IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:FleetManagementViewModel}}, Path=IsAdmin}">
                                             <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
                                             <ImageButton Source="edit.svg"
                                                          HeightRequest="24" WidthRequest="24" BackgroundColor="Transparent"
@@ -153,7 +154,8 @@
                                         </Border>
 
                                         
-                                        <Border BackgroundColor="#FEE2E2" StrokeThickness="0" WidthRequest="50" HeightRequest="70" VerticalOptions="Center">
+                                        <Border BackgroundColor="#FEE2E2" StrokeThickness="0" WidthRequest="50" HeightRequest="70" VerticalOptions="Center"
+                                                IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:FleetManagementViewModel}}, Path=IsAdmin}">
                                             <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
                                             <ImageButton Source="trash.svg"
                                                          HeightRequest="24" WidthRequest="24" BackgroundColor="Transparent"
@@ -241,7 +243,8 @@
                 FontAttributes="Bold"
                 CornerRadius="12"
                 HeightRequest="55"
-                Margin="20,10,20,15"/>
+                Margin="20,10,20,15"
+                IsVisible="{Binding IsAdmin}"/>
 
         <controls:BottomNavBar Grid.Row="4" SelectedTab="List"/>
 

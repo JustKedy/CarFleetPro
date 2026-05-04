@@ -22,6 +22,10 @@ namespace CarFleetPro.Mobile.ViewModels
         [ObservableProperty]
         public partial bool IsLoading { get; set; } = true;
 
+        [ObservableProperty]
+        public partial bool IsAdmin { get; set; }
+
+
         
         [ObservableProperty]
         public partial string SeciliFiltre { get; set; } = "Tümü";
@@ -37,6 +41,8 @@ namespace CarFleetPro.Mobile.ViewModels
             IsLoading = true;
             try
             {
+                IsAdmin = await SessionManager.IsAdminAsync();
+
                 var gelenAraclar = await _apiService.GetVehiclesAsync(forceRefresh);
                 if (gelenAraclar != null)
                 {

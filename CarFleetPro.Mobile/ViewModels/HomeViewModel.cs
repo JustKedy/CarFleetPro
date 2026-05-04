@@ -34,8 +34,8 @@ namespace CarFleetPro.Mobile.ViewModels
         [ObservableProperty] public partial double BarGenisligi { get; set; } = 0;
         [ObservableProperty] public partial int KiralamaSayisi { get; set; }
 
-        
         [ObservableProperty] public partial bool IsLoading { get; set; } = true;
+        [ObservableProperty] public partial bool IsAdmin { get; set; }
 
         public HomeViewModel(ApiService apiService)
         {
@@ -49,6 +49,7 @@ namespace CarFleetPro.Mobile.ViewModels
             if (ToplamAracSayisi == 0) IsLoading = true;
             try
             {
+                IsAdmin = await SessionManager.IsAdminAsync();
                 var vehicles = await _apiService.GetVehiclesAsync();
 
                 if (vehicles == null || vehicles.Count == 0) return;

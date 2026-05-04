@@ -245,12 +245,22 @@ namespace CarFleetPro.Mobile.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var result = System.Text.Json.JsonSerializer.Deserialize<AuthResponse>(
-                        content, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    // Alper'in dönüş formatı: { token, expiration, user: { fullName, email, role } }
+                    // JSON element okuyarak User objesini alabiliriz veya jsonSerializer kullanabiliriz
+                    var resultStr = await response.Content.ReadAsStringAsync();
+                    var jsonObj = System.Text.Json.JsonDocument.Parse(resultStr);
+                    var info = jsonObj.RootElement;
+                    
+                    var token = info.GetProperty("token").GetString();
+                    
+                    // User property içindeki alanları alma
+                    var userObj = info.GetProperty("user");
+                    var role = userObj.GetProperty("role").GetString() ?? "Personel";
+                    var fullName = userObj.GetProperty("fullName").GetString() ?? "";
 
-                    if (result?.Token != null)
+                    if (!string.IsNullOrEmpty(token))
                     {
-                        await SecureStorage.Default.SetAsync("jwt_token", result.Token);
+                        await SessionManager.SaveSessionAsync(token, role, fullName);
                         return (true, "Giriş başarılı!");
                     }
                     return (false, $"Sunucudan geçersiz yanıt. İçerik: {content}");
@@ -474,21 +484,54 @@ namespace CarFleetPro.Mobile.Services
                 return new List<AlertInfo>();
             }
         }
-    }
+    // ----------------------------------------------------
+    // User / Staff Endpoint Metodları
+    // ----------------------------------------------------
+    
+    public async Task<List<UserDto>> GetUsersAsync()
+    {
+        var token = await SecureStorage.Default.GetAsync("jwt_token");
+        if (string.IsNullOrEmpty(token)) return new List<UserDto>();
 
-    
-    
-    
+        _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        var response = await _httpClient.GetAsync($"{BaseUrl}/auth/users");
+
+        if (response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            var options = new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            return System.Text.Json.JsonSerializer.Deserialize<List<UserDto>>(content, options) ?? new List<UserDto>();
+        }
+        return new List<UserDto>();
+    }
+}
 
     public class AuthResponse
     {
         public string Token { get; set; } = string.Empty;
         public DateTime? Expiration { get; set; }
+        public AuthUserResponse? User { get; set; }
+    }
+
+    public class AuthUserResponse
+    {
+        public string FullName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Role { get; set; } = string.Empty;
     }
 
     public class ForgotPasswordResponse
     {
         public string Message { get; set; } = string.Empty;
         public string? Token { get; set; }
+    }
+
+    public class UserDto
+    {
+        public string Id { get; set; } = string.Empty;
+        public string FullName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Role { get; set; } = string.Empty;
+        public bool IsActive { get; set; }
     }
 }

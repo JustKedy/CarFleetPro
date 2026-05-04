@@ -12,6 +12,7 @@ namespace CarFleetPro.Mobile.Models
         public int Yas { get; set; }
         public int Km { get; set; }
         public string Durum { get; set; } = string.Empty; 
+        public decimal DailyRate { get; set; }
         public string? KiralayanKisi { get; set; }
         public decimal? KiralamaFiyati { get; set; }
         public string? KiralamaSuresi { get; set; }

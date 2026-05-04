@@ -161,7 +161,10 @@ namespace CarFleetPro.Mobile.Views
                 HorsePower = int.TryParse(HpEntry.Text, out int hp) ? hp : 0,
                 Color = RenkPicker.SelectedItem?.ToString(),
                 Branch = "Merkez Şube",
-                Status = durumId
+                Status = durumId,
+                DailyRate = decimal.TryParse(FiyatEntry.Text?.Replace(".", ","), out decimal fiyat) ? fiyat : 0,
+                InsuranceExpiry = SigortaDatePicker.Date ?? DateTime.Now.AddYears(1),
+                InspectionExpiry = MuayeneDatePicker.Date ?? DateTime.Now.AddYears(1)
             };
 
             

@@ -20,5 +20,7 @@ namespace CarFleetPro.Mobile.Models
         public string? Color { get; set; }
         public string Branch { get; set; } = "Merkez Şube";
         public int Status { get; set; } = 0; 
+        public DateTime InsuranceExpiry { get; set; }
+        public DateTime InspectionExpiry { get; set; }
     }
 }

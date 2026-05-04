@@ -20,8 +20,8 @@
                 </Grid>
 
                 <VerticalStackLayout Grid.Row="1" Spacing="5" Margin="0,15,0,0">
-                    <Label Text="NISSAN QASHQAI" TextColor="White" FontSize="32" FontAttributes="Bold" HorizontalOptions="Center"/>
-                    <Label Text="55 BFR 051 | 2023 | DİZEL | OTOMATİK" TextColor="White" FontSize="14" HorizontalOptions="Center" Opacity="0.8"/>
+                    <Label x:Name="VehicleNameLabel" Text="-" TextColor="White" FontSize="32" FontAttributes="Bold" HorizontalOptions="Center"/>
+                    <Label x:Name="VehiclePlateLabel" Text="-" TextColor="White" FontSize="14" HorizontalOptions="Center" Opacity="0.8"/>
 
                     <Image Source="car_placeholder.png" Aspect="AspectFit" HeightRequest="140" HorizontalOptions="Center" Margin="0,10,0,0"/>
                 </VerticalStackLayout>
@@ -83,7 +83,7 @@
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="10"/>
                             </Border.StrokeShape>
-                            <DatePicker Format="dd.MM.yyyy" TextColor="#1F2937"/>
+                            <DatePicker x:Name="StartDatePicker" Format="dd.MM.yyyy" TextColor="#1F2937" DateSelected="OnCalculateTotal"/>
                         </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="1" Spacing="8">
@@ -92,7 +92,7 @@
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="10"/>
                             </Border.StrokeShape>
-                            <DatePicker Format="dd.MM.yyyy" TextColor="#1F2937"/>
+                            <DatePicker x:Name="EndDatePicker" Format="dd.MM.yyyy" TextColor="#1F2937" DateSelected="OnCalculateTotal"/>
                         </Border>
                     </VerticalStackLayout>
                 </Grid>
@@ -113,7 +113,7 @@
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="10"/>
                             </Border.StrokeShape>
-                            <Entry x:Name="DepozitoEntry" Placeholder="Örn: 2000" Keyboard="Numeric" TextColor="#1F2937"/>
+                            <Entry x:Name="DepozitoEntry" Placeholder="Örn: 2000" Keyboard="Numeric" TextColor="#1F2937" TextChanged="OnCalculateTotal"/>
                         </Border>
                     </VerticalStackLayout>
                 </Grid>

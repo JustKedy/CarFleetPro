@@ -49,8 +49,8 @@
                                 <Image Source="user_black.svg" HeightRequest="35" WidthRequest="35" HorizontalOptions="Center" VerticalOptions="Center"/>
                             </Border>
                             <VerticalStackLayout Grid.Column="1" Margin="15,0,0,0" VerticalOptions="Center">
-                                <Label Text="Kadir Gürbüz" FontAttributes="Bold" FontSize="18" TextColor="#1F2937" />
-                                <Label Text="Yetki: Sistem Yöneticisi" FontSize="12" TextColor="#6B7280" />
+                                <Label x:Name="ProfileNameLabel" Text="..." FontAttributes="Bold" FontSize="18" TextColor="#1F2937" />
+                                <Label x:Name="ProfileRoleLabel" Text="Yetki: Yükleniyor" FontSize="12" TextColor="#6B7280" />
                             </VerticalStackLayout>
                             <Image Grid.Column="2" Source="arrow_right_black.svg" HeightRequest="16" WidthRequest="16" VerticalOptions="Center"/>
                         </Grid>

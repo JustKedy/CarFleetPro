@@ -80,7 +80,8 @@
                             </VerticalStackLayout>
                         </Border>
 
-                        <Border Grid.Row="1" Grid.Column="1" BackgroundColor="White" Padding="15" StrokeThickness="0">
+                        <Border Grid.Row="1" Grid.Column="1" BackgroundColor="White" Padding="15" StrokeThickness="0"
+                                IsVisible="{Binding IsAdmin}">
                             <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
                             <Border.Shadow><Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.1"/></Border.Shadow>
                             <VerticalStackLayout>
@@ -126,7 +127,8 @@
                     </Border>
 
                     
-                    <Border BackgroundColor="White" Padding="20" Margin="20,5,20,10" StrokeThickness="0">
+                    <Border BackgroundColor="White" Padding="20" Margin="20,5,20,10" StrokeThickness="0"
+                            IsVisible="{Binding IsAdmin}">
                         <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
                         <Border.Shadow><Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.1"/></Border.Shadow>
                         <VerticalStackLayout Spacing="15">

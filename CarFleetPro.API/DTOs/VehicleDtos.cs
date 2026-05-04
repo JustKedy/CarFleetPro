@@ -10,6 +10,7 @@ namespace CarFleetPro.API.DTOs
         public int Yas { get; set; }
         public int Km { get; set; }
         public string Durum { get; set; } = string.Empty;
+        public decimal DailyRate { get; set; }
         public string? KiralayanKisi { get; set; }
         public decimal? KiralamaFiyati { get; set; }
         public string? KiralamaSuresi { get; set; }
@@ -34,6 +35,8 @@ namespace CarFleetPro.API.DTOs
         public string? Color { get; set; }
         public string? Branch { get; set; }
         public Models.VehicleStatus Status { get; set; }
+        public DateTime InsuranceExpiry { get; set; } 
+        public DateTime InspectionExpiry { get; set; } 
     }
 
     

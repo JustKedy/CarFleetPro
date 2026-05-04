@@ -12,8 +12,8 @@ namespace CarFleetPro.Mobile.ViewModels
 
         public ObservableCollection<Vehicle> AracListesi { get; set; } = [];
 
-        
         [ObservableProperty] public partial bool IsLoading { get; set; } = true;
+        [ObservableProperty] public partial bool IsAdmin { get; set; }
 
         
         public GarageViewModel(ApiService apiService)
@@ -27,6 +27,7 @@ namespace CarFleetPro.Mobile.ViewModels
             IsLoading = true;
             try
             {
+                IsAdmin = await SessionManager.IsAdminAsync();
                 var apiVehicles = await _apiService.GetVehiclesAsync(forceRefresh);
 
                 if (apiVehicles == null || apiVehicles.Count == 0)
