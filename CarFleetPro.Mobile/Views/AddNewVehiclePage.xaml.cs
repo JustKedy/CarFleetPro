@@ -174,7 +174,7 @@ namespace CarFleetPro.Mobile.Views
                 
                 var (success, message) = await _apiService.UpdateVehicleAsync(_duzenlenenArac.Id, request);
 
-                if (saveBtn != null) saveBtn.IsEnabled = true;
+                if (sender is Button btn) btn.IsEnabled = true;
 
                 if (success)
                 {

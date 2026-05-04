@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:CarFleetPro.Mobile.Controls"
+             x:Class="CarFleetPro.Mobile.Views.InvoicePage"
+             BackgroundColor="#F3F4F6"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="110, Auto, *, 75">
+
+        <Border Grid.Row="0" BackgroundColor="#0A1128" StrokeThickness="0">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="0, 0, 20, 20" />
+            </Border.StrokeShape>
+            <Grid ColumnDefinitions="30, *, 30" Padding="20,0">
+                <ImageButton Grid.Column="0" Source="arrow_left_white.svg" Clicked="OnBackClicked" HeightRequest="25" WidthRequest="25" VerticalOptions="Center"/>
+                <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center" Spacing="5">
+                    <HorizontalStackLayout HorizontalOptions="Center" Spacing="0">
+                        <Label Text="CARFLEET" FontSize="14" TextColor="White" FontAttributes="Bold" />
+                        <Label Text="PRO" FontSize="14" TextColor="#3B82F6" FontAttributes="Bold" />
+                    </HorizontalStackLayout>
+                    <Label Text="ÖDEMELER VE FATURALAR" FontSize="20" TextColor="White" HorizontalOptions="Center" Margin="0,5,0,0"/>
+                </VerticalStackLayout>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*, Auto" Padding="20,15" ColumnSpacing="10">
+            <Border Grid.Column="0" Stroke="#D1D5DB" StrokeThickness="1" BackgroundColor="White" HeightRequest="50">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <Entry Placeholder="Sözleşme No veya İsim Ara..." TextColor="#1F2937" PlaceholderColor="#9CA3AF" Margin="15,0" VerticalOptions="Center" />
+            </Border>
+            <Button Grid.Column="1" Text="TÜMÜ" BackgroundColor="#E5E7EB" TextColor="#1F2937" FontAttributes="Bold" CornerRadius="12" HeightRequest="50" Padding="15,0"/>
+        </Grid>
+
+        <CollectionView x:Name="InvoiceList" Grid.Row="2" Margin="20,0" VerticalScrollBarVisibility="Never" SelectionMode="Single">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border BackgroundColor="White" Margin="0,5" Padding="15" StrokeThickness="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="15" />
+                        </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.05"/>
+                        </Border.Shadow>
+                        <Grid RowDefinitions="Auto, Auto" RowSpacing="10">
+                            <!-- Başlık Satırı -->
+                            <Grid Grid.Row="0" ColumnDefinitions="*, Auto">
+                                <VerticalStackLayout Grid.Column="0">
+                                    <Label Text="Fatura No: INV-2026-001" FontAttributes="Bold" TextColor="#1F2937" FontSize="14" />
+                                    <Label Text="Sözleşme: #SZL-001" FontSize="12" TextColor="#6B7280" />
+                                </VerticalStackLayout>
+                                <Border Grid.Column="1" BackgroundColor="#D1FAE5" Padding="10,5" StrokeThickness="0" VerticalOptions="Start">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="8" />
+                                    </Border.StrokeShape>
+                                    <Label Text="ÖDENDİ" TextColor="#065F46" FontSize="10" FontAttributes="Bold"/>
+                                </Border>
+                            </Grid>
+                            
+                            <!-- Detay Satırı -->
+                            <Grid Grid.Row="1" ColumnDefinitions="*, Auto" VerticalOptions="End">
+                                <VerticalStackLayout Grid.Column="0">
+                                    <Label Text="Tahsilat Tarihi: 01.05.2026" FontSize="11" TextColor="#4B5563" />
+                                    <Label Text="Tutar: 15.000 TL" FontSize="14" TextColor="#1F2937" FontAttributes="Bold" />
+                                </VerticalStackLayout>
+                                <Button Grid.Column="1" Text="EKSTRE GÖRÜNTÜLE" BackgroundColor="#F3F4F6" TextColor="#3B82F6" FontSize="10" FontAttributes="Bold" HeightRequest="30" Padding="10,0" CornerRadius="6" VerticalOptions="End"/>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <controls:BottomNavBar Grid.Row="3" SelectedTab="Home" />
+
+    </Grid>
+</ContentPage>

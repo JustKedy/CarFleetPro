@@ -27,7 +27,23 @@ public partial class SettingsPage : ContentPage
     {
         if (Navigation != null)
         {
-            await Navigation.PushAsync(new AdminRegistrationPage());
+            await Navigation.PushAsync(new StaffManagementPage());
+        }
+    }
+
+    private async void OnInvoiceTapped(object? sender, EventArgs e)
+    {
+        if (Navigation != null)
+        {
+            await Navigation.PushAsync(new InvoicePage());
+        }
+    }
+
+    private async void OnManageNotificationsClicked(object? sender, EventArgs e)
+    {
+        if (Navigation != null)
+        {
+            await Navigation.PushAsync(new NotificationManagementPage());
         }
     }
 
