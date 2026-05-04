@@ -60,5 +60,27 @@ namespace CarFleetPro.Mobile.Views
                 _viewModel.SilCommand.Execute(secilenArac);
             }
         }
+
+        private async void OnBakimKayitlariClicked(object? sender, EventArgs e)
+        {
+            if (sender is BindableObject bindable && bindable.BindingContext is Vehicle secilenArac)
+            {
+                if (Navigation != null)
+                {
+                    await Navigation.PushAsync(new VehicleMaintenancePage());
+                }
+            }
+        }
+
+        private async void OnHasarKayitlariClicked(object? sender, EventArgs e)
+        {
+            if (sender is BindableObject bindable && bindable.BindingContext is Vehicle secilenArac)
+            {
+                if (Navigation != null)
+                {
+                    await Navigation.PushAsync(new DamageRecordPage());
+                }
+            }
+        }
     }
 }

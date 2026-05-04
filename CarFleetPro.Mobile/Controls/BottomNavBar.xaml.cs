@@ -13,6 +13,15 @@ public partial class BottomNavBar : ContentView
     public static readonly BindableProperty SelectedTabProperty =
         BindableProperty.Create(nameof(SelectedTab), typeof(string), typeof(BottomNavBar), "Home", propertyChanged: OnSelectedTabChanged);
 
+    public static readonly BindableProperty IsAdminProperty =
+        BindableProperty.Create(nameof(IsAdmin), typeof(bool), typeof(BottomNavBar), false, propertyChanged: OnRoleChanged);
+
+    public bool IsAdmin
+    {
+        get => (bool)GetValue(IsAdminProperty);
+        set => SetValue(IsAdminProperty, value);
+    }
+
     public string SelectedTab
     {
         get => (string)GetValue(SelectedTabProperty);
@@ -31,6 +40,43 @@ public partial class BottomNavBar : ContentView
         if (bindable is BottomNavBar control)
         {
             control.UpdateUI((string)newValue);
+        }
+    }
+
+    private static void OnRoleChanged(BindableObject bindable, object oldValue, object newValue)
+    {
+        if (bindable is BottomNavBar control)
+        {
+            control.ApplyRoleVisibility();
+        }
+    }
+
+    private void ApplyRoleVisibility()
+    {
+        // Örnek: Personel yetkisinde "List" sekmesi gizlenir.
+        // Yunus buradaki IsVisible mantığını kendi Role/Auth sistemine göre ayarlayabilir.
+        ListBorder.IsVisible = IsAdmin;
+        
+        // Eğer List gizlenirse grid oranları değişmeli
+        if (!IsAdmin)
+        {
+            NavGrid.ColumnDefinitions = new ColumnDefinitionCollection
+            {
+                new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                new ColumnDefinition { Width = new GridLength(0, GridUnitType.Absolute) },
+                new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }
+            };
+        }
+        else
+        {
+            NavGrid.ColumnDefinitions = new ColumnDefinitionCollection
+            {
+                new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }
+            };
         }
     }
 
@@ -78,14 +124,17 @@ public partial class BottomNavBar : ContentView
     // --- GERÇEK SÜZÜLME/SÜRÜKLENME MOTORU ---
     private async void SlideIndicator()
     {
-        double tabWidth = NavGrid.Width / 4;
+        int totalVisibleTabs = IsAdmin ? 4 : 3;
+        if (totalVisibleTabs == 0) return;
+        
+        double tabWidth = NavGrid.Width / totalVisibleTabs;
 
         // 1. Önce çerçeveyi hafızadaki 'eski' yerine ışınla (kullanıcı görmez)
-        double startX = _lastTabIndex * tabWidth;
+        double startX = GetTabXPosition(_lastTabIndex, tabWidth);
         SlidingIndicator.TranslationX = startX;
 
         // 2. Şimdi yeni hedefe doğru yağ gibi sürükle
-        double targetX = _currentTabIndex * tabWidth;
+        double targetX = GetTabXPosition(_currentTabIndex, tabWidth);
 
         // Eğer zaten aynı yerdeyse animasyon yapma
         if (Math.Abs(startX - targetX) < 1) return;
@@ -95,6 +144,17 @@ public partial class BottomNavBar : ContentView
 
         // 3. Hafızayı güncelle ki bir sonraki geçişte nereden başlayacağını bilsin
         _lastTabIndex = _currentTabIndex;
+    }
+
+    private double GetTabXPosition(int index, double tabWidth)
+    {
+        // Eğer personel ise ve list sekmesi (index 2) yoksa, 3. sekme (index 3) aslında 2. sıraya kaymıştır.
+        if (!IsAdmin)
+        {
+            if (index == 3) return 2 * tabWidth; // Settings
+            if (index == 2) return 1 * tabWidth; // List hidden, defaults to previous
+        }
+        return index * tabWidth;
     }
 
     private static async Task AnimateIcon(Border border)

@@ -70,4 +70,26 @@ public partial class GaragePage : ContentPage
             }
         }
     }
+
+    private async void OnKiralaClicked(object? sender, EventArgs e)
+    {
+        if (sender is Button btn && btn.BindingContext is Models.Vehicle)
+        {
+            if (Navigation != null)
+            {
+                await Navigation.PushAsync(new RentalFormPage());
+            }
+        }
+    }
+
+    private async void OnBakimClicked(object? sender, EventArgs e)
+    {
+        if (sender is Button btn && btn.BindingContext is Models.Vehicle)
+        {
+            if (Navigation != null)
+            {
+                await Navigation.PushAsync(new VehicleMaintenancePage());
+            }
+        }
+    }
 }
