@@ -67,11 +67,14 @@
 
                                 <!-- Durum satırı  -->
                                 <Grid ColumnDefinitions="Auto,*,Auto" Padding="5,0" Margin="0,5">
-                                    <Grid.GestureRecognizers>
-                                        <TapGestureRecognizer Tapped="OnAracTapped" />
-                                    </Grid.GestureRecognizers>
 
                                     <HorizontalStackLayout Grid.Column="0" Spacing="6" VerticalOptions="Center">
+                                        <HorizontalStackLayout.GestureRecognizers>
+                                            <TapGestureRecognizer 
+                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:GarageViewModel}}, Path=DurumDegistirCommand}" 
+                CommandParameter="{Binding .}" />
+                                        </HorizontalStackLayout.GestureRecognizers>
+
                                         <Ellipse WidthRequest="16" HeightRequest="16" VerticalOptions="Center">
                                             <Ellipse.Triggers>
                                                 <DataTrigger TargetType="Ellipse" Binding="{Binding Durum}" Value="MÜSAİT">
@@ -85,13 +88,16 @@
                                                 </DataTrigger>
                                             </Ellipse.Triggers>
                                         </Ellipse>
-                                        <Label Text="{Binding Durum}" TextColor="#1F2937"
-                                               FontSize="15" FontAttributes="Bold" VerticalOptions="Center"/>
+
+                                        <Label Text="{Binding Durum}" TextColor="#1F2937" FontSize="15" FontAttributes="Bold" VerticalOptions="Center"/>
                                     </HorizontalStackLayout>
 
-                                    <Image Grid.Column="2" Source="arrowdown.svg"
-                                           HeightRequest="20" WidthRequest="20"
-                                           VerticalOptions="Center" HorizontalOptions="End">
+                                    <Image Grid.Column="2" Source="arrowdown.svg" HeightRequest="20" WidthRequest="20" VerticalOptions="Center" HorizontalOptions="End">
+                                        <Image.GestureRecognizers>
+                                            <TapGestureRecognizer 
+                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:GarageViewModel}}, Path=DetayAcKapaCommand}" 
+                CommandParameter="{Binding .}" />
+                                        </Image.GestureRecognizers>
                                         <Image.Triggers>
                                             <DataTrigger TargetType="Image" Binding="{Binding IsExpanded}" Value="True">
                                                 <Setter Property="Rotation" Value="180"/>

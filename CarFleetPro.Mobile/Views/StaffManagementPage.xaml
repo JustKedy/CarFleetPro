@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:CarFleetPro.Mobile.Controls"
+             x:Class="CarFleetPro.Mobile.Views.StaffManagementPage"
+             BackgroundColor="#F3F4F6"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="110, Auto, *, 75">
+
+        <Border Grid.Row="0" BackgroundColor="#0A1128" StrokeThickness="0">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="0, 0, 20, 20" />
+            </Border.StrokeShape>
+            <Grid ColumnDefinitions="30, *, 30" Padding="20,0">
+                <ImageButton Grid.Column="0" Source="arrow_left_white.svg" Clicked="OnBackClicked" HeightRequest="25" WidthRequest="25" VerticalOptions="Center"/>
+                <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center" Spacing="5">
+                    <HorizontalStackLayout HorizontalOptions="Center" Spacing="0">
+                        <Label Text="CARFLEET" FontSize="14" TextColor="White" FontAttributes="Bold" />
+                        <Label Text="PRO" FontSize="14" TextColor="#3B82F6" FontAttributes="Bold" />
+                    </HorizontalStackLayout>
+                    <Label Text="PERSONEL YÖNETİMİ" FontSize="26" TextColor="White" HorizontalOptions="Center" Margin="0,5,0,0"/>
+                </VerticalStackLayout>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*, Auto" Padding="20,15" ColumnSpacing="10">
+            <Border Grid.Column="0" Stroke="#D1D5DB" StrokeThickness="1" BackgroundColor="White" HeightRequest="50">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <Entry Placeholder="Personel Ara (İsim, Görev)..." TextColor="#1F2937" PlaceholderColor="#9CA3AF" Margin="15,0" VerticalOptions="Center" />
+            </Border>
+
+            <Button Grid.Column="1" Text="YENİ EKLE" Clicked="OnAddNewStaffClicked" BackgroundColor="#3B82F6" TextColor="White" FontAttributes="Bold" CornerRadius="12" HeightRequest="50" Padding="15,0"/>
+        </Grid>
+
+        <CollectionView x:Name="StaffList" Grid.Row="2" Margin="20,0" VerticalScrollBarVisibility="Never" SelectionMode="Single">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border BackgroundColor="White" Margin="0,5" Padding="15" StrokeThickness="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="15" />
+                        </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.05"/>
+                        </Border.Shadow>
+                        <Grid ColumnDefinitions="Auto, *, Auto, Auto" ColumnSpacing="10">
+                            <!-- Avatar -->
+                            <Border Grid.Column="0" WidthRequest="45" HeightRequest="45" BackgroundColor="#DBEAFE" VerticalOptions="Center" StrokeThickness="0">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="22.5" />
+                                </Border.StrokeShape>
+                                <Label Text="P" TextColor="#1E40AF" HorizontalOptions="Center" VerticalOptions="Center" FontAttributes="Bold" />
+                            </Border>
+
+                            <!-- Detaylar -->
+                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                <Label Text="Personel Adı" FontAttributes="Bold" TextColor="#1F2937" FontSize="16" />
+                                <Label Text="Admin / Yönetici" FontSize="12" TextColor="#6B7280" />
+                            </VerticalStackLayout>
+
+                            <!-- Düzenle Butonu -->
+                            <ImageButton Grid.Column="2" Source="edit_icon.svg" BackgroundColor="Transparent" HeightRequest="24" WidthRequest="24" VerticalOptions="Center"/>
+                            
+                            <!-- Sil Butonu -->
+                            <ImageButton Grid.Column="3" Source="trash_icon.svg" BackgroundColor="Transparent" HeightRequest="24" WidthRequest="24" VerticalOptions="Center"/>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <controls:BottomNavBar Grid.Row="3" SelectedTab="Settings" />
+
+    </Grid>
+</ContentPage>

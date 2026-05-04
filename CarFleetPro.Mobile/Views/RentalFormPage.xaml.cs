@@ -1,3 +1,7 @@
+using Microsoft.Maui.Controls;
+using System;
+using System.Threading.Tasks;
+
 namespace CarFleetPro.Mobile.Views;
 
 public partial class RentalFormPage : ContentPage
@@ -5,31 +9,30 @@ public partial class RentalFormPage : ContentPage
     public RentalFormPage()
     {
         InitializeComponent();
-        
+    }
 
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        // Sayfa açılırken yumuşak bir geçiş efekti
+        this.Opacity = 0;
+        await this.FadeToAsync(1, 400, Easing.CubicOut);
     }
 
     private async void OnBackClicked(object? sender, EventArgs e)
     {
-        if (Navigation != null)
-        {
-            await Navigation.PopAsync();
-        }
-    }
-
-    private async void OnCancelClicked(object? sender, EventArgs e)
-    {
-        // Bir önceki sayfaya (Detay Sayfası) geri fırlat
         await Navigation.PopAsync();
     }
 
-    private async void OnRentCompleteClicked(object? sender, EventArgs e)
+    private async void OnCompleteRentalClicked(object? sender, EventArgs e)
     {
-        // YUNUS NOT: Kiralama tamamlama işlemi API entegrasyonu buraya gerçekleştirilecek.
-    }
+        // ####### YUNUS İÇİN NOT #######
+        // Kanka buraya kiralama kaydını veritabanına atacak POST isteği gelecek.
+        // Formdaki verileri toplayıp ApiService.CreateRentalAsync(request) demelisin.
+        // Kayıt başarılıysa kullanıcıyı Dashboard'a veya Garaj'a geri yönlendireceğiz.
+        // ##############################
 
-    // YUNUS NOT: "TAMAMLA" butonu tetiklendiğinde;
-    // 1. Kiralama kaydı oluşturulacak (POST /Rentals)
-    // 2. Aracın durumu 'Dolu' (StatusId = 2) olarak güncellenecek
-    // 3. Başarılı ise ana ekrana yönlendirilecek.
+        await DisplayAlertAsync("Bilgi", "Kiralama işlemi başarılı bir şekilde kaydedildi.", "Tamam");
+        await Navigation.PopAsync();
+    }
 }

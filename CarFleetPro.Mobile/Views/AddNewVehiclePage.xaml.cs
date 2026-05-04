@@ -173,7 +173,7 @@ namespace CarFleetPro.Mobile.Views
                 // VAR OLAN ARACI GÜNCELLE
                 var (success, message) = await _apiService.UpdateVehicleAsync(_duzenlenenArac.Id, request);
 
-                if (saveButton != null) saveButton.IsEnabled = true;
+                if (sender is Button btn) btn.IsEnabled = true;
 
                 if (success)
                 {
