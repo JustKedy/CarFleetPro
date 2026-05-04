@@ -31,4 +31,16 @@ namespace CarFleetPro.API.DTOs
         public string Token { get; set; } = string.Empty;
         public string NewPassword { get; set; } = string.Empty;
     }
-}
+
+    // Madde 2 — Admin kullanıcı yönetimi DTO'ları
+    public class UpdateUserRoleDto
+    {
+        /// <summary>Admin veya Agent gibi roller</summary>
+        public string Role { get; set; } = string.Empty;
+    }
+
+    public class UpdateUserStatusDto
+    {
+        public bool IsActive { get; set; }
+    }
+}

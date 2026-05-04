@@ -4,79 +4,33 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace CarFleetPro.API.Migrations
 {
-    
+    /// <inheritdoc />
     public partial class AddNotificationSettings : Migration
     {
-        
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "Color",
-                table: "Vehicles",
-                type: "text",
-                nullable: true);
+            // Bu kolonlar manuel SQL ile zaten eklenmiş olabilir, IF NOT EXISTS ile güvenli ekle
+            migrationBuilder.Sql("ALTER TABLE \"Vehicles\" ADD COLUMN IF NOT EXISTS \"Color\" text;");
+            migrationBuilder.Sql("ALTER TABLE \"Vehicles\" ADD COLUMN IF NOT EXISTS \"HorsePower\" integer NOT NULL DEFAULT 0;");
+            migrationBuilder.Sql("ALTER TABLE \"Vehicles\" ADD COLUMN IF NOT EXISTS \"ImageUrl\" text;");
+            migrationBuilder.Sql("ALTER TABLE \"Vehicles\" ADD COLUMN IF NOT EXISTS \"Branch\" text NOT NULL DEFAULT 'Merkez Şube';");
 
-            migrationBuilder.AddColumn<int>(
-                name: "HorsePower",
-                table: "Vehicles",
-                type: "integer",
-                nullable: false,
-                defaultValue: 0);
-
-            migrationBuilder.AddColumn<string>(
-                name: "ImageUrl",
-                table: "Vehicles",
-                type: "text",
-                nullable: true);
-
-            migrationBuilder.AddColumn<bool>(
-                name: "InstantAvailabilityAlerts",
-                table: "AspNetUsers",
-                type: "boolean",
-                nullable: false,
-                defaultValue: false);
-
-            migrationBuilder.AddColumn<bool>(
-                name: "MaintenanceAlerts",
-                table: "AspNetUsers",
-                type: "boolean",
-                nullable: false,
-                defaultValue: false);
-
-            migrationBuilder.AddColumn<bool>(
-                name: "RentalExpiryAlerts",
-                table: "AspNetUsers",
-                type: "boolean",
-                nullable: false,
-                defaultValue: false);
+            migrationBuilder.Sql("ALTER TABLE \"AspNetUsers\" ADD COLUMN IF NOT EXISTS \"InstantAvailabilityAlerts\" boolean NOT NULL DEFAULT true;");
+            migrationBuilder.Sql("ALTER TABLE \"AspNetUsers\" ADD COLUMN IF NOT EXISTS \"MaintenanceAlerts\" boolean NOT NULL DEFAULT true;");
+            migrationBuilder.Sql("ALTER TABLE \"AspNetUsers\" ADD COLUMN IF NOT EXISTS \"RentalExpiryAlerts\" boolean NOT NULL DEFAULT true;");
         }
 
-        
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "Color",
-                table: "Vehicles");
-
-            migrationBuilder.DropColumn(
-                name: "HorsePower",
-                table: "Vehicles");
-
-            migrationBuilder.DropColumn(
-                name: "ImageUrl",
-                table: "Vehicles");
-
-            migrationBuilder.DropColumn(
-                name: "InstantAvailabilityAlerts",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropColumn(
-                name: "MaintenanceAlerts",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropColumn(
-                name: "RentalExpiryAlerts",
-                table: "AspNetUsers");
+            migrationBuilder.DropColumn(name: "Color", table: "Vehicles");
+            migrationBuilder.DropColumn(name: "HorsePower", table: "Vehicles");
+            migrationBuilder.DropColumn(name: "ImageUrl", table: "Vehicles");
+            migrationBuilder.DropColumn(name: "Branch", table: "Vehicles");
+            migrationBuilder.DropColumn(name: "InstantAvailabilityAlerts", table: "AspNetUsers");
+            migrationBuilder.DropColumn(name: "MaintenanceAlerts", table: "AspNetUsers");
+            migrationBuilder.DropColumn(name: "RentalExpiryAlerts", table: "AspNetUsers");
         }
     }
 }

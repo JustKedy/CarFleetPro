@@ -245,5 +245,63 @@ namespace CarFleetPro.API.Controllers
 
             return Ok(new { message = "Şifreniz başarıyla sıfırlandı! Yeni şifrenizle giriş yapabilirsiniz." });
         }
+
+        // ─────────────────────────────────────────────────────
+        // Madde 2 — Admin: Kullanıcı / Personel Yönetimi
+        // ─────────────────────────────────────────────────────
+
+        // GET /api/auth/users — Tüm kullanıcıları listele (sadece Admin)
+        [HttpGet("users")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var users = _userManager.Users.ToList();
+            var result = users.Select(u => new
+            {
+                u.Id,
+                u.FullName,
+                u.Email,
+                u.PhoneNumber,
+                u.Role,
+                u.IsActive,
+                u.MaintenanceAlerts,
+                u.RentalExpiryAlerts,
+                u.InstantAvailabilityAlerts
+            });
+            return Ok(result);
+        }
+
+        // PUT /api/auth/users/{id}/role — Kullanıcı rolünü değiştir (Admin only)
+        [HttpPut("users/{id}/role")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateUserRole(string id, [FromBody] UpdateUserRoleDto dto)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null) return NotFound("Kullanıcı bulunamadı.");
+
+            user.Role = dto.Role;
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+                return BadRequest(string.Join(", ", result.Errors.Select(e => e.Description)));
+
+            return Ok(new { message = $"Kullanıcı rolü '{dto.Role}' olarak güncellendi." });
+        }
+
+        // PUT /api/auth/users/{id}/status — Kullanıcı aktif/pasif (Admin only)
+        [HttpPut("users/{id}/status")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateUserStatus(string id, [FromBody] UpdateUserStatusDto dto)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null) return NotFound("Kullanıcı bulunamadı.");
+
+            user.IsActive = dto.IsActive;
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+                return BadRequest(string.Join(", ", result.Errors.Select(e => e.Description)));
+
+            var statusText = dto.IsActive ? "aktif" : "pasif";
+            return Ok(new { message = $"Kullanıcı hesabı {statusText} yapıldı." });
+        }
     }
-}
+}
