@@ -16,8 +16,7 @@ public partial class RentalFormPage : ContentPage
         _apiService = new ApiService();
         _vehicle = vehicle;
 
-        
-        VehicleNameLabel.Text = $"{vehicle.Marka} {vehicle.Model}";
+        VehicleNameLabel.Text  = $"{vehicle.Marka} {vehicle.Model}";
         VehiclePlateLabel.Text = vehicle.Plaka;
     }
 
