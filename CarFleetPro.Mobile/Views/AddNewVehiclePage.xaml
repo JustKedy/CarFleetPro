@@ -121,6 +121,34 @@
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="8" />
                             </Border.StrokeShape>
+                            <Entry x:Name="FiyatEntry" Placeholder="Günlük Kiralama Fiyatı (₺)" Keyboard="Numeric" TextColor="#1F2937" PlaceholderColor="#9CA3AF" BackgroundColor="Transparent"/>
+                        </Border>
+
+                        <Grid ColumnDefinitions="*, *" ColumnSpacing="15">
+                            <VerticalStackLayout Grid.Column="0" Spacing="5">
+                                <Label Text="Sigorta Bitiş" FontSize="12" TextColor="#6B7280" />
+                                <Border Stroke="#E5E7EB" StrokeThickness="1" BackgroundColor="#F9FAFB" Padding="15,0" HeightRequest="50">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="8" />
+                                    </Border.StrokeShape>
+                                    <DatePicker x:Name="SigortaDatePicker" TextColor="#1F2937" BackgroundColor="Transparent" Format="dd/MM/yyyy" />
+                                </Border>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="1" Spacing="5">
+                                <Label Text="Muayene Bitiş" FontSize="12" TextColor="#6B7280" />
+                                <Border Stroke="#E5E7EB" StrokeThickness="1" BackgroundColor="#F9FAFB" Padding="15,0" HeightRequest="50">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="8" />
+                                    </Border.StrokeShape>
+                                    <DatePicker x:Name="MuayeneDatePicker" TextColor="#1F2937" BackgroundColor="Transparent" Format="dd/MM/yyyy" />
+                                </Border>
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <Border Stroke="#E5E7EB" StrokeThickness="1" BackgroundColor="#F9FAFB" Padding="15,0" HeightRequest="50">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8" />
+                            </Border.StrokeShape>
                             <Picker x:Name="DurumPicker" Title="Mevcut Durum Seçin" TextColor="#1F2937" TitleColor="#9CA3AF" BackgroundColor="Transparent" />
 
                         </Border>

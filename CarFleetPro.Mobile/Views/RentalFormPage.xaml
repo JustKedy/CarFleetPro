@@ -5,100 +5,149 @@
              BackgroundColor="#F3F4F6"
              Shell.NavBarIsVisible="False">
 
-    <Grid RowDefinitions="110, *, 80">
+    <Grid RowDefinitions="Auto, *">
 
-        <Border Grid.Row="0" BackgroundColor="#0A1128" StrokeThickness="0">
+        <Border Grid.Row="0" BackgroundColor="#0A1128" StrokeThickness="0" Padding="20,10,20,30">
             <Border.StrokeShape>
-                <RoundRectangle CornerRadius="0, 0, 20, 20" />
+                <RoundRectangle CornerRadius="0,0,30,30"/>
             </Border.StrokeShape>
-            <Grid ColumnDefinitions="30, *, 30" Padding="20,0">
-                <ImageButton Grid.Column="0" Source="arrow_left_white.svg" Clicked="OnBackClicked" HeightRequest="25" WidthRequest="25" VerticalOptions="Center"/>
-                <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center" Spacing="5">
-                    <HorizontalStackLayout HorizontalOptions="Center" Spacing="0">
-                        <Label Text="CARFLEET" FontSize="14" TextColor="White" FontAttributes="Bold" />
-                        <Label Text="PRO" FontSize="14" TextColor="#3B82F6" FontAttributes="Bold" />
-                    </HorizontalStackLayout>
-                    <Label Text="ARACI KİRALA" FontSize="26" TextColor="White" HorizontalOptions="Center" Margin="0,5,0,0"/>
+
+            <Grid RowDefinitions="Auto, Auto">
+                <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" HeightRequest="50">
+                    <ImageButton Grid.Column="0" Source="arrow_back_white.svg" Clicked="OnBackClicked" BackgroundColor="Transparent" WidthRequest="30" HeightRequest="30"/>
+                    <Label Grid.Column="1" Text="ARAÇ KİRALAMA" FontAttributes="Bold" TextColor="White" FontSize="18" HorizontalOptions="Center" VerticalOptions="Center"/>
+                    <Image Grid.Column="2" Source="notification_bell_white.svg" HeightRequest="25" WidthRequest="25"/>
+                </Grid>
+
+                <VerticalStackLayout Grid.Row="1" Spacing="5" Margin="0,15,0,0">
+                    <Label Text="NISSAN QASHQAI" TextColor="White" FontSize="32" FontAttributes="Bold" HorizontalOptions="Center"/>
+                    <Label Text="55 BFR 051 | 2023 | DİZEL | OTOMATİK" TextColor="White" FontSize="14" HorizontalOptions="Center" Opacity="0.8"/>
+
+                    <Image Source="car_placeholder.png" Aspect="AspectFit" HeightRequest="140" HorizontalOptions="Center" Margin="0,10,0,0"/>
                 </VerticalStackLayout>
             </Grid>
         </Border>
 
         <ScrollView Grid.Row="1" VerticalScrollBarVisibility="Never">
-            <VerticalStackLayout Padding="20" Spacing="20">
+            <VerticalStackLayout Padding="20" Spacing="25">
 
-                <Border BackgroundColor="#E0F2FE" Padding="15" Stroke="#3B82F6" StrokeThickness="1">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="12" />
-                    </Border.StrokeShape>
-                    <HorizontalStackLayout Spacing="15" VerticalOptions="Center">
-                        <Image Source="car.svg" HeightRequest="30" WidthRequest="30" />
-                        <VerticalStackLayout>
-                            <Label x:Name="VehicleNameLabel" Text="RENAULT CLIO" FontAttributes="Bold" TextColor="#0369A1"/>
-                            <Label x:Name="VehiclePlateLabel" Text="55 MS 061" FontSize="12" TextColor="#0369A1"/>
-                        </VerticalStackLayout>
-                    </HorizontalStackLayout>
-                </Border>
+                <Label Text="Müşteri Bilgileri" FontSize="18" TextColor="#1F2937" FontAttributes="Bold"/>
 
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Müşteri Seçimi" FontAttributes="Bold" TextColor="#1F2937" Margin="5,0"/>
-                    <Border Stroke="#D1D5DB" StrokeThickness="1" BackgroundColor="White" Padding="15,0" HeightRequest="55">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Kayıtlı Müşteri Seçin" TextColor="#6B7280" FontSize="12"/>
+                    <Border HeightRequest="50" Padding="15,0" StrokeThickness="1" Stroke="#D1D5DB" BackgroundColor="White">
                         <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="12" />
+                            <RoundRectangle CornerRadius="10"/>
                         </Border.StrokeShape>
-                        <Picker x:Name="CustomerPicker" Title="Kayıtlı Müşteriler" TextColor="#1F2937" TitleColor="#9CA3AF">
-                        </Picker>
+                        <Picker x:Name="MusteriPicker" Title="Müşteri Seçiniz" TextColor="#1F2937"/>
                     </Border>
                 </VerticalStackLayout>
 
                 <Grid ColumnDefinitions="*, *" ColumnSpacing="15">
-                    <VerticalStackLayout Grid.Column="0" Spacing="10">
-                        <Label Text="Teslim Tarihi" FontAttributes="Bold" TextColor="#1F2937" Margin="5,0"/>
-                        <Border Stroke="#D1D5DB" StrokeThickness="1" BackgroundColor="White" Padding="10,0" HeightRequest="55">
+                    <VerticalStackLayout Grid.Column="0" Spacing="8">
+                        <Label Text="Adı Soyadı" TextColor="#6B7280" FontSize="12"/>
+                        <Border HeightRequest="50" Padding="15,0" StrokeThickness="1" Stroke="#D1D5DB" BackgroundColor="White">
                             <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="12" />
+                                <RoundRectangle CornerRadius="10"/>
                             </Border.StrokeShape>
-                            <DatePicker x:Name="StartDatePicker" Format="dd/MM/yyyy" TextColor="#1F2937" />
+                            <Entry Placeholder="Ad Soyad" TextColor="#1F2937"/>
                         </Border>
                     </VerticalStackLayout>
-
-                    <VerticalStackLayout Grid.Column="1" Spacing="10">
-                        <Label Text="Dönüş Tarihi" FontAttributes="Bold" TextColor="#1F2937" Margin="5,0"/>
-                        <Border Stroke="#D1D5DB" StrokeThickness="1" BackgroundColor="White" Padding="10,0" HeightRequest="55">
+                    <VerticalStackLayout Grid.Column="1" Spacing="8">
+                        <Label Text="T.C. Kimlik" TextColor="#6B7280" FontSize="12"/>
+                        <Border HeightRequest="50" Padding="15,0" StrokeThickness="1" Stroke="#D1D5DB" BackgroundColor="White">
                             <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="12" />
+                                <RoundRectangle CornerRadius="10"/>
                             </Border.StrokeShape>
-                            <DatePicker x:Name="EndDatePicker" Format="dd/MM/yyyy" TextColor="#1F2937" />
+                            <Entry Placeholder="11 Haneli No" Keyboard="Numeric" TextColor="#1F2937"/>
                         </Border>
                     </VerticalStackLayout>
                 </Grid>
 
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Günlük Kiralama Bedeli (TL)" FontAttributes="Bold" TextColor="#1F2937" Margin="5,0"/>
-                    <Border Stroke="#D1D5DB" StrokeThickness="1" BackgroundColor="White" Padding="15,0" HeightRequest="55">
+                <Label Text="Kiralama Detayları" FontSize="18" TextColor="#1F2937" FontAttributes="Bold" Margin="0,10,0,0"/>
+
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Araç Seçimi" TextColor="#6B7280" FontSize="12"/>
+                    <Border HeightRequest="50" Padding="15,0" StrokeThickness="1" Stroke="#D1D5DB" BackgroundColor="White">
                         <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="12" />
+                            <RoundRectangle CornerRadius="10"/>
                         </Border.StrokeShape>
-                        <Entry x:Name="DepositEntry" Keyboard="Numeric" Placeholder="0.00" TextColor="#1F2937" VerticalOptions="Center"/>
+                        <Picker x:Name="AracPicker" Title="Müsait Araç Seçiniz" TextColor="#1F2937"/>
                     </Border>
                 </VerticalStackLayout>
 
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Kiralama Notları" FontAttributes="Bold" TextColor="#1F2937" Margin="5,0"/>
-                    <Border Stroke="#D1D5DB" StrokeThickness="1" BackgroundColor="White" Padding="15" HeightRequest="100">
+                <Grid ColumnDefinitions="*, *" ColumnSpacing="15">
+                    <VerticalStackLayout Grid.Column="0" Spacing="8">
+                        <Label Text="Teslim Tarihi" TextColor="#6B7280" FontSize="12"/>
+                        <Border HeightRequest="50" Padding="10,0" StrokeThickness="1" Stroke="#D1D5DB" BackgroundColor="White">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="10"/>
+                            </Border.StrokeShape>
+                            <DatePicker Format="dd.MM.yyyy" TextColor="#1F2937"/>
+                        </Border>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="1" Spacing="8">
+                        <Label Text="Dönüş Tarihi" TextColor="#6B7280" FontSize="12"/>
+                        <Border HeightRequest="50" Padding="10,0" StrokeThickness="1" Stroke="#D1D5DB" BackgroundColor="White">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="10"/>
+                            </Border.StrokeShape>
+                            <DatePicker Format="dd.MM.yyyy" TextColor="#1F2937"/>
+                        </Border>
+                    </VerticalStackLayout>
+                </Grid>
+
+                <Grid ColumnDefinitions="*, *" ColumnSpacing="15">
+                    <VerticalStackLayout Grid.Column="0" Spacing="8">
+                        <Label Text="Günlük Ücret (TL)" TextColor="#6B7280" FontSize="12"/>
+                        <Border HeightRequest="50" Padding="15,0" StrokeThickness="1" Stroke="#D1D5DB" BackgroundColor="White">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="10"/>
+                            </Border.StrokeShape>
+                            <Entry x:Name="GunlukUcretEntry" Placeholder="0.00" Keyboard="Numeric" TextColor="#1F2937" IsEnabled="False"/>
+                        </Border>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="1" Spacing="8">
+                        <Label Text="Depozito (TL)" TextColor="#6B7280" FontSize="12"/>
+                        <Border HeightRequest="50" Padding="15,0" StrokeThickness="1" Stroke="#D1D5DB" BackgroundColor="White">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="10"/>
+                            </Border.StrokeShape>
+                            <Entry x:Name="DepozitoEntry" Placeholder="Örn: 2000" Keyboard="Numeric" TextColor="#1F2937"/>
+                        </Border>
+                    </VerticalStackLayout>
+                </Grid>
+
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Toplam Tutar (TL)" TextColor="#6B7280" FontSize="12"/>
+                    <Border HeightRequest="50" Padding="15,0" StrokeThickness="1" Stroke="#3B82F6" BackgroundColor="#EFF6FF">
                         <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="12" />
+                            <RoundRectangle CornerRadius="10"/>
                         </Border.StrokeShape>
-                        <Editor x:Name="NotesEditor" Placeholder="Hasar kaydı, özel istekler vb..." TextColor="#1F2937" AutoSize="Disabled"/>
+                        <Label x:Name="ToplamTutarLabel" Text="0.00 TL" TextColor="#3B82F6" FontAttributes="Bold" FontSize="16" VerticalOptions="Center"/>
                     </Border>
                 </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Kiralama Notları" TextColor="#6B7280" FontSize="12"/>
+                    <Border HeightRequest="100" Padding="15" StrokeThickness="1" Stroke="#D1D5DB" BackgroundColor="White">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="10"/>
+                        </Border.StrokeShape>
+                        <Editor Placeholder="Özel notlar..." TextColor="#1F2937"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <Button Text="KİRALAMAYI TAMAMLA" 
+                        BackgroundColor="#3B82F6" 
+                        TextColor="White" 
+                        FontAttributes="Bold" 
+                        CornerRadius="12" 
+                        HeightRequest="55" 
+                        Margin="0,20,0,30"
+                        Clicked="OnCompleteRentalClicked"/>
 
             </VerticalStackLayout>
         </ScrollView>
-
-        <Grid Grid.Row="2" ColumnDefinitions="*, *" ColumnSpacing="15" Padding="20,10">
-            <Button Grid.Column="0" Text="İPTAL" Clicked="OnCancelClicked" BackgroundColor="White" TextColor="#EF4444" BorderColor="#EF4444" BorderWidth="1" CornerRadius="12" FontAttributes="Bold"/>
-            <Button Grid.Column="1" Text="TAMAMLA" Clicked="OnRentCompleteClicked" BackgroundColor="#3B82F6" TextColor="White" CornerRadius="12" FontAttributes="Bold"/>
-        </Grid>
-
     </Grid>
 </ContentPage>
