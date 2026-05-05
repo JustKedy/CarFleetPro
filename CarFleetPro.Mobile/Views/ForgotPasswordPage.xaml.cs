@@ -39,7 +39,6 @@ public partial class ForgotPasswordPage : ContentPage
 
         if (success && _resetToken != null)
         {
-            
             var newPassword = await DisplayPromptAsync(
                 "Yeni Şifre", 
                 "E-postanıza gönderilen kodu onayladıktan sonra yeni şifrenizi belirleyin:",

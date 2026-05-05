@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:CarFleetPro.Mobile.Controls"
              x:Class="CarFleetPro.Mobile.Views.StaffManagementPage"
-             BackgroundColor="#F3F4F6"
+             BackgroundColor="{AppThemeBinding Light=#F3F4F6, Dark=#0F172A}"
              Shell.NavBarIsVisible="False">
 
     <Grid RowDefinitions="110, Auto, *, 75">
@@ -25,11 +25,11 @@
         </Border>
 
         <Grid Grid.Row="1" ColumnDefinitions="*, Auto" Padding="20,15" ColumnSpacing="10">
-            <Border Grid.Column="0" Stroke="#D1D5DB" StrokeThickness="1" BackgroundColor="White" HeightRequest="50">
+            <Border Grid.Column="0" Stroke="{AppThemeBinding Light=#D1D5DB, Dark=#334155}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" HeightRequest="50">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="12" />
                 </Border.StrokeShape>
-                <Entry Placeholder="Personel Ara (İsim, Görev)..." TextColor="#1F2937" PlaceholderColor="#9CA3AF" Margin="15,0" VerticalOptions="Center" />
+                <Entry Placeholder="Personel Ara (İsim, Görev)..." TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" PlaceholderColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}" Margin="15,0" VerticalOptions="Center" />
             </Border>
 
             <Button Grid.Column="1" Text="YENİ EKLE" Clicked="OnAddNewStaffClicked" BackgroundColor="#3B82F6" TextColor="White" FontAttributes="Bold" CornerRadius="12" HeightRequest="50" Padding="15,0"/>
@@ -38,7 +38,7 @@
         <CollectionView x:Name="StaffList" Grid.Row="2" Margin="20,0" VerticalScrollBarVisibility="Never" SelectionMode="Single">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Border BackgroundColor="White" Margin="0,5" Padding="15" StrokeThickness="0">
+                    <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Margin="0,5" Padding="15" StrokeThickness="0">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="15" />
                         </Border.StrokeShape>
@@ -56,8 +56,8 @@
 
                             <!-- Detaylar -->
                             <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
-                                <Label Text="Personel Adı" FontAttributes="Bold" TextColor="#1F2937" FontSize="16" />
-                                <Label Text="Admin / Yönetici" FontSize="12" TextColor="#6B7280" />
+                                <Label Text="Personel Adı" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" FontSize="16" />
+                                <Label Text="Admin / Yönetici" FontSize="12" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}" />
                             </VerticalStackLayout>
 
                             <!-- Düzenle Butonu -->

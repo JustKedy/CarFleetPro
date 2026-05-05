@@ -1,6 +1,10 @@
 using CarFleetPro.Mobile.Models;
 using CarFleetPro.Mobile.ViewModels;
 using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.Maui;
+using Microsoft.Maui.Controls;
+using System;
+using System.Threading.Tasks;
 
 namespace CarFleetPro.Mobile.Views
 {
@@ -40,9 +44,14 @@ namespace CarFleetPro.Mobile.Views
             }
         }
 
-        
-        
-        
+        private void OnMoreClicked(object? sender, EventArgs e)
+        {
+            if (sender is BindableObject bindable && bindable.BindingContext is Vehicle secilenArac)
+            {
+                secilenArac.IsExpanded = !secilenArac.IsExpanded;
+            }
+        }
+
         
         
         private void OnDuzenleTapped(object? sender, TappedEventArgs e)

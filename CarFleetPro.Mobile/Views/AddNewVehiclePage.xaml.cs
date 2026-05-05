@@ -1,3 +1,4 @@
+﻿using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Media;
 using Microsoft.Maui.Graphics;
@@ -43,7 +44,6 @@ namespace CarFleetPro.Mobile.Views
 
         private async Task VerileriDoldur()
         {
-            
             var brandsTask = _apiService.GetBrandsAsync();
             var colorsTask = _apiService.GetColorsAsync();
             var statusesTask = _apiService.GetStatusesAsync();
@@ -54,7 +54,6 @@ namespace CarFleetPro.Mobile.Views
             RenkPicker.ItemsSource = colorsTask.Result;
             DurumPicker.ItemsSource = statusesTask.Result;
 
-            
             BrandPicker.SelectedIndexChanged += async (s, e) =>
             {
                 ModelPicker.ItemsSource = null;
@@ -66,7 +65,6 @@ namespace CarFleetPro.Mobile.Views
                 }
             };
 
-            
             if (_duzenlenenArac != null)
             {
                 BrandPicker.SelectedItem = _duzenlenenArac.Marka;
@@ -76,7 +74,7 @@ namespace CarFleetPro.Mobile.Views
 
         private void SayfayiDuzenlemeModunaGecir()
         {
-            PageTitleLabel.Text = "ARAÇ DÜZENLE";
+            PageTitleLabel.Text = "ARAÃ‡ DÃœZENLE";
             if (_duzenlenenArac != null)
             {
                 PlakaEntry.Text = _duzenlenenArac.Plaka;
@@ -121,36 +119,33 @@ namespace CarFleetPro.Mobile.Views
 
         private async void OnSaveClicked(object? sender, EventArgs e)
         {
-            
             if (string.IsNullOrWhiteSpace(PlakaEntry.Text))
             {
-                await DisplayAlertAsync("Eksik Bilgi", "Lütfen araç plakasını girin.", "Tamam");
+                await DisplayAlertAsync("Eksik Bilgi", "LÃ¼tfen araÃ§ plakasÄ±nÄ± girin.", "Tamam");
                 return;
             }
             if (BrandPicker.SelectedItem == null)
             {
-                await DisplayAlertAsync("Eksik Bilgi", "Lütfen bir marka seçin.", "Tamam");
+                await DisplayAlertAsync("Eksik Bilgi", "LÃ¼tfen bir marka seÃ§in.", "Tamam");
                 return;
             }
             if (ModelPicker.SelectedItem == null)
             {
-                await DisplayAlertAsync("Eksik Bilgi", "Lütfen bir model seçin.", "Tamam");
+                await DisplayAlertAsync("Eksik Bilgi", "LÃ¼tfen bir model seÃ§in.", "Tamam");
                 return;
             }
             if (string.IsNullOrWhiteSpace(YilEntry.Text) || !int.TryParse(YilEntry.Text, out int yil) || yil < 1950 || yil > DateTime.Now.Year)
             {
-                await DisplayAlertAsync("Hatalı Bilgi", $"Lütfen geçerli bir yıl girin (1950 - {DateTime.Now.Year}).", "Tamam");
+                await DisplayAlertAsync("HatalÄ± Bilgi", $"LÃ¼tfen geÃ§erli bir yÄ±l girin (1950 - {DateTime.Now.Year}).", "Tamam");
                 return;
             }
 
-            
             int durumId = 0; 
             var selectedDurum = DurumPicker.SelectedItem?.ToString();
             if (string.Equals(selectedDurum, "DOLU", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(selectedDurum, "KİRADA", StringComparison.OrdinalIgnoreCase)) durumId = 1;
+                string.Equals(selectedDurum, "KÄ°RADA", StringComparison.OrdinalIgnoreCase)) durumId = 1;
             else if (string.Equals(selectedDurum, "BAKIMDA", StringComparison.OrdinalIgnoreCase)) durumId = 2;
 
-            
             var request = new CreateVehicleRequest
             {
                 PlateNumber = PlakaEntry.Text.Trim().ToUpper(),
@@ -160,25 +155,21 @@ namespace CarFleetPro.Mobile.Views
                 Mileage = int.TryParse(KmEntry.Text, out int km) ? km : 0,
                 HorsePower = int.TryParse(HpEntry.Text, out int hp) ? hp : 0,
                 Color = RenkPicker.SelectedItem?.ToString(),
-                Branch = "Merkez Şube",
+                Branch = "Merkez Åube",
                 Status = durumId
             };
 
-            
             Button? saveBtn = sender as Button;
             if (saveBtn != null) saveBtn.IsEnabled = false;
 
-            
             if (_duzenlenenArac != null)
             {
-                
                 var (success, message) = await _apiService.UpdateVehicleAsync(_duzenlenenArac.Id, request);
-
-                if (sender is Button btn) btn.IsEnabled = true;
+                if (saveBtn != null) saveBtn.IsEnabled = true;
 
                 if (success)
                 {
-                    await ShowSuccessToast("Araç başarıyla güncellendi kiral! 🛠️");
+                    await ShowSuccessToast("AraÃ§ baÅŸarÄ±yla gÃ¼ncellendi!");
                     WeakReferenceMessenger.Default.Send(new VehicleAddedMessage());
                     await Navigation.PopAsync();
                 }
@@ -189,14 +180,12 @@ namespace CarFleetPro.Mobile.Views
             }
             else
             {
-                
                 var (success, message) = await _apiService.CreateVehicleAsync(request);
-
                 if (saveBtn != null) saveBtn.IsEnabled = true;
 
                 if (success)
                 {
-                    await ShowSuccessToast("Araç filoya başarıyla eklendi! 🚗");
+                    await ShowSuccessToast("AraÃ§ filoya baÅŸarÄ±yla eklendi!");
                     WeakReferenceMessenger.Default.Send(new VehicleAddedMessage());
                     await Navigation.PopAsync();
                 }

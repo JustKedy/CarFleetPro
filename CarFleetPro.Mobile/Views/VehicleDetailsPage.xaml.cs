@@ -1,5 +1,6 @@
-using CarFleetPro.Mobile.Models;
+﻿using CarFleetPro.Mobile.Models;
 using CarFleetPro.Mobile.Services;
+using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using System;
 
@@ -34,7 +35,7 @@ public partial class VehicleDetailsPage : ContentPage
             StatusBadge.Text = detail.Status;
             StatusBadge.BackgroundColor = detail.Status switch
             {
-                "MÜSAİT" => Color.FromArgb("#10B981"),
+                "MÃœSAÄ°T" => Color.FromArgb("#10B981"),
                 "DOLU" => Color.FromArgb("#EF4444"),
                 _ => Color.FromArgb("#F59E0B")
             };
@@ -58,14 +59,14 @@ public partial class VehicleDetailsPage : ContentPage
 
     private async void OnMaintenanceClicked(object? sender, EventArgs e)
     {
-        var confirm = await DisplayAlertAsync("Bakıma Gönder", 
-            $"{_selectedVehicle.Plaka} plakalı aracı bakıma göndermek istediğinize emin misiniz?", 
-            "Evet", "İptal");
+        var confirm = await DisplayAlertAsync("BakÄ±ma GÃ¶nder", 
+            $"{_selectedVehicle.Plaka} plakalÄ± aracÄ± bakÄ±ma gÃ¶ndermek istediÄŸinize emin misiniz?", 
+            "Evet", "Ä°ptal");
 
         if (!confirm) return;
 
         var (success, message) = await _apiService.SendToMaintenanceAsync(_selectedVehicle.Id);
-        await DisplayAlertAsync(success ? "Başarılı ✅" : "Hata ❌", message, "Tamam");
+        await DisplayAlertAsync(success ? "BaÅŸarÄ±lÄ± âœ…" : "Hata âŒ", message, "Tamam");
 
         if (success && Navigation is not null)
             await Navigation.PopAsync();

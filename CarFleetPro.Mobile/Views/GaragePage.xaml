@@ -6,7 +6,7 @@
              xmlns:models="clr-namespace:CarFleetPro.Mobile.Models"
              x:DataType="vm:GarageViewModel"
              x:Class="CarFleetPro.Mobile.Views.GaragePage"
-             BackgroundColor="#F3F4F6"
+             BackgroundColor="{AppThemeBinding Light=#F3F4F6, Dark=#0F172A}"
              Shell.NavBarIsVisible="False">
 
     <Grid RowDefinitions="Auto, *, Auto">
@@ -27,10 +27,47 @@
         </Border>
 
         
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1" RowDefinitions="Auto, *">
 
-            
-            <CollectionView
+            <!-- Filter Chips -->
+            <ScrollView Grid.Row="0" HorizontalOptions="Fill" Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Padding="20,15,20,5">
+                <HorizontalStackLayout Spacing="10">
+                    <!-- Tümü -->
+                    <Border BackgroundColor="#3B82F6" StrokeThickness="0" HeightRequest="38" Padding="15,0">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="19"/></Border.StrokeShape>
+                        <Label Text="Tümü" TextColor="White" VerticalOptions="Center" FontAttributes="Bold" FontSize="13"/>
+                    </Border>
+
+                    <!-- Müsait -->
+                    <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" StrokeThickness="1" Stroke="#10B981" HeightRequest="38" Padding="15,0">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="19"/></Border.StrokeShape>
+                        <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                            <Ellipse Fill="#10B981" WidthRequest="8" HeightRequest="8"/>
+                            <Label Text="Müsait" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" FontSize="13"/>
+                        </HorizontalStackLayout>
+                    </Border>
+
+                    <!-- Dolu -->
+                    <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" StrokeThickness="1" Stroke="#EF4444" HeightRequest="38" Padding="15,0">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="19"/></Border.StrokeShape>
+                        <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                            <Ellipse Fill="#EF4444" WidthRequest="8" HeightRequest="8"/>
+                            <Label Text="Dolu" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" FontSize="13"/>
+                        </HorizontalStackLayout>
+                    </Border>
+
+                    <!-- Bakımda -->
+                    <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" StrokeThickness="1" Stroke="#F59E0B" HeightRequest="38" Padding="15,0">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="19"/></Border.StrokeShape>
+                        <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                            <Ellipse Fill="#F59E0B" WidthRequest="8" HeightRequest="8"/>
+                            <Label Text="Bakımda" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" FontSize="13"/>
+                        </HorizontalStackLayout>
+                    </Border>
+                </HorizontalStackLayout>
+            </ScrollView>
+
+            <CollectionView Grid.Row="1"
                 Margin="0,10,0,0"
                 SelectionMode="None"
                 ItemsSource="{Binding AracListesi}"
@@ -43,7 +80,7 @@
                 <CollectionView.ItemTemplate>
                     
                     <DataTemplate x:DataType="models:Vehicle">
-                        <Border BackgroundColor="White"
+                        <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}"
                                 Padding="10" Margin="20,10,20,10"
                                 Stroke="Transparent" StrokeThickness="0">
                             <Border.StrokeShape>
@@ -56,7 +93,7 @@
                             <VerticalStackLayout Spacing="10">
 
                                 
-                                <Border Padding="0" StrokeThickness="0" BackgroundColor="#E5E7EB" HeightRequest="180">
+                                <Border Padding="0" StrokeThickness="0" BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#334155}" HeightRequest="180">
                                     <Border.StrokeShape><RoundRectangle CornerRadius="10" /></Border.StrokeShape>
                                     <Image Source="{Binding ResimUrl}"
                                            Aspect="AspectFill"
@@ -65,37 +102,43 @@
 
                                 
                                 <Grid ColumnDefinitions="Auto,*,Auto" Padding="5,0" Margin="0,5">
+                                    <Grid.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnAracTapped" />
+                                    </Grid.GestureRecognizers>
 
                                     <HorizontalStackLayout Grid.Column="0" Spacing="6" VerticalOptions="Center">
-                                        <HorizontalStackLayout.GestureRecognizers>
-                                            <TapGestureRecognizer 
-                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:GarageViewModel}}, Path=DurumDegistirCommand}" 
-                CommandParameter="{Binding .}" />
-                                        </HorizontalStackLayout.GestureRecognizers>
-
                                         <Ellipse WidthRequest="16" HeightRequest="16" VerticalOptions="Center">
                                             <Ellipse.Triggers>
-                                                <DataTrigger TargetType="Ellipse" Binding="{Binding Durum}" Value="MÜSAİT">
-                                                    <Setter Property="Fill" Value="#10B981"/>
-                                                </DataTrigger>
-                                                <DataTrigger TargetType="Ellipse" Binding="{Binding Durum}" Value="DOLU">
-                                                    <Setter Property="Fill" Value="#EF4444"/>
-                                                </DataTrigger>
-                                                <DataTrigger TargetType="Ellipse" Binding="{Binding Durum}" Value="BAKIMDA">
-                                                    <Setter Property="Fill" Value="#F59E0B"/>
-                                                </DataTrigger>
+                                                 <DataTrigger TargetType="Ellipse" Binding="{Binding Durum}" Value="MÜSAİT">
+                                                     <Setter Property="Fill" Value="#10B981"/>
+                                                 </DataTrigger>
+                                                 <DataTrigger TargetType="Ellipse" Binding="{Binding Durum}" Value="Müsait">
+                                                     <Setter Property="Fill" Value="#10B981"/>
+                                                 </DataTrigger>
+                                                 <DataTrigger TargetType="Ellipse" Binding="{Binding Durum}" Value="müsait">
+                                                     <Setter Property="Fill" Value="#10B981"/>
+                                                 </DataTrigger>
+                                                 <DataTrigger TargetType="Ellipse" Binding="{Binding Durum}" Value="DOLU">
+                                                     <Setter Property="Fill" Value="#EF4444"/>
+                                                 </DataTrigger>
+                                                 <DataTrigger TargetType="Ellipse" Binding="{Binding Durum}" Value="Dolu">
+                                                     <Setter Property="Fill" Value="#EF4444"/>
+                                                 </DataTrigger>
+                                                 <DataTrigger TargetType="Ellipse" Binding="{Binding Durum}" Value="BAKIMDA">
+                                                     <Setter Property="Fill" Value="#F59E0B"/>
+                                                 </DataTrigger>
+                                                 <DataTrigger TargetType="Ellipse" Binding="{Binding Durum}" Value="Bakımda">
+                                                     <Setter Property="Fill" Value="#F59E0B"/>
+                                                 </DataTrigger>
                                             </Ellipse.Triggers>
                                         </Ellipse>
-
-                                        <Label Text="{Binding Durum}" TextColor="#1F2937" FontSize="15" FontAttributes="Bold" VerticalOptions="Center"/>
+                                         <Label Text="{Binding Plaka}" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"
+                                                FontSize="15" FontAttributes="Bold" VerticalOptions="Center"/>
                                     </HorizontalStackLayout>
 
-                                    <Image Grid.Column="2" Source="arrowdown.svg" HeightRequest="20" WidthRequest="20" VerticalOptions="Center" HorizontalOptions="End">
-                                        <Image.GestureRecognizers>
-                                            <TapGestureRecognizer 
-                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:GarageViewModel}}, Path=DetayAcKapaCommand}" 
-                CommandParameter="{Binding .}" />
-                                        </Image.GestureRecognizers>
+                                    <Image Grid.Column="2" Source="arrowdown.svg"
+                                           HeightRequest="20" WidthRequest="20"
+                                           VerticalOptions="Center" HorizontalOptions="End">
                                         <Image.Triggers>
                                             <DataTrigger TargetType="Image" Binding="{Binding IsExpanded}" Value="True">
                                                 <Setter Property="Rotation" Value="180"/>
@@ -105,39 +148,47 @@
                                 </Grid>
 
                                 
-                                <Border Padding="15" Stroke="#D1D5DB" StrokeThickness="1"
-                                        BackgroundColor="White"
+                                <Border Padding="15" Stroke="{AppThemeBinding Light=#D1D5DB, Dark=#334155}" StrokeThickness="1"
+                                        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}"
                                         IsVisible="{Binding IsExpanded}">
                                     <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
                                     <VerticalStackLayout Spacing="15">
-                                    <Grid ColumnDefinitions="*,*" RowSpacing="5">
-                                        <VerticalStackLayout Grid.Column="0" Spacing="5">
-                                            <Label Text="{Binding KiralayanKisi,   StringFormat='Kiralayan: {0}',        TargetNullValue='Kiralayan: Yok'}"  FontSize="12" TextColor="#4B5563"/>
-                                            <Label Text="{Binding KiralamaFiyati,  StringFormat='Kiralama Fiyatı: {0}TL', TargetNullValue='Kiralama Fiyatı: -'}" FontSize="12" TextColor="#4B5563"/>
-                                            <Label Text="{Binding KiralamaSuresi,  StringFormat='Kiralama Süresi: {0}',  TargetNullValue='Kiralama Süresi: -'}" FontSize="12" TextColor="#4B5563"/>
-                                            <Label Text="{Binding KiralamaTarihi,  StringFormat='Kiralama Tarihi: {0}',  TargetNullValue='Kiralama Tarihi: -'}" FontSize="12" TextColor="#4B5563"/>
-                                        </VerticalStackLayout>
-                                        <VerticalStackLayout Grid.Column="1" Spacing="5">
-                                            <Label Text="{Binding Plaka, StringFormat='Araç Plakası: {0}'}" FontSize="12" TextColor="#4B5563" HorizontalOptions="End"/>
-                                            <Label Text="{Binding Marka, StringFormat='Araç Marka: {0}'}"  FontSize="12" TextColor="#4B5563" HorizontalOptions="End"/>
-                                            <Label Text="{Binding Model, StringFormat='Araç Model: {0}'}"  FontSize="12" TextColor="#3B82F6" FontAttributes="Bold" HorizontalOptions="End"/>
-                                            <Label Text="{Binding Hp,    StringFormat='Araç Hp: {0}'}"     FontSize="12" TextColor="#4B5563" HorizontalOptions="End"/>
-                                            <Label Text="{Binding Yas,   StringFormat='Araç Yaşı: {0}'}"   FontSize="12" TextColor="#4B5563" HorizontalOptions="End"/>
-                                            <Label Text="{Binding Km,    StringFormat='Araç KM: {0}'}"     FontSize="12" TextColor="#4B5563" HorizontalOptions="End"/>
-                                        </VerticalStackLayout>
-                                    </Grid>
-
-                                        <BoxView HeightRequest="1" BackgroundColor="#E5E7EB" Margin="0,5"/>
-
-                                        <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
-                                            <Button Grid.Column="0" Text="Bakım Durumu" 
-                                                    Clicked="OnBakimClicked"
-                                                    BackgroundColor="#F3F4F6" TextColor="#4B5563" FontSize="11" FontAttributes="Bold" CornerRadius="8" HeightRequest="35"/>
-                                            
-                                            <Button Grid.Column="1" Text="Aracı Kirala" 
-                                                    Clicked="OnKiralaClicked"
-                                                    BackgroundColor="#3B82F6" TextColor="White" FontSize="11" FontAttributes="Bold" CornerRadius="8" HeightRequest="35"/>
+                                        <Grid ColumnDefinitions="*,*" RowSpacing="5">
+                                            <VerticalStackLayout Grid.Column="0" Spacing="5">
+                                                <Label Text="{Binding Durum}"  FontSize="12" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}"/>
+                                                 <Label Text="{Binding Marka, StringFormat='{0} '}" FontSize="12" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}"/>
+                                                 <Label Text="{Binding Model}" FontSize="12" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}"/>
+                                                <Label Text="{Binding KiralayanKisi,   StringFormat='Kiralayan: {0}',        TargetNullValue='Kiralayan: Yok'}" FontSize="12" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}"/>
+                                                <Label Text="{Binding KiralamaFiyati,  StringFormat='Kiralama Fiyatı: {0}TL', TargetNullValue='Kiralama Fiyatı: -'}" FontSize="12" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}"/>
+                                            </VerticalStackLayout>
+                                            <VerticalStackLayout Grid.Column="1" Spacing="5">
+                                                <Label Text="{Binding KiralamaSuresi,  StringFormat='Kiralama Süresi: {0}',  TargetNullValue='Kiralama Süresi: -'}" FontSize="12" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}" HorizontalOptions="End"/>
+                                                <Label Text="{Binding KiralamaTarihi,  StringFormat='Kiralama Tarihi: {0}',  TargetNullValue='Kiralama Tarihi: -'}"  FontSize="12" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}" HorizontalOptions="End"/>
+                                                <Label Text="{Binding Plaka, StringFormat='Araç Plakası: {0}'}"  FontSize="12" TextColor="#3B82F6" FontAttributes="Bold" HorizontalOptions="End"/>
+                                                <Label Text="{Binding Marka, StringFormat='Araç Marka: {0}'}"     FontSize="12" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}" HorizontalOptions="End"/>
+                                                <Label Text="{Binding Model, StringFormat='Araç Model: {0}'}"   FontSize="12" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}" HorizontalOptions="End"/>
+                                                <Label Text="{Binding Hp,    StringFormat='Araç Hp: {0}'}"     FontSize="12" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}" HorizontalOptions="End"/>
+                                            </VerticalStackLayout>
                                         </Grid>
+
+                                        <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                                            <Button Text="KİRALA" 
+                                                    Clicked="OnKiralaClicked"
+                                                    BackgroundColor="#3B82F6"
+                                                    TextColor="White"
+                                                    FontAttributes="Bold"
+                                                    CornerRadius="8"
+                                                    HeightRequest="40"
+                                                    Padding="15,0"/>
+                                            <Button Text="BAKIM" 
+                                                    Clicked="OnBakimClicked"
+                                                    BackgroundColor="#F59E0B"
+                                                    TextColor="White"
+                                                    FontAttributes="Bold"
+                                                    CornerRadius="8"
+                                                    HeightRequest="40"
+                                                    Padding="15,0"/>
+                                        </HorizontalStackLayout>
                                     </VerticalStackLayout>
                                 </Border>
 
@@ -152,30 +203,30 @@
                                  IsVisible="{Binding IsLoading}">
 
                 
-                <Border BackgroundColor="White" Padding="14" StrokeThickness="0">
+                <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Padding="14" StrokeThickness="0">
                     <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
                     <VerticalStackLayout Spacing="12">
-                        <BoxView HeightRequest="150" BackgroundColor="#E5E7EB" CornerRadius="10"/>
+                        <BoxView HeightRequest="150" BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#334155}" CornerRadius="10"/>
                         <BoxView HeightRequest="14" WidthRequest="100" BackgroundColor="#D1D5DB" HorizontalOptions="Start" CornerRadius="6"/>
-                        <BoxView HeightRequest="12" WidthRequest="160" BackgroundColor="#E5E7EB" HorizontalOptions="Start" CornerRadius="6"/>
+                        <BoxView HeightRequest="12" WidthRequest="160" BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#334155}" HorizontalOptions="Start" CornerRadius="6"/>
                     </VerticalStackLayout>
                 </Border>
 
-                <Border BackgroundColor="White" Padding="14" StrokeThickness="0">
+                <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Padding="14" StrokeThickness="0">
                     <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
                     <VerticalStackLayout Spacing="12">
-                        <BoxView HeightRequest="150" BackgroundColor="#E5E7EB" CornerRadius="10"/>
+                        <BoxView HeightRequest="150" BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#334155}" CornerRadius="10"/>
                         <BoxView HeightRequest="14" WidthRequest="100" BackgroundColor="#D1D5DB" HorizontalOptions="Start" CornerRadius="6"/>
-                        <BoxView HeightRequest="12" WidthRequest="160" BackgroundColor="#E5E7EB" HorizontalOptions="Start" CornerRadius="6"/>
+                        <BoxView HeightRequest="12" WidthRequest="160" BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#334155}" HorizontalOptions="Start" CornerRadius="6"/>
                     </VerticalStackLayout>
                 </Border>
 
-                <Border BackgroundColor="White" Padding="14" StrokeThickness="0">
+                <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Padding="14" StrokeThickness="0">
                     <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
                     <VerticalStackLayout Spacing="12">
-                        <BoxView HeightRequest="150" BackgroundColor="#E5E7EB" CornerRadius="10"/>
+                        <BoxView HeightRequest="150" BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#334155}" CornerRadius="10"/>
                         <BoxView HeightRequest="14" WidthRequest="100" BackgroundColor="#D1D5DB" HorizontalOptions="Start" CornerRadius="6"/>
-                        <BoxView HeightRequest="12" WidthRequest="160" BackgroundColor="#E5E7EB" HorizontalOptions="Start" CornerRadius="6"/>
+                        <BoxView HeightRequest="12" WidthRequest="160" BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#334155}" HorizontalOptions="Start" CornerRadius="6"/>
                     </VerticalStackLayout>
                 </Border>
 

@@ -1,8 +1,12 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System;
 using CarFleetPro.Mobile.Models;
 using CarFleetPro.Mobile.Services;
+using Microsoft.Maui.ApplicationModel;
 
 namespace CarFleetPro.Mobile.ViewModels
 {
@@ -12,10 +16,8 @@ namespace CarFleetPro.Mobile.ViewModels
 
         public ObservableCollection<Vehicle> AracListesi { get; set; } = [];
 
-        
         [ObservableProperty] public partial bool IsLoading { get; set; } = true;
 
-        
         public GarageViewModel(ApiService apiService)
         {
             _apiService = apiService;

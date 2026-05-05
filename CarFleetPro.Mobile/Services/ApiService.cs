@@ -269,16 +269,16 @@ namespace CarFleetPro.Mobile.Services
         
         
         
-        public async Task<(bool Success, string Message)> RegisterAdminAsync(string fullName, string email, string password)
+        public async Task<(bool Success, string Message)> RegisterUserAsync(string fullName, string email, string password, string role)
         {
             try
             {
                 await SetAuthorizationHeader();
-                var data = new { FullName = fullName, Email = email, Password = password };
+                var data = new { FullName = fullName, Email = email, Password = password, Role = role };
                 var response = await _httpClient.PostAsJsonAsync("Auth/register", data);
                 var content = await response.Content.ReadAsStringAsync();
 
-                if (response.IsSuccessStatusCode) return (true, "Yeni yönetici hesabı başarıyla oluşturuldu!");
+                if (response.IsSuccessStatusCode) return (true, "Yeni kullanıcı hesabı başarıyla oluşturuldu!");
                 return (false, content.Trim().Trim('"'));
             }
             catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }

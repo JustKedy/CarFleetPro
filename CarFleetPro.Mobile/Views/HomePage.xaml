@@ -5,7 +5,7 @@
              xmlns:vm="clr-namespace:CarFleetPro.Mobile.ViewModels"
              x:DataType="vm:HomeViewModel"
              x:Class="CarFleetPro.Mobile.Views.HomePage"
-             BackgroundColor="#F3F4F6"
+             BackgroundColor="{AppThemeBinding Light=#F3F4F6, Dark=#0F172A}"
              Shell.NavBarIsVisible="False">
 
     <Grid RowDefinitions="110, *, 75">
@@ -38,11 +38,11 @@
                             <Button Text="Tümü"         Command="{Binding SubeFiltreleCommand}" CommandParameter="0"
                                     BackgroundColor="#0A1128" TextColor="White" CornerRadius="20" HeightRequest="40" Padding="20,0" />
                             <Button Text="Bafra Şube"   Command="{Binding SubeFiltreleCommand}" CommandParameter="1"
-                                    BackgroundColor="White" TextColor="#1F2937" BorderColor="#D1D5DB" BorderWidth="1" CornerRadius="20" HeightRequest="40" Padding="15,0" />
+                                    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" BorderColor="{AppThemeBinding Light=#D1D5DB, Dark=#334155}" BorderWidth="1" CornerRadius="20" HeightRequest="40" Padding="15,0" />
                             <Button Text="Atakum Şube"  Command="{Binding SubeFiltreleCommand}" CommandParameter="2"
-                                    BackgroundColor="White" TextColor="#1F2937" BorderColor="#D1D5DB" BorderWidth="1" CornerRadius="20" HeightRequest="40" Padding="15,0" />
+                                    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" BorderColor="{AppThemeBinding Light=#D1D5DB, Dark=#334155}" BorderWidth="1" CornerRadius="20" HeightRequest="40" Padding="15,0" />
                             <Button Text="İlkadım Şube" Command="{Binding SubeFiltreleCommand}" CommandParameter="3"
-                                    BackgroundColor="White" TextColor="#1F2937" BorderColor="#D1D5DB" BorderWidth="1" CornerRadius="20" HeightRequest="40" Padding="15,0" />
+                                    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" BorderColor="{AppThemeBinding Light=#D1D5DB, Dark=#334155}" BorderWidth="1" CornerRadius="20" HeightRequest="40" Padding="15,0" />
                         </HorizontalStackLayout>
                     </ScrollView>
 
@@ -50,53 +50,53 @@
                     <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*"
                           ColumnSpacing="15" RowSpacing="15" Margin="20,5,20,5">
 
-                        <Border Grid.Row="0" Grid.Column="0" BackgroundColor="White" Padding="15" StrokeThickness="0">
+                        <Border Grid.Row="0" Grid.Column="0" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Padding="15" StrokeThickness="0">
                             <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
                             <Border.Shadow><Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.1"/></Border.Shadow>
                             <VerticalStackLayout>
-                                <Label Text="Toplam Araç" FontSize="12" TextColor="#6B7280"/>
+                                <Label Text="Toplam Araç" FontSize="12" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}"/>
                                 <Label Text="{Binding ToplamAracSayisi, FallbackValue='45'}"
-                                       FontSize="24" FontAttributes="Bold" TextColor="#1F2937" Margin="0,5,0,0"/>
+                                       FontSize="24" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" Margin="0,5,0,0"/>
                             </VerticalStackLayout>
                         </Border>
 
-                        <Border Grid.Row="0" Grid.Column="1" BackgroundColor="White" Padding="15" StrokeThickness="0">
+                        <Border Grid.Row="0" Grid.Column="1" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Padding="15" StrokeThickness="0">
                             <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
                             <Border.Shadow><Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.1"/></Border.Shadow>
                             <VerticalStackLayout>
-                                <Label Text="Aktif Kirada" FontSize="12" TextColor="#6B7280"/>
+                                <Label Text="Aktif Kirada" FontSize="12" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}"/>
                                 <Label Text="{Binding KiradakiAracSayisi, FallbackValue='28'}"
                                        FontSize="24" FontAttributes="Bold" TextColor="#3B82F6" Margin="0,5,0,0"/>
                             </VerticalStackLayout>
                         </Border>
 
-                        <Border Grid.Row="1" Grid.Column="0" BackgroundColor="White" Padding="15" StrokeThickness="0">
+                        <Border Grid.Row="1" Grid.Column="0" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Padding="15" StrokeThickness="0">
                             <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
                             <Border.Shadow><Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.1"/></Border.Shadow>
                             <VerticalStackLayout>
-                                <Label Text="Müsait Araç" FontSize="12" TextColor="#6B7280"/>
+                                <Label Text="Müsait Araç" FontSize="12" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}"/>
                                 <Label Text="{Binding MusaitAracSayisi, FallbackValue='15'}"
                                        FontSize="24" FontAttributes="Bold" TextColor="#10B981" Margin="0,5,0,0"/>
                             </VerticalStackLayout>
                         </Border>
 
-                        <Border Grid.Row="1" Grid.Column="1" BackgroundColor="White" Padding="15" StrokeThickness="0">
+                        <Border Grid.Row="1" Grid.Column="1" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Padding="15" StrokeThickness="0">
                             <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
                             <Border.Shadow><Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.1"/></Border.Shadow>
                             <VerticalStackLayout>
-                                <Label Text="Aylık Ciro" FontSize="12" TextColor="#6B7280"/>
+                                <Label Text="Aylık Ciro" FontSize="12" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}"/>
                                 <Label Text="{Binding AylikCiro, StringFormat='{0:N0} ₺', FallbackValue='145.000 ₺'}"
-                                       FontSize="24" FontAttributes="Bold" TextColor="#1F2937" Margin="0,5,0,0"/>
+                                       FontSize="24" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" Margin="0,5,0,0"/>
                             </VerticalStackLayout>
                         </Border>
                     </Grid>
 
                     
-                    <Border BackgroundColor="White" Padding="20" Margin="20,5,20,5" StrokeThickness="0">
+                    <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Padding="20" Margin="20,5,20,5" StrokeThickness="0">
                         <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
                         <Border.Shadow><Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.1"/></Border.Shadow>
                         <VerticalStackLayout Spacing="15">
-                            <Label Text="Filo Durum Analizi" FontAttributes="Bold" FontSize="16" TextColor="#1F2937"/>
+                            <Label Text="Filo Durum Analizi" FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
                             <Border HeightRequest="12" StrokeThickness="0">
                                 <Border.StrokeShape><RoundRectangle CornerRadius="6"/></Border.StrokeShape>
                                 <Grid ColumnDefinitions="{Binding GrafikOranlari, FallbackValue='5*, 3*, 1*'}">
@@ -109,50 +109,50 @@
                                 <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
                                     <Ellipse Fill="#3B82F6" WidthRequest="10" HeightRequest="10"/>
                                     <Label Text="{Binding KiraYuzdesi, StringFormat='Kirada ({0}%)', FallbackValue='Kirada (%60)'}"
-                                           FontSize="12" TextColor="#6B7280"/>
+                                           FontSize="12" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}"/>
                                 </HorizontalStackLayout>
                                 <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
                                     <Ellipse Fill="#10B981" WidthRequest="10" HeightRequest="10"/>
                                     <Label Text="{Binding MusaitYuzdesi, StringFormat='Müsait ({0}%)', FallbackValue='Müsait (%30)'}"
-                                           FontSize="12" TextColor="#6B7280"/>
+                                           FontSize="12" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}"/>
                                 </HorizontalStackLayout>
                                 <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
                                     <Ellipse Fill="#F59E0B" WidthRequest="10" HeightRequest="10"/>
                                     <Label Text="{Binding BakimYuzdesi, StringFormat='Bakımda ({0}%)', FallbackValue='Bakımda (%10)'}"
-                                           FontSize="12" TextColor="#6B7280"/>
+                                           FontSize="12" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}"/>
                                 </HorizontalStackLayout>
                             </HorizontalStackLayout>
                         </VerticalStackLayout>
                     </Border>
 
                     
-                    <Border BackgroundColor="White" Padding="20" Margin="20,5,20,10" StrokeThickness="0">
+                    <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Padding="20" Margin="20,5,20,10" StrokeThickness="0">
                         <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
                         <Border.Shadow><Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.1"/></Border.Shadow>
                         <VerticalStackLayout Spacing="15">
-                            <Label Text="En Çok Talep Gören Modeller" FontAttributes="Bold" FontSize="16" TextColor="#1F2937"/>
+                            <Label Text="En Çok Talep Gören Modeller" FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
 
                             <Grid ColumnDefinitions="80,*,40" VerticalOptions="Center">
                                 <Label Grid.Column="0" Text="{Binding AracModelAdi, FallbackValue='R. Clio'}"
-                                       FontSize="13" TextColor="#4B5563" VerticalOptions="Center"/>
-                                <Border Grid.Column="1" BackgroundColor="#F3F4F6" HeightRequest="8" StrokeThickness="0" VerticalOptions="Center">
+                                       FontSize="13" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}" VerticalOptions="Center"/>
+                                <Border Grid.Column="1" BackgroundColor="{AppThemeBinding Light=#F3F4F6, Dark=#0F172A}" HeightRequest="8" StrokeThickness="0" VerticalOptions="Center">
                                     <Border.StrokeShape><RoundRectangle CornerRadius="4"/></Border.StrokeShape>
                                     <BoxView BackgroundColor="#3B82F6" HorizontalOptions="Start"
                                              WidthRequest="{Binding BarGenisligi, FallbackValue='180'}"/>
                                 </Border>
                                 <Label Grid.Column="2" Text="{Binding KiralamaSayisi, StringFormat='{0} Kez', FallbackValue='24 Kez'}"
-                                       FontSize="12" FontAttributes="Bold" TextColor="#1F2937"
+                                       FontSize="12" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"
                                        HorizontalOptions="End" VerticalOptions="Center"/>
                             </Grid>
 
                             <Grid ColumnDefinitions="80,*,40" VerticalOptions="Center">
-                                <Label Grid.Column="0" Text="F. Focus" FontSize="13" TextColor="#4B5563" VerticalOptions="Center"/>
-                                <Border Grid.Column="1" BackgroundColor="#F3F4F6" HeightRequest="8" StrokeThickness="0" VerticalOptions="Center">
+                                <Label Grid.Column="0" Text="F. Focus" FontSize="13" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}" VerticalOptions="Center"/>
+                                <Border Grid.Column="1" BackgroundColor="{AppThemeBinding Light=#F3F4F6, Dark=#0F172A}" HeightRequest="8" StrokeThickness="0" VerticalOptions="Center">
                                     <Border.StrokeShape><RoundRectangle CornerRadius="4"/></Border.StrokeShape>
                                     <BoxView BackgroundColor="#10B981" HorizontalOptions="Start" WidthRequest="130"/>
                                 </Border>
                                 <Label Grid.Column="2" Text="18 Kez" FontSize="12" FontAttributes="Bold"
-                                       TextColor="#1F2937" HorizontalOptions="End" VerticalOptions="Center"/>
+                                       TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" HorizontalOptions="End" VerticalOptions="Center"/>
                             </Grid>
                         </VerticalStackLayout>
                     </Border>
@@ -168,56 +168,56 @@
                           ColumnSpacing="15" RowSpacing="15">
 
                         
-                        <Border Grid.Row="0" Grid.Column="0" BackgroundColor="White" Padding="15" StrokeThickness="0" HeightRequest="80">
+                        <Border Grid.Row="0" Grid.Column="0" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Padding="15" StrokeThickness="0" HeightRequest="80">
                             <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
                             <VerticalStackLayout Spacing="10">
-                                <BoxView HeightRequest="12" WidthRequest="80" BackgroundColor="#E5E7EB" HorizontalOptions="Start" CornerRadius="6"/>
+                                <BoxView HeightRequest="12" WidthRequest="80" BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#334155}" HorizontalOptions="Start" CornerRadius="6"/>
                                 <BoxView HeightRequest="24" WidthRequest="50" BackgroundColor="#D1D5DB" HorizontalOptions="Start" CornerRadius="6"/>
                             </VerticalStackLayout>
                         </Border>
                         
-                        <Border Grid.Row="0" Grid.Column="1" BackgroundColor="White" Padding="15" StrokeThickness="0" HeightRequest="80">
+                        <Border Grid.Row="0" Grid.Column="1" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Padding="15" StrokeThickness="0" HeightRequest="80">
                             <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
                             <VerticalStackLayout Spacing="10">
-                                <BoxView HeightRequest="12" WidthRequest="80" BackgroundColor="#E5E7EB" HorizontalOptions="Start" CornerRadius="6"/>
+                                <BoxView HeightRequest="12" WidthRequest="80" BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#334155}" HorizontalOptions="Start" CornerRadius="6"/>
                                 <BoxView HeightRequest="24" WidthRequest="50" BackgroundColor="#D1D5DB" HorizontalOptions="Start" CornerRadius="6"/>
                             </VerticalStackLayout>
                         </Border>
                         
-                        <Border Grid.Row="1" Grid.Column="0" BackgroundColor="White" Padding="15" StrokeThickness="0" HeightRequest="80">
+                        <Border Grid.Row="1" Grid.Column="0" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Padding="15" StrokeThickness="0" HeightRequest="80">
                             <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
                             <VerticalStackLayout Spacing="10">
-                                <BoxView HeightRequest="12" WidthRequest="80" BackgroundColor="#E5E7EB" HorizontalOptions="Start" CornerRadius="6"/>
+                                <BoxView HeightRequest="12" WidthRequest="80" BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#334155}" HorizontalOptions="Start" CornerRadius="6"/>
                                 <BoxView HeightRequest="24" WidthRequest="50" BackgroundColor="#D1D5DB" HorizontalOptions="Start" CornerRadius="6"/>
                             </VerticalStackLayout>
                         </Border>
                         
-                        <Border Grid.Row="1" Grid.Column="1" BackgroundColor="White" Padding="15" StrokeThickness="0" HeightRequest="80">
+                        <Border Grid.Row="1" Grid.Column="1" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Padding="15" StrokeThickness="0" HeightRequest="80">
                             <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
                             <VerticalStackLayout Spacing="10">
-                                <BoxView HeightRequest="12" WidthRequest="80" BackgroundColor="#E5E7EB" HorizontalOptions="Start" CornerRadius="6"/>
+                                <BoxView HeightRequest="12" WidthRequest="80" BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#334155}" HorizontalOptions="Start" CornerRadius="6"/>
                                 <BoxView HeightRequest="24" WidthRequest="50" BackgroundColor="#D1D5DB" HorizontalOptions="Start" CornerRadius="6"/>
                             </VerticalStackLayout>
                         </Border>
                     </Grid>
 
                     
-                    <Border BackgroundColor="White" Padding="20" StrokeThickness="0" HeightRequest="120">
+                    <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Padding="20" StrokeThickness="0" HeightRequest="120">
                         <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
                         <VerticalStackLayout Spacing="15">
-                            <BoxView HeightRequest="14" WidthRequest="140" BackgroundColor="#E5E7EB" HorizontalOptions="Start" CornerRadius="6"/>
+                            <BoxView HeightRequest="14" WidthRequest="140" BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#334155}" HorizontalOptions="Start" CornerRadius="6"/>
                             <BoxView HeightRequest="12" BackgroundColor="#D1D5DB" CornerRadius="6"/>
-                            <BoxView HeightRequest="12" WidthRequest="200" BackgroundColor="#E5E7EB" HorizontalOptions="Center" CornerRadius="6"/>
+                            <BoxView HeightRequest="12" WidthRequest="200" BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#334155}" HorizontalOptions="Center" CornerRadius="6"/>
                         </VerticalStackLayout>
                     </Border>
 
                     
-                    <Border BackgroundColor="White" Padding="20" StrokeThickness="0" HeightRequest="130">
+                    <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Padding="20" StrokeThickness="0" HeightRequest="130">
                         <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
                         <VerticalStackLayout Spacing="18">
-                            <BoxView HeightRequest="14" WidthRequest="200" BackgroundColor="#E5E7EB" HorizontalOptions="Start" CornerRadius="6"/>
+                            <BoxView HeightRequest="14" WidthRequest="200" BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#334155}" HorizontalOptions="Start" CornerRadius="6"/>
                             <BoxView HeightRequest="10" BackgroundColor="#D1D5DB" CornerRadius="5"/>
-                            <BoxView HeightRequest="10" WidthRequest="220" BackgroundColor="#E5E7EB" HorizontalOptions="Start" CornerRadius="5"/>
+                            <BoxView HeightRequest="10" WidthRequest="220" BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#334155}" HorizontalOptions="Start" CornerRadius="5"/>
                         </VerticalStackLayout>
                     </Border>
 

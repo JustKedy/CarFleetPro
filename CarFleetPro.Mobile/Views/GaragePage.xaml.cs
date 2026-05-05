@@ -5,90 +5,91 @@ using Microsoft.Maui.Controls;
 using System;
 using System.Threading.Tasks;
 
-namespace CarFleetPro.Mobile.Views;
-
-public partial class GaragePage : ContentPage
+namespace CarFleetPro.Mobile.Views
 {
-    private readonly GarageViewModel _viewModel;
-
-    public GaragePage(GarageViewModel viewModel)
+    public partial class GaragePage : Microsoft.Maui.Controls.ContentPage
     {
-        InitializeComponent();
-        _viewModel = viewModel;
-        BindingContext = _viewModel;
-    }
+        private readonly GarageViewModel _viewModel;
 
-    protected override async void OnAppearing()
-    {
-        base.OnAppearing();
-
-        // SAYFA AÇILIŞ ANİMASYONU
-        this.Opacity = 0;
-        await this.FadeToAsync(1, 300, Easing.CubicOut);
-
-        // Verileri yenileme komutu
-        if (_viewModel.VerileriYenileCommand.CanExecute(null))
+        public GaragePage(GarageViewModel viewModel)
         {
-            await _viewModel.VerileriYenileCommand.ExecuteAsync(null);
+            InitializeComponent();
+            _viewModel = viewModel;
+            BindingContext = _viewModel;
         }
-    }
 
-    // --- KAYDIRMA (SLIDING) ANİMASYONU ---
-    private async void OnAracTapped(object? sender, TappedEventArgs e)
-    {
-        if (sender is not Grid grid) return;
-
-        // Tıklanan grid'in bağlı olduğu araç bilgisini al
-        if (grid.BindingContext is not Vehicle secilenArac) return;
-
-        // XAML'daki detay panelini (Border) bul (VerticalStackLayout'un 3. elemanı)
-        if (grid.Parent is VerticalStackLayout parentLayout && parentLayout.Children.Count >= 3)
+        protected override async void OnAppearing()
         {
-            if (parentLayout.Children[2] is Border detayPaneli)
+            base.OnAppearing();
+
+            // SAYFA AÇILIŞ ANİMASYONU
+            this.Opacity = 0;
+            await this.FadeToAsync(1, 300, Microsoft.Maui.Easing.CubicOut);
+
+            // Verileri yenileme komutu
+            if (_viewModel.VerileriYenileCommand.CanExecute(null))
             {
-                secilenArac.IsExpanded = !secilenArac.IsExpanded;
+                await _viewModel.VerileriYenileCommand.ExecuteAsync(null);
+            }
+        }
 
-                if (secilenArac.IsExpanded)
-                {
-                    detayPaneli.IsVisible = true;
-                    detayPaneli.Opacity = 0;
-                    detayPaneli.TranslationY = -20; // Yukarıdan süzülerek gelsin
+        // --- KAYDIRMA (SLIDING) ANİMASYONU ---
+        private async void OnAracTapped(object? sender, TappedEventArgs e)
+        {
+            if (sender is not Grid grid) return;
 
-                    await Task.WhenAll(
-                        detayPaneli.FadeToAsync(1, 400, Easing.CubicOut),
-                        detayPaneli.TranslateToAsync(0, 0, 400, Easing.CubicOut)
-                    );
-                }
-                else
+            // Tıklanan grid'in bağlı olduğu araç bilgisini al
+            if (grid.BindingContext is not Vehicle secilenArac) return;
+
+            // XAML'daki detay panelini (Border) bul (VerticalStackLayout'un 3. elemanı)
+            if (grid.Parent is VerticalStackLayout parentLayout && parentLayout.Children.Count >= 3)
+            {
+                if (parentLayout.Children[2] is Border detayPaneli)
                 {
-                    await Task.WhenAll(
-                        detayPaneli.FadeToAsync(0, 350, Easing.CubicIn),
-                        detayPaneli.TranslateToAsync(0, -20, 350, Easing.CubicIn)
-                    );
-                    detayPaneli.IsVisible = false;
+                    secilenArac.IsExpanded = !secilenArac.IsExpanded;
+
+                    if (secilenArac.IsExpanded)
+                    {
+                        detayPaneli.IsVisible = true;
+                        detayPaneli.Opacity = 0;
+                        detayPaneli.TranslationY = -20; // Yukarıdan süzülerek gelsin
+
+                        await Task.WhenAll(
+                            detayPaneli.FadeToAsync(1, 400, Microsoft.Maui.Easing.CubicOut),
+                            detayPaneli.TranslateToAsync(0, 0, 400, Microsoft.Maui.Easing.CubicOut)
+                        );
+                    }
+                    else
+                    {
+                        await Task.WhenAll(
+                            detayPaneli.FadeToAsync(0, 350, Microsoft.Maui.Easing.CubicIn),
+                            detayPaneli.TranslateToAsync(0, -20, 350, Microsoft.Maui.Easing.CubicIn)
+                        );
+                        detayPaneli.IsVisible = false;
+                    }
                 }
             }
         }
-    }
 
-    private async void OnKiralaClicked(object? sender, EventArgs e)
-    {
-        if (sender is Button btn && btn.BindingContext is Models.Vehicle)
+        private async void OnKiralaClicked(object? sender, EventArgs e)
         {
-            if (Navigation != null)
+            if (sender is Button btn && btn.BindingContext is Vehicle vehicle)
             {
-                await Navigation.PushAsync(new RentalFormPage());
+                if (Navigation != null)
+                {
+                    await Navigation.PushAsync(new RentalFormPage(vehicle));
+                }
             }
         }
-    }
 
-    private async void OnBakimClicked(object? sender, EventArgs e)
-    {
-        if (sender is Button btn && btn.BindingContext is Models.Vehicle)
+        private async void OnBakimClicked(object? sender, EventArgs e)
         {
-            if (Navigation != null)
+            if (sender is Button btn && btn.BindingContext is Vehicle)
             {
-                await Navigation.PushAsync(new VehicleMaintenancePage());
+                if (Navigation != null)
+                {
+                    await Navigation.PushAsync(new VehicleMaintenancePage());
+                }
             }
         }
     }

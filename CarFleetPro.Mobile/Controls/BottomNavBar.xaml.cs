@@ -1,4 +1,4 @@
-using Microsoft.Maui.Controls;
+﻿using Microsoft.Maui.Controls;
 using System;
 using System.Threading.Tasks;
 using CarFleetPro.Mobile.Views;
@@ -7,14 +7,16 @@ namespace CarFleetPro.Mobile.Controls;
 
 public partial class BottomNavBar : ContentView
 {
-    
-    private static int _lastTabIndex = 0;
+    private bool _isFirstLoad = true;
+
+    // Global deÄŸiÅŸken sayesinde sayfalar arasÄ± geÃ§iÅŸlerde son durumu kaybetmeyiz
+    private static string _globalSelectedTab = "Home";
 
     public static readonly BindableProperty SelectedTabProperty =
         BindableProperty.Create(nameof(SelectedTab), typeof(string), typeof(BottomNavBar), "Home", propertyChanged: OnSelectedTabChanged);
 
     public static readonly BindableProperty IsAdminProperty =
-        BindableProperty.Create(nameof(IsAdmin), typeof(bool), typeof(BottomNavBar), false, propertyChanged: OnRoleChanged);
+        BindableProperty.Create(nameof(IsAdmin), typeof(bool), typeof(BottomNavBar), true, propertyChanged: OnRoleChanged);
 
     public bool IsAdmin
     {
@@ -28,18 +30,18 @@ public partial class BottomNavBar : ContentView
         set => SetValue(SelectedTabProperty, value);
     }
 
-    private int _currentTabIndex;
-
     public BottomNavBar()
     {
         InitializeComponent();
+        SelectedTab = _globalSelectedTab; // Ä°lk aÃ§Ä±lÄ±ÅŸta son durumu al
     }
 
     private static void OnSelectedTabChanged(BindableObject bindable, object oldValue, object newValue)
     {
         if (bindable is BottomNavBar control)
         {
-            control.UpdateUI((string)newValue);
+            _globalSelectedTab = (string)newValue;
+            control.UpdateUI();
         }
     }
 
@@ -53,11 +55,8 @@ public partial class BottomNavBar : ContentView
 
     private void ApplyRoleVisibility()
     {
-        // Örnek: Personel yetkisinde "List" sekmesi gizlenir.
-        // Yunus buradaki IsVisible mantığını kendi Role/Auth sistemine göre ayarlayabilir.
         ListBorder.IsVisible = IsAdmin;
         
-        // Eğer List gizlenirse grid oranları değişmeli
         if (!IsAdmin)
         {
             NavGrid.ColumnDefinitions = new ColumnDefinitionCollection
@@ -78,123 +77,155 @@ public partial class BottomNavBar : ContentView
                 new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }
             };
         }
+
+        SlideIndicator(false); // Rol deÄŸiÅŸtiÄŸinde animasyonsuz anÄ±nda oturttur
     }
 
-    // Navigasyon bittiğinde veya boyut değiştiğinde tetiklenir
     private void OnNavGridSizeChanged(object? sender, EventArgs e)
     {
-        if (NavGrid.Width > 0)
+        if (ContainerGrid.Width > 0)
         {
-            UpdateUI(SelectedTab);
+            UpdateUI();
+            _isFirstLoad = false;
         }
     }
 
-    private void UpdateUI(string activeTab)
+    private void UpdateUI()
     {
-        if (NavGrid.Width <= 0) return;
+        if (ContainerGrid.Width <= 0) return;
 
         HomeImg.Source = "homenegatif.svg";
         GarageImg.Source = "garagenegatif.svg";
         ListImg.Source = "listnegatif.svg";
         SettingsImg.Source = "settingsnegatif.svg";
 
-        switch (activeTab)
+        switch (SelectedTab)
         {
             case "Home":
                 HomeImg.Source = "homepozitif.svg";
-                _currentTabIndex = 0;
                 break;
             case "Garage":
                 GarageImg.Source = "garagepozitif.svg";
-                _currentTabIndex = 1;
                 break;
             case "List":
                 ListImg.Source = "listpozitif.svg";
-                _currentTabIndex = 2;
                 break;
             case "Settings":
                 SettingsImg.Source = "settingspozitif.svg";
-                _currentTabIndex = 3;
                 break;
         }
 
-        SlideIndicator();
+        SlideIndicator(!_isFirstLoad);
     }
 
-    
-    private async void SlideIndicator()
+    private int GetVisualIndex(string tabName)
     {
-        int totalVisibleTabs = IsAdmin ? 4 : 3;
+        if (ListBorder.IsVisible)
+        {
+            return tabName switch
+            {
+                "Home" => 0,
+                "Garage" => 1,
+                "List" => 2,
+                "Settings" => 3,
+                _ => 0
+            };
+        }
+        else
+        {
+            return tabName switch
+            {
+                "Home" => 0,
+                "Garage" => 1,
+                "Settings" => 2, // List (2) olmadÄ±ÄŸÄ± iÃ§in Settings (2) olur
+                _ => 0
+            };
+        }
+    }
+
+    private void SlideIndicator(bool animated)
+    {
+        if (ContainerGrid.Width <= 0) return;
+
+        int totalVisibleTabs = ListBorder.IsVisible ? 4 : 3;
         if (totalVisibleTabs == 0) return;
         
-        double tabWidth = NavGrid.Width / totalVisibleTabs;
+        // Matematiksel olarak kesin konum hesaplama:
+        double tabWidth = ContainerGrid.Width / totalVisibleTabs;
+        int visualIndex = GetVisualIndex(SelectedTab);
 
-        // 1. Önce çerçeveyi hafızadaki 'eski' yerine ışınla (kullanıcı görmez)
-        double startX = GetTabXPosition(_lastTabIndex, tabWidth);
-        SlidingIndicator.TranslationX = startX;
+        double targetCenter = (visualIndex * tabWidth) + (tabWidth / 2);
+        double indicatorWidth = SlidingIndicator.WidthRequest; // 50
+        double targetX = targetCenter - (indicatorWidth / 2);
 
-        // 2. Şimdi yeni hedefe doğru yağ gibi sürükle
-        double targetX = GetTabXPosition(_currentTabIndex, tabWidth);
+        // OlasÄ± Ã§akÄ±ÅŸmalarÄ± ve hatalarÄ± Ã¶nlemek iÃ§in Ã§alÄ±ÅŸan tÃ¼m animasyonlarÄ± temizle
+        SlidingIndicator.CancelAnimations();
 
-        
-        if (Math.Abs(startX - targetX) < 1) return;
-
-        
-        await SlidingIndicator.TranslateToAsync(targetX, 0, 500, Easing.CubicInOut);
-
-        
-        _lastTabIndex = _currentTabIndex;
-    }
-
-    private double GetTabXPosition(int index, double tabWidth)
-    {
-        // Eğer personel ise ve list sekmesi (index 2) yoksa, 3. sekme (index 3) aslında 2. sıraya kaymıştır.
-        if (!IsAdmin)
+        if (animated)
         {
-            if (index == 3) return 2 * tabWidth; // Settings
-            if (index == 2) return 1 * tabWidth; // List hidden, defaults to previous
+            _ = SlidingIndicator.TranslateToAsync(targetX, 0, 300, Easing.CubicInOut);
         }
-        return index * tabWidth;
+        else
+        {
+            SlidingIndicator.TranslationX = targetX;
+        }
     }
 
     private static async Task AnimateIcon(Border border)
     {
+        border.CancelAnimations();
         await border.ScaleToAsync(0.8, 100, Easing.CubicOut);
         await border.ScaleToAsync(1.0, 200, Easing.SpringOut);
     }
 
-    private async void OnHomeTapped(object? sender, TappedEventArgs e)
+    private async void NavigateTo(string tabName, Func<Page> pageFactory)
     {
-        if (SelectedTab == "Home") return;
-        _ = AnimateIcon(HomeBorder);
+        if (SelectedTab == tabName) return;
+        
+        SelectedTab = tabName; // Bu, anÄ±nda UpdateUI ve SlideIndicator tetikler! Animasyon TIKLANDIÄI AN baÅŸlar.
+
+        Border targetBorder = tabName switch
+        {
+            "Home" => HomeBorder,
+            "Garage" => GarageBorder,
+            "List" => ListBorder,
+            "Settings" => SettingsBorder,
+            _ => HomeBorder
+        };
+
+        _ = AnimateIcon(targetBorder);
+        
+        // KullanÄ±cÄ± animasyonu hissetsin diye yarÄ±m saniyenin onda biri kadar bekle (tepkisellik)
         await Task.Delay(50);
-        var page = IPlatformApplication.Current!.Services.GetRequiredService<HomePage>();
-        await Navigation.PushAsync(page, false);
+        
+        try
+        {
+            Page page = pageFactory();
+            await Navigation.PushAsync(page, false);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Navigation error: {ex.Message}");
+        }
     }
 
-    private async void OnGarageTapped(object? sender, TappedEventArgs e)
+    private void OnHomeTapped(object? sender, TappedEventArgs e)
     {
-        if (SelectedTab == "Garage") return;
-        _ = AnimateIcon(GarageBorder);
-        await Task.Delay(50);
-        var page = IPlatformApplication.Current!.Services.GetRequiredService<GaragePage>();
-        await Navigation.PushAsync(page, false);
+        NavigateTo("Home", () => IPlatformApplication.Current!.Services.GetRequiredService<HomePage>());
     }
 
-    private async void OnListTapped(object? sender, TappedEventArgs e)
+    private void OnGarageTapped(object? sender, TappedEventArgs e)
     {
-        if (SelectedTab == "List") return;
-        _ = AnimateIcon(ListBorder);
-        await Task.Delay(50);
-        var page = IPlatformApplication.Current!.Services.GetRequiredService<FleetManagementPage>();
-        await Navigation.PushAsync(page, false);
+        NavigateTo("Garage", () => IPlatformApplication.Current!.Services.GetRequiredService<GaragePage>());
     }
 
-    private async void OnSettingsTapped(object? sender, TappedEventArgs e)
+    private void OnListTapped(object? sender, TappedEventArgs e)
     {
-        if (SelectedTab == "Settings") return;
-        _ = AnimateIcon(SettingsBorder);
-        await Task.Delay(50);
-        await Navigation.PushAsync(new SettingsPage(), false);
+        NavigateTo("List", () => IPlatformApplication.Current!.Services.GetRequiredService<FleetManagementPage>());
+    }
+
+    private void OnSettingsTapped(object? sender, TappedEventArgs e)
+    {
+        NavigateTo("Settings", () => new SettingsPage());
     }
 }

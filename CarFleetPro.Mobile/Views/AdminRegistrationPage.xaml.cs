@@ -1,4 +1,6 @@
 using CarFleetPro.Mobile.Services;
+using System;
+using Microsoft.Maui.Controls;
 
 namespace CarFleetPro.Mobile.Views;
 
@@ -36,7 +38,7 @@ public partial class AdminRegistrationPage : ContentPage
             return;
         }
 
-        var (success, message) = await _apiService.RegisterAdminAsync(name, email, password);
+        var (success, message) = await _apiService.RegisterUserAsync(name, email, password, "Admin");
         await DisplayAlertAsync(success ? "Başarılı ✅" : "Hata ❌", message, "Tamam");
 
         if (success && Navigation != null)

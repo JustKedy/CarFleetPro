@@ -1,4 +1,4 @@
-using Microsoft.Maui.Controls;
+﻿using Microsoft.Maui.Controls;
 using System;
 using System.Threading.Tasks;
 using CarFleetPro.Mobile.Services;
@@ -23,7 +23,7 @@ public partial class LoginPage : ContentPage
 
         if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
         {
-            await DisplayAlertAsync("Eksik Bilgi", "Lütfen E-posta ve şifrenizi girin.", "Tamam");
+            await DisplayAlertAsync("Eksik Bilgi", "LÃ¼tfen E-posta ve ÅŸifrenizi girin.", "Tamam");
             return;
         }
 
@@ -51,12 +51,12 @@ public partial class LoginPage : ContentPage
             }
             catch (Exception ex)
             {
-                await DisplayAlertAsync("UI/Navigasyon Hatası", $"HomePage açılırken hata oluştu: {ex.Message}", "Tamam");
+                await DisplayAlertAsync("UI/Navigasyon HatasÄ±", $"HomePage aÃ§Ä±lÄ±rken hata oluÅŸtu: {ex.Message}", "Tamam");
             }
         }
         else
         {
-            await DisplayAlertAsync("Giriş Başarısız", message, "Tamam");
+            await DisplayAlertAsync("GiriÅŸ BaÅŸarÄ±sÄ±z", message, "Tamam");
         }
     }
 

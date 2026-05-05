@@ -38,7 +38,7 @@ namespace CarFleetPro.API.Controllers
                 UserName = model.Email,
                 Email = model.Email,
                 FullName = model.FullName,
-                Role = "Agent"
+                Role = string.IsNullOrEmpty(model.Role) ? "Agent" : model.Role
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);

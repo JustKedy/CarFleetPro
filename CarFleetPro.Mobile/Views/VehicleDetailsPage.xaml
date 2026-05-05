@@ -2,7 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="CarFleetPro.Mobile.Views.VehicleDetailsPage"
-             BackgroundColor="#F3F4F6"
+             BackgroundColor="{AppThemeBinding Light=#F3F4F6, Dark=#0F172A}"
              Shell.NavBarIsVisible="False">
 
     <Grid RowDefinitions="Auto, *">
@@ -28,50 +28,50 @@
         <ScrollView Grid.Row="1" Margin="0,-30,0,0">
             <VerticalStackLayout Spacing="20" Padding="20,0,20,30">
 
-                <Border BackgroundColor="White" Padding="20">
+                <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Padding="20">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="20" />
                     </Border.StrokeShape>
                     <VerticalStackLayout Spacing="5">
-                        <Label Text="{Binding MarkaModel}" FontSize="24" FontAttributes="Bold" TextColor="#1F2937"/>
-                        <Label Text="{Binding PlakaYil}" FontSize="16" TextColor="#6B7280"/>
+                        <Label Text="{Binding MarkaModel}" FontSize="24" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
+                        <Label Text="{Binding PlakaYil}" FontSize="16" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}"/>
                     </VerticalStackLayout>
                 </Border>
 
                 <Grid ColumnDefinitions="*, *, *" ColumnSpacing="10">
-                    <Border Grid.Column="0" BackgroundColor="White" Padding="10" HeightRequest="80">
+                    <Border Grid.Column="0" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Padding="10" HeightRequest="80">
                         <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
-                            <Label Text="KM" FontSize="12" HorizontalOptions="Center" TextColor="#9CA3AF"/>
+                            <Label Text="KM" FontSize="12" HorizontalOptions="Center" TextColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}"/>
                             <Label Text="{Binding Km}" FontAttributes="Bold" FontSize="16" HorizontalOptions="Center"/>
                         </VerticalStackLayout>
                     </Border>
                 </Grid>
 
                 <Grid ColumnDefinitions="*, *, *" ColumnSpacing="10">
-                    <Border Grid.Column="0" BackgroundColor="White" Padding="10" HeightRequest="80">
+                    <Border Grid.Column="0" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Padding="10" HeightRequest="80">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="12" />
                         </Border.StrokeShape>
                         <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
-                            <Label Text="KM" FontSize="12" HorizontalOptions="Center" TextColor="#9CA3AF"/>
+                            <Label Text="KM" FontSize="12" HorizontalOptions="Center" TextColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}"/>
                             <Label x:Name="KmLabel" Text="0" FontAttributes="Bold" FontSize="16" HorizontalOptions="Center"/>
                         </VerticalStackLayout>
                     </Border>
-                    <Border Grid.Column="1" BackgroundColor="White" Padding="10">
+                    <Border Grid.Column="1" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Padding="10">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="12" />
                         </Border.StrokeShape>
                         <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
-                            <Label Text="YAKIT" FontSize="12" HorizontalOptions="Center" TextColor="#9CA3AF"/>
+                            <Label Text="YAKIT" FontSize="12" HorizontalOptions="Center" TextColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}"/>
                             <Label x:Name="FuelLabel" Text="-" FontAttributes="Bold" FontSize="16" HorizontalOptions="Center"/>
                         </VerticalStackLayout>
                     </Border>
-                    <Border Grid.Column="2" BackgroundColor="White" Padding="10">
+                    <Border Grid.Column="2" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Padding="10">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="12" />
                         </Border.StrokeShape>
                         <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
-                            <Label Text="VİTES" FontSize="12" HorizontalOptions="Center" TextColor="#9CA3AF"/>
+                            <Label Text="VİTES" FontSize="12" HorizontalOptions="Center" TextColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}"/>
                             <Label x:Name="GearLabel" Text="-" FontAttributes="Bold" FontSize="16" HorizontalOptions="Center"/>
                         </VerticalStackLayout>
                     </Border>
@@ -79,7 +79,7 @@
 
                 <Label Text="Son Hareketler" FontAttributes="Bold" FontSize="18" Margin="5,10,0,0"/>
 
-                <Border BackgroundColor="White" Padding="15">
+                <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Padding="15">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="15" />
                     </Border.StrokeShape>
@@ -89,8 +89,8 @@
                             <Grid ColumnDefinitions="Auto, *, Auto" Padding="0,7">
                                 <BoxView WidthRequest="4" BackgroundColor="{Binding Color}" Grid.Column="0"/>
                                 <VerticalStackLayout Grid.Column="1" Margin="15,0">
-                                    <Label Text="{Binding Title}" FontAttributes="Bold" TextColor="#1F2937"/>
-                                    <Label Text="{Binding DateRange}" FontSize="12" TextColor="#9CA3AF"/>
+                                    <Label Text="{Binding Title}" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
+                                    <Label Text="{Binding DateRange}" FontSize="12" TextColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}"/>
                                 </VerticalStackLayout>
                                 <Label Grid.Column="2" Text="{Binding Status}" TextColor="#10B981" VerticalOptions="Center" FontSize="12"/>
                             </Grid>
@@ -100,7 +100,7 @@
                 </Border>
 
                 <Grid ColumnDefinitions="*, *" ColumnSpacing="15" Margin="0,10,0,0">
-                    <Button Grid.Column="0" Text="BAKIMA GÖNDER" Clicked="OnMaintenanceClicked" BackgroundColor="White" TextColor="#F59E0B" BorderColor="#F59E0B" BorderWidth="1" HeightRequest="55" CornerRadius="12" FontAttributes="Bold"/>
+                    <Button Grid.Column="0" Text="BAKIMA GÖNDER" Clicked="OnMaintenanceClicked" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" TextColor="#F59E0B" BorderColor="#F59E0B" BorderWidth="1" HeightRequest="55" CornerRadius="12" FontAttributes="Bold"/>
                     <Button Grid.Column="1" Text="ARACI KİRALA" Clicked="OnRentClicked" BackgroundColor="#3B82F6" TextColor="White" HeightRequest="55" CornerRadius="12" FontAttributes="Bold"/>
                 </Grid>
 

@@ -1,126 +1,206 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:CarFleetPro.Mobile.Models"
              x:Class="CarFleetPro.Mobile.Views.RentalFormPage"
-             BackgroundColor="#F3F4F6"
+             x:DataType="models:Vehicle"
+             BackgroundColor="{AppThemeBinding Light=#F3F4F6, Dark=#0F172A}"
              Shell.NavBarIsVisible="False">
 
-    <Grid RowDefinitions="Auto, *">
+    <ScrollView VerticalScrollBarVisibility="Never">
+        <VerticalStackLayout Spacing="0">
+            
+            <!-- Scrolling Header Section -->
+            <Border BackgroundColor="#0A1128" StrokeThickness="0" Padding="0,0,0,30">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="0,0,30,30"/>
+                </Border.StrokeShape>
 
-        <Border Grid.Row="0" BackgroundColor="#0A1128" StrokeThickness="0" Padding="20,10,20,30">
-            <Border.StrokeShape>
-                <RoundRectangle CornerRadius="0,0,30,30"/>
-            </Border.StrokeShape>
+                <Grid RowDefinitions="Auto, Auto, Auto, Auto">
+                    <!-- Top Row: Navigation and Logo -->
+                    <Grid Grid.Row="0" HeightRequest="80" Padding="20,10,20,0">
+                        <!-- Back Button (Left) -->
+                        <ImageButton Source="arrow_back_white.svg" 
+                                     Clicked="OnBackClicked" 
+                                     BackgroundColor="Transparent" 
+                                     WidthRequest="30" HeightRequest="30"
+                                     HorizontalOptions="Start" VerticalOptions="Center"/>
+                        
+                        <!-- Centered Logo and Page Title -->
+                        <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="5">
+                            <HorizontalStackLayout HorizontalOptions="Center" Spacing="0">
+                                <Label Text="CARFLEET" FontSize="14" TextColor="White" FontAttributes="Bold"/>
+                                <Label Text="PRO"      FontSize="14" TextColor="#3B82F6" FontAttributes="Bold"/>
+                            </HorizontalStackLayout>
+                            <Label Text="KİRALAMA" FontSize="26" TextColor="White"
+                                   HorizontalOptions="Center" Margin="0,5,0,0"/>
+                        </VerticalStackLayout>
+                        
+                        <!-- Notification Icon (Right) -->
+                        <Image Source="notification_bell_white.svg" 
+                               HeightRequest="25" WidthRequest="25" 
+                               HorizontalOptions="End" VerticalOptions="Center"/>
+                    </Grid>
 
-            <Grid RowDefinitions="Auto, Auto">
-                <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" HeightRequest="50">
-                    <ImageButton Grid.Column="0" Source="arrow_back_white.svg" Clicked="OnBackClicked" BackgroundColor="Transparent" WidthRequest="30" HeightRequest="30"/>
-                    <Label Grid.Column="1" Text="ARAÇ KİRALAMA" FontAttributes="Bold" TextColor="White" FontSize="18" HorizontalOptions="Center" VerticalOptions="Center"/>
-                    <Image Grid.Column="2" Source="notification_bell_white.svg" HeightRequest="25" WidthRequest="25"/>
+                    <!-- Vehicle Name (Above Photo) -->
+                    <VerticalStackLayout Grid.Row="1" Margin="0,20,0,10" Spacing="2">
+                        <Label TextColor="White" FontSize="26" FontAttributes="Bold" HorizontalOptions="Center">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="{Binding Marka}"/>
+                                    <Span Text=" "/>
+                                    <Span Text="{Binding Model}"/>
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                    </VerticalStackLayout>
+
+                    <!-- CarouselView for Images (Instagram Style) -->
+                    <Grid Grid.Row="2" RowDefinitions="Auto, Auto" Margin="0,0,0,0">
+                        <CarouselView x:Name="ImagesCarousel" 
+                                      Grid.Row="0"
+                                      HeightRequest="220" 
+                                      HorizontalOptions="Fill" 
+                                      IndicatorView="indicatorView"
+                                      Loop="False"
+                                      PeekAreaInsets="20">
+                            <CarouselView.ItemTemplate>
+                                <DataTemplate x:DataType="x:String">
+                                    <Border Margin="10,0" StrokeThickness="0" HeightRequest="220">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="15"/>
+                                        </Border.StrokeShape>
+                                        <Image Source="{Binding .}" Aspect="AspectFill" HeightRequest="220"/>
+                                    </Border>
+                                </DataTemplate>
+                            </CarouselView.ItemTemplate>
+                        </CarouselView>
+                        
+                        <IndicatorView x:Name="indicatorView" 
+                                       Grid.Row="1"
+                                       HorizontalOptions="Center" 
+                                       IndicatorColor="#4B5563" 
+                                       SelectedIndicatorColor="#3B82F6" 
+                                       Margin="0,8,0,0">
+                            <IndicatorView.IndicatorTemplate>
+                                <DataTemplate x:DataType="x:Color">
+                                    <Ellipse Fill="{Binding .}" HeightRequest="7" WidthRequest="7" Margin="2,0"/>
+                                </DataTemplate>
+                            </IndicatorView.IndicatorTemplate>
+                        </IndicatorView>
+                    </Grid>
+
+                    <!-- Plate Number (Below Photo) -->
+                    <Label Grid.Row="3" Text="{Binding Plaka}" TextColor="White" FontSize="14" HorizontalOptions="Center" Opacity="0.8" Margin="0,10,0,0"/>
                 </Grid>
+            </Border>
 
-                <VerticalStackLayout Grid.Row="1" Spacing="5" Margin="0,15,0,0">
-                    <Label Text="NISSAN QASHQAI" TextColor="White" FontSize="32" FontAttributes="Bold" HorizontalOptions="Center"/>
-                    <Label Text="55 BFR 051 | 2023 | DİZEL | OTOMATİK" TextColor="White" FontSize="14" HorizontalOptions="Center" Opacity="0.8"/>
-
-                    <Image Source="car_placeholder.png" Aspect="AspectFit" HeightRequest="140" HorizontalOptions="Center" Margin="0,10,0,0"/>
-                </VerticalStackLayout>
-            </Grid>
-        </Border>
-
-        <ScrollView Grid.Row="1" VerticalScrollBarVisibility="Never">
+            <!-- Form Content -->
             <VerticalStackLayout Padding="20" Spacing="25">
 
-                <Label Text="Müşteri Bilgileri" FontSize="18" TextColor="#1F2937" FontAttributes="Bold"/>
+                <Label Text="Müşteri Bilgileri" FontSize="18" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" FontAttributes="Bold"/>
 
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Kayıtlı Müşteri Seçin" TextColor="#6B7280" FontSize="12"/>
-                    <Border HeightRequest="50" Padding="15,0" StrokeThickness="1" Stroke="#D1D5DB" BackgroundColor="White">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="10"/>
-                        </Border.StrokeShape>
-                        <Picker x:Name="MusteriPicker" Title="Müşteri Seçiniz" TextColor="#1F2937"/>
-                    </Border>
-                </VerticalStackLayout>
-
-                <Grid ColumnDefinitions="*, *" ColumnSpacing="15">
-                    <VerticalStackLayout Grid.Column="0" Spacing="8">
-                        <Label Text="Adı Soyadı" TextColor="#6B7280" FontSize="12"/>
-                        <Border HeightRequest="50" Padding="15,0" StrokeThickness="1" Stroke="#D1D5DB" BackgroundColor="White">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="10"/>
-                            </Border.StrokeShape>
-                            <Entry Placeholder="Ad Soyad" TextColor="#1F2937"/>
+                <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto" ColumnSpacing="15" RowSpacing="15">
+                    <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="8">
+                        <Label Text="Adı Soyadı" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}" FontSize="12"/>
+                        <Border HeightRequest="50" Padding="15,0" StrokeThickness="1" Stroke="{AppThemeBinding Light=#D1D5DB, Dark=#334155}" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                            <Entry x:Name="CustomerNameEntry" Placeholder="Ad Soyad" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
                         </Border>
                     </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Column="1" Spacing="8">
-                        <Label Text="T.C. Kimlik" TextColor="#6B7280" FontSize="12"/>
-                        <Border HeightRequest="50" Padding="15,0" StrokeThickness="1" Stroke="#D1D5DB" BackgroundColor="White">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="10"/>
-                            </Border.StrokeShape>
-                            <Entry Placeholder="11 Haneli No" Keyboard="Numeric" TextColor="#1F2937"/>
+                    
+                    <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="8">
+                        <Label Text="T.C. Kimlik" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}" FontSize="12"/>
+                        <Border HeightRequest="50" Padding="15,0" StrokeThickness="1" Stroke="{AppThemeBinding Light=#D1D5DB, Dark=#334155}" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                            <Entry x:Name="CustomerTCEntry" Placeholder="11 Haneli" Keyboard="Numeric" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
                         </Border>
                     </VerticalStackLayout>
-                </Grid>
 
-                <Label Text="Kiralama Detayları" FontSize="18" TextColor="#1F2937" FontAttributes="Bold" Margin="0,10,0,0"/>
-
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Araç Seçimi" TextColor="#6B7280" FontSize="12"/>
-                    <Border HeightRequest="50" Padding="15,0" StrokeThickness="1" Stroke="#D1D5DB" BackgroundColor="White">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="10"/>
-                        </Border.StrokeShape>
-                        <Picker x:Name="AracPicker" Title="Müsait Araç Seçiniz" TextColor="#1F2937"/>
-                    </Border>
-                </VerticalStackLayout>
-
-                <Grid ColumnDefinitions="*, *" ColumnSpacing="15">
-                    <VerticalStackLayout Grid.Column="0" Spacing="8">
-                        <Label Text="Teslim Tarihi" TextColor="#6B7280" FontSize="12"/>
-                        <Border HeightRequest="50" Padding="10,0" StrokeThickness="1" Stroke="#D1D5DB" BackgroundColor="White">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="10"/>
-                            </Border.StrokeShape>
-                            <DatePicker Format="dd.MM.yyyy" TextColor="#1F2937"/>
+                    <VerticalStackLayout Grid.Row="1" Grid.Column="0" Spacing="8">
+                        <Label Text="Telefon Numarası" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}" FontSize="12"/>
+                        <Border HeightRequest="50" Padding="15,0" StrokeThickness="1" Stroke="{AppThemeBinding Light=#D1D5DB, Dark=#334155}" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                            <Entry x:Name="CustomerPhoneEntry" Placeholder="05xx..." Keyboard="Telephone" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
                         </Border>
                     </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Column="1" Spacing="8">
-                        <Label Text="Dönüş Tarihi" TextColor="#6B7280" FontSize="12"/>
-                        <Border HeightRequest="50" Padding="10,0" StrokeThickness="1" Stroke="#D1D5DB" BackgroundColor="White">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="10"/>
-                            </Border.StrokeShape>
-                            <DatePicker Format="dd.MM.yyyy" TextColor="#1F2937"/>
+
+                    <VerticalStackLayout Grid.Row="1" Grid.Column="1" Spacing="8">
+                        <Label Text="E-Posta (İsteğe Bağlı)" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}" FontSize="12"/>
+                        <Border HeightRequest="50" Padding="15,0" StrokeThickness="1" Stroke="{AppThemeBinding Light=#D1D5DB, Dark=#334155}" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                            <Entry x:Name="CustomerEmailEntry" Placeholder="örnek@mail.com" Keyboard="Email" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
                         </Border>
                     </VerticalStackLayout>
                 </Grid>
 
+                <Label Text="Yedek Kişi / Yakını (Acil Durum)" FontSize="15" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" FontAttributes="Bold" Margin="0,5,0,0"/>
+                
                 <Grid ColumnDefinitions="*, *" ColumnSpacing="15">
                     <VerticalStackLayout Grid.Column="0" Spacing="8">
-                        <Label Text="Günlük Ücret (TL)" TextColor="#6B7280" FontSize="12"/>
-                        <Border HeightRequest="50" Padding="15,0" StrokeThickness="1" Stroke="#D1D5DB" BackgroundColor="White">
+                        <Label Text="Adı Soyadı" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}" FontSize="12"/>
+                        <Border HeightRequest="50" Padding="15,0" StrokeThickness="1" Stroke="{AppThemeBinding Light=#D1D5DB, Dark=#334155}" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                            <Entry x:Name="EmergencyNameEntry" Placeholder="Yakını Ad Soyad" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
+                        </Border>
+                    </VerticalStackLayout>
+                    
+                    <VerticalStackLayout Grid.Column="1" Spacing="8">
+                        <Label Text="Telefonu" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}" FontSize="12"/>
+                        <Border HeightRequest="50" Padding="15,0" StrokeThickness="1" Stroke="{AppThemeBinding Light=#D1D5DB, Dark=#334155}" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                            <Entry x:Name="EmergencyPhoneEntry" Placeholder="Telefon" Keyboard="Telephone" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
+                        </Border>
+                    </VerticalStackLayout>
+                </Grid>
+
+                <Label Text="Kiralama Detayları" FontSize="18" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" FontAttributes="Bold" Margin="0,10,0,0"/>
+
+                <Grid ColumnDefinitions="*, *" ColumnSpacing="15">
+                    <VerticalStackLayout Grid.Column="0" Spacing="8">
+                        <Label Text="Teslim Tarihi" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}" FontSize="12"/>
+                        <Border HeightRequest="50" Padding="10,0" StrokeThickness="1" Stroke="{AppThemeBinding Light=#D1D5DB, Dark=#334155}" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}">
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="10"/>
                             </Border.StrokeShape>
-                            <Entry x:Name="GunlukUcretEntry" Placeholder="0.00" Keyboard="Numeric" TextColor="#1F2937" IsEnabled="False"/>
+                            <DatePicker Format="dd.MM.yyyy" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
                         </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="1" Spacing="8">
-                        <Label Text="Depozito (TL)" TextColor="#6B7280" FontSize="12"/>
-                        <Border HeightRequest="50" Padding="15,0" StrokeThickness="1" Stroke="#D1D5DB" BackgroundColor="White">
+                        <Label Text="Dönüş Tarihi" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}" FontSize="12"/>
+                        <Border HeightRequest="50" Padding="10,0" StrokeThickness="1" Stroke="{AppThemeBinding Light=#D1D5DB, Dark=#334155}" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}">
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="10"/>
                             </Border.StrokeShape>
-                            <Entry x:Name="DepozitoEntry" Placeholder="Örn: 2000" Keyboard="Numeric" TextColor="#1F2937"/>
+                            <DatePicker Format="dd.MM.yyyy" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
+                        </Border>
+                    </VerticalStackLayout>
+                </Grid>
+
+                <Grid ColumnDefinitions="*, *" ColumnSpacing="15">
+                    <VerticalStackLayout Grid.Column="0" Spacing="8">
+                        <Label Text="Günlük Ücret (TL)" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}" FontSize="12"/>
+                        <Border HeightRequest="50" Padding="15,0" StrokeThickness="1" Stroke="{AppThemeBinding Light=#D1D5DB, Dark=#334155}" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="10"/>
+                            </Border.StrokeShape>
+                            <Entry x:Name="GunlukUcretEntry" Placeholder="0.00" Keyboard="Numeric" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
+                        </Border>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="1" Spacing="8">
+                        <Label Text="Depozito (TL)" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}" FontSize="12"/>
+                        <Border HeightRequest="50" Padding="15,0" StrokeThickness="1" Stroke="{AppThemeBinding Light=#D1D5DB, Dark=#334155}" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="10"/>
+                            </Border.StrokeShape>
+                            <Entry x:Name="DepozitoEntry" Placeholder="Örn: 2000" Keyboard="Numeric" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
                         </Border>
                     </VerticalStackLayout>
                 </Grid>
 
                 <VerticalStackLayout Spacing="8">
-                    <Label Text="Toplam Tutar (TL)" TextColor="#6B7280" FontSize="12"/>
-                    <Border HeightRequest="50" Padding="15,0" StrokeThickness="1" Stroke="#3B82F6" BackgroundColor="#EFF6FF">
+                    <Label Text="Toplam Tutar (TL)" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}" FontSize="12"/>
+                    <Border HeightRequest="50" Padding="15,0" StrokeThickness="1" Stroke="#3B82F6" BackgroundColor="{AppThemeBinding Light=#EFF6FF, Dark=#172554}">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="10"/>
                         </Border.StrokeShape>
@@ -129,12 +209,12 @@
                 </VerticalStackLayout>
 
                 <VerticalStackLayout Spacing="8">
-                    <Label Text="Kiralama Notları" TextColor="#6B7280" FontSize="12"/>
-                    <Border HeightRequest="100" Padding="15" StrokeThickness="1" Stroke="#D1D5DB" BackgroundColor="White">
+                    <Label Text="Kiralama Notları" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}" FontSize="12"/>
+                    <Border HeightRequest="100" Padding="15" StrokeThickness="1" Stroke="{AppThemeBinding Light=#D1D5DB, Dark=#334155}" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="10"/>
                         </Border.StrokeShape>
-                        <Editor Placeholder="Özel notlar..." TextColor="#1F2937"/>
+                        <Editor Placeholder="Özel notlar..." TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
                     </Border>
                 </VerticalStackLayout>
 
@@ -148,6 +228,6 @@
                         Clicked="OnCompleteRentalClicked"/>
 
             </VerticalStackLayout>
-        </ScrollView>
-    </Grid>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

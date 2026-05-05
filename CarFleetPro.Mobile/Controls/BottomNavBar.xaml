@@ -3,50 +3,54 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="CarFleetPro.Mobile.Controls.BottomNavBar">
 
-    <Border BackgroundColor="#0A1128" StrokeThickness="0" HeightRequest="75" Padding="10,0">
+    <Border BackgroundColor="{AppThemeBinding Light=#0A1128, Dark=#1E293B}" StrokeThickness="0" HeightRequest="75" Padding="10,0">
         <Border.StrokeShape>
             <RoundRectangle CornerRadius="20,20,0,0" />
         </Border.StrokeShape>
 
-        <Grid x:Name="NavGrid" ColumnDefinitions="*, *, *, *" SizeChanged="OnNavGridSizeChanged">
-
-            <Border x:Name="SlidingIndicator" Grid.Column="0" 
+        <!-- Kusursuz konumlandÄ±rma iÃ§in tÃ¼m kapsayÄ±cÄ±yÄ± yÃ¶neten Grid -->
+        <Grid x:Name="ContainerGrid" SizeChanged="OnNavGridSizeChanged">
+            
+            <!-- GÃ¶sterge, ContainerGrid'in en solundan (X=0) baÅŸlar ve matematiksel olarak hedefe kaydÄ±rÄ±lÄ±r -->
+            <Border x:Name="SlidingIndicator" 
                     BackgroundColor="Transparent" Stroke="#3B82F6" StrokeThickness="1.5" 
                     WidthRequest="50" HeightRequest="42"
-                    HorizontalOptions="Center" VerticalOptions="Center" ZIndex="0">
+                    HorizontalOptions="Start" VerticalOptions="Center" ZIndex="0">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="12" />
                 </Border.StrokeShape>
             </Border>
 
-            <Border x:Name="HomeBorder" Grid.Column="0" BackgroundColor="Transparent" StrokeThickness="0" Padding="12, 8" HorizontalOptions="Center" VerticalOptions="Center" ZIndex="1">
-                <Border.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnHomeTapped" />
-                </Border.GestureRecognizers>
-                <Image x:Name="HomeImg" Source="homenegatif.svg" HeightRequest="26" />
-            </Border>
+            <!-- Ä°konlar NavGrid iÃ§erisindedir ve z-index ile gÃ¶stergenin Ã¼stÃ¼nde yer alÄ±r -->
+            <Grid x:Name="NavGrid" ColumnDefinitions="*, *, *, *">
+                <Border x:Name="HomeBorder" Grid.Column="0" BackgroundColor="Transparent" StrokeThickness="0" Padding="12, 8" HorizontalOptions="Center" VerticalOptions="Center" ZIndex="1">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnHomeTapped" />
+                    </Border.GestureRecognizers>
+                    <Image x:Name="HomeImg" Source="homenegatif.svg" HeightRequest="26" />
+                </Border>
 
-            <Border x:Name="GarageBorder" Grid.Column="1" BackgroundColor="Transparent" StrokeThickness="0" Padding="12, 8" HorizontalOptions="Center" VerticalOptions="Center" ZIndex="1">
-                <Border.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnGarageTapped" />
-                </Border.GestureRecognizers>
-                <Image x:Name="GarageImg" Source="garagenegatif.svg" HeightRequest="26" />
-            </Border>
+                <Border x:Name="GarageBorder" Grid.Column="1" BackgroundColor="Transparent" StrokeThickness="0" Padding="12, 8" HorizontalOptions="Center" VerticalOptions="Center" ZIndex="1">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnGarageTapped" />
+                    </Border.GestureRecognizers>
+                    <Image x:Name="GarageImg" Source="garagenegatif.svg" HeightRequest="26" />
+                </Border>
 
-            <Border x:Name="ListBorder" Grid.Column="2" BackgroundColor="Transparent" StrokeThickness="0" Padding="12, 8" HorizontalOptions="Center" VerticalOptions="Center" ZIndex="1">
-                <Border.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnListTapped" />
-                </Border.GestureRecognizers>
-                <Image x:Name="ListImg" Source="listnegatif.svg" HeightRequest="26" />
-            </Border>
+                <Border x:Name="ListBorder" Grid.Column="2" BackgroundColor="Transparent" StrokeThickness="0" Padding="12, 8" HorizontalOptions="Center" VerticalOptions="Center" ZIndex="1">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnListTapped" />
+                    </Border.GestureRecognizers>
+                    <Image x:Name="ListImg" Source="listnegatif.svg" HeightRequest="26" />
+                </Border>
 
-            <Border x:Name="SettingsBorder" Grid.Column="3" BackgroundColor="Transparent" StrokeThickness="0" Padding="12, 8" HorizontalOptions="Center" VerticalOptions="Center" ZIndex="1">
-                <Border.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnSettingsTapped" />
-                </Border.GestureRecognizers>
-                <Image x:Name="SettingsImg" Source="settingsnegatif.svg" HeightRequest="26" />
-            </Border>
-
+                <Border x:Name="SettingsBorder" Grid.Column="3" BackgroundColor="Transparent" StrokeThickness="0" Padding="12, 8" HorizontalOptions="Center" VerticalOptions="Center" ZIndex="1">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnSettingsTapped" />
+                    </Border.GestureRecognizers>
+                    <Image x:Name="SettingsImg" Source="settingsnegatif.svg" HeightRequest="26" />
+                </Border>
+            </Grid>
         </Grid>
     </Border>
 </ContentView>

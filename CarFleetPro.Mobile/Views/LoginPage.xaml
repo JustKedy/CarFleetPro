@@ -2,7 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="CarFleetPro.Mobile.Views.LoginPage"
-             BackgroundColor="#F3F4F6"
+             BackgroundColor="{AppThemeBinding Light=#F3F4F6, Dark=#0F172A}"
              Shell.NavBarIsVisible="False">
 
     <Grid>
@@ -34,7 +34,7 @@
                            Margin="0, 20, 0, 0" />
                 </VerticalStackLayout>
 
-                <Border BackgroundColor="White" 
+                <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" 
                         Padding="20, 30" 
                         Margin="0, 10, 0, 0"
                         Stroke="Transparent"
@@ -50,27 +50,27 @@
 
                     <VerticalStackLayout Spacing="20">
 
-                        <Border Padding="15,0" Stroke="#D1D5DB" StrokeThickness="1" BackgroundColor="White" HeightRequest="50">
+                        <Border Padding="15,0" Stroke="{AppThemeBinding Light=#D1D5DB, Dark=#334155}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" HeightRequest="50">
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="8" />
                             </Border.StrokeShape>
                             <Entry x:Name="EmailEntry"
                                    Placeholder="E-posta adresiniz"
                                    Keyboard="Email"
-                                   TextColor="#1F2937"
-                                   PlaceholderColor="#9CA3AF"
+                                   TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"
+                                   PlaceholderColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}"
                                    VerticalOptions="Center" />
                         </Border>
 
-                        <Border Padding="15,0" Stroke="#D1D5DB" StrokeThickness="1" BackgroundColor="White" HeightRequest="50">
+                        <Border Padding="15,0" Stroke="{AppThemeBinding Light=#D1D5DB, Dark=#334155}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" HeightRequest="50">
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="8" />
                             </Border.StrokeShape>
                             <Entry x:Name="PasswordEntry"
                                    Placeholder="Şifreniz"
                                    IsPassword="True"
-                                   TextColor="#1F2937"
-                                   PlaceholderColor="#9CA3AF"
+                                   TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"
+                                   PlaceholderColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}"
                                    VerticalOptions="Center" />
                         </Border>
 

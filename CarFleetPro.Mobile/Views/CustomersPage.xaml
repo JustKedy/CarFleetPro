@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:CarFleetPro.Mobile.Controls"
              x:Class="CarFleetPro.Mobile.Views.CustomersPage"
-             BackgroundColor="#F3F4F6"
+             BackgroundColor="{AppThemeBinding Light=#F3F4F6, Dark=#0F172A}"
              Shell.NavBarIsVisible="False">
 
     <Grid RowDefinitions="110, Auto, *, 75">
@@ -25,11 +25,11 @@
         </Border>
 
         <Grid Grid.Row="1" ColumnDefinitions="*, 60" Padding="20,15" ColumnSpacing="10">
-            <Border Grid.Column="0" Stroke="#D1D5DB" StrokeThickness="1" BackgroundColor="White" HeightRequest="50">
+            <Border Grid.Column="0" Stroke="{AppThemeBinding Light=#D1D5DB, Dark=#334155}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" HeightRequest="50">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="12" />
                 </Border.StrokeShape>
-                <Entry x:Name="SearchEntry" Placeholder="Müşteri Ara (İsim, TC, Tel)..." TextColor="#1F2937" PlaceholderColor="#9CA3AF" Margin="15,0" VerticalOptions="Center" TextChanged="OnSearchTextChanged" />
+                <Entry x:Name="SearchEntry" Placeholder="Müşteri Ara (İsim, TC, Tel)..." TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" PlaceholderColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}" Margin="15,0" VerticalOptions="Center" TextChanged="OnSearchTextChanged" />
             </Border>
 
             <Button Grid.Column="1" Text="+" BackgroundColor="#3B82F6" TextColor="White" FontSize="24" FontAttributes="Bold" CornerRadius="12" HeightRequest="50" />
@@ -41,7 +41,7 @@
 
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Border BackgroundColor="White" Margin="0,5" Padding="15">
+                    <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Margin="0,5" Padding="15">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="15" />
                         </Border.StrokeShape>
@@ -54,13 +54,13 @@
                             </Border>
 
                             <VerticalStackLayout Grid.Column="1" Margin="15,0" VerticalOptions="Center">
-                                <Label Text="{Binding FullName}" FontAttributes="Bold" TextColor="#1F2937" FontSize="16" />
-                                <Label Text="{Binding PhoneNumber}" FontSize="12" TextColor="#6B7280" />
+                                <Label Text="{Binding FullName}" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" FontSize="16" />
+                                <Label Text="{Binding PhoneNumber}" FontSize="12" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}" />
                             </VerticalStackLayout>
 
                             <VerticalStackLayout Grid.Column="2" VerticalOptions="Center" HorizontalOptions="End">
                                 <Label Text="{Binding RentalStatus}" TextColor="#10B981" FontSize="11" HorizontalOptions="End" FontAttributes="Bold" />
-                                <Label Text="{Binding TotalRentals, StringFormat='Kiralama: {0}'}" FontSize="11" TextColor="#9CA3AF" HorizontalOptions="End" />
+                                <Label Text="{Binding TotalRentals, StringFormat='Kiralama: {0}'}" FontSize="11" TextColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}" HorizontalOptions="End" />
                             </VerticalStackLayout>
                         </Grid>
                     </Border>
