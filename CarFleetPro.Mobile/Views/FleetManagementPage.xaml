@@ -120,7 +120,7 @@
                                     
                                     
                                     <HorizontalStackLayout Grid.Column="2" Spacing="10" VerticalOptions="Center">
-
+                                        
                                         <!-- BAKIM BUTONU KAPSÜLÜ -->
                                         <Border BackgroundColor="#F3F4F6" StrokeThickness="0" WidthRequest="50" HeightRequest="70" VerticalOptions="Center">
                                             <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
@@ -130,7 +130,7 @@
                                                          Aspect="AspectFit"
                                                          Clicked="OnBakimKayitlariClicked" />
                                         </Border>
-
+                                        
                                         <!-- HASAR BUTONU KAPSÜLÜ -->
                                         <Border BackgroundColor="#F3F4F6" StrokeThickness="0" WidthRequest="50" HeightRequest="70" VerticalOptions="Center">
                                             <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
@@ -140,7 +140,7 @@
                                                          Aspect="AspectFit"
                                                          Clicked="OnHasarKayitlariClicked" />
                                         </Border>
-
+                                        
                                         <!-- DÜZENLE BUTONU KAPSÜLÜ -->
                                         <Border BackgroundColor="#F3F4F6" StrokeThickness="0" WidthRequest="50" HeightRequest="70" VerticalOptions="Center">
                                             <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
