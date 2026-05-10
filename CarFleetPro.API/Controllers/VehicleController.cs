@@ -231,7 +231,10 @@ namespace CarFleetPro.API.Controllers
                 .ToListAsync();
 
             
-            var rentalMap = activeRentals.ToDictionary(r => r.VehicleId);
+            // Aynı araca birden fazla aktif kiralama olsa bile crash atmaz
+            var rentalMap = activeRentals
+                .GroupBy(r => r.VehicleId)
+                .ToDictionary(g => g.Key, g => g.First());
             foreach (var card in cardList)
             {
                 if (rentalMap.TryGetValue(card.Id, out var rental))
