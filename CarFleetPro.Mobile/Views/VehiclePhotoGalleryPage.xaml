@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="CarFleetPro.Mobile.Views.VehiclePhotoGalleryPage"
+             BackgroundColor="{AppThemeBinding Light=#F3F4F6, Dark=#0F172A}"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto, *, Auto">
+
+        <!-- Başlık -->
+        <Grid Grid.Row="0" Padding="20,50,20,15"
+              BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}">
+            <Grid.Shadow>
+                <Shadow Brush="Black" Offset="0,2" Radius="8" Opacity="0.08"/>
+            </Grid.Shadow>
+            <Grid ColumnDefinitions="Auto, *, Auto">
+                <ImageButton Grid.Column="0"
+                             Source="arrow_left_white.svg"
+                             Clicked="OnBackClicked"
+                             HeightRequest="28" WidthRequest="28"
+                             BackgroundColor="Transparent"/>
+                <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center">
+                    <Label x:Name="TitleLabel"
+                           Text="Araç Fotoğrafları"
+                           FontSize="17" FontAttributes="Bold"
+                           HorizontalOptions="Center"
+                           TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
+                    <Label x:Name="CountLabel"
+                           Text="0 fotoğraf"
+                           FontSize="12"
+                           HorizontalOptions="Center"
+                           TextColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}"/>
+                </VerticalStackLayout>
+                <!-- Admin için fotoğraf ekle -->
+                <Button x:Name="AddPhotoBtn"
+                        Grid.Column="2"
+                        Text="+ Ekle"
+                        FontSize="13"
+                        FontAttributes="Bold"
+                        BackgroundColor="#3B82F6"
+                        TextColor="White"
+                        CornerRadius="10"
+                        HeightRequest="34"
+                        Padding="12,0"
+                        IsVisible="False"
+                        Clicked="OnAddPhotoClicked"/>
+            </Grid>
+        </Grid>
+
+        <!-- Fotoğraf ızgarası -->
+        <CollectionView x:Name="PhotoGrid"
+                        Grid.Row="1"
+                        Margin="10,10,10,0"
+                        ItemsLayout="VerticalGrid, 3"
+                        SelectionMode="Single"
+                        SelectionChanged="OnPhotoSelected">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Padding="4" HeightRequest="130">
+                        <Border StrokeThickness="0">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="10"/>
+                            </Border.StrokeShape>
+                            <Image Source="{Binding ImageUrl}"
+                                   Aspect="AspectFill"/>
+                            <!-- Birincil rozeti -->
+                            <Border IsVisible="{Binding IsPrimary}"
+                                    BackgroundColor="#3B82F6"
+                                    Padding="5,2"
+                                    HorizontalOptions="Start"
+                                    VerticalOptions="Start"
+                                    Margin="5,5,0,0">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="6"/>
+                                </Border.StrokeShape>
+                                <Label Text="KAPAK" TextColor="White"
+                                       FontSize="9" FontAttributes="Bold"/>
+                            </Border>
+                        </Border>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Boş durum -->
+        <VerticalStackLayout x:Name="EmptyState"
+                             Grid.Row="1"
+                             VerticalOptions="Center"
+                             HorizontalOptions="Center"
+                             IsVisible="False"
+                             Spacing="10">
+            <Label Text="📷" FontSize="48" HorizontalOptions="Center"/>
+            <Label Text="Bu araç için henüz fotoğraf eklenmemiş."
+                   FontSize="15"
+                   TextColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}"
+                   HorizontalOptions="Center"
+                   HorizontalTextAlignment="Center"/>
+        </VerticalStackLayout>
+
+        <!-- Seçili fotoğraf aksiyonları (admin) -->
+        <Border x:Name="ActionBar"
+                Grid.Row="2"
+                BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}"
+                Padding="20,12"
+                IsVisible="False">
+            <Border.Shadow>
+                <Shadow Brush="Black" Offset="0,-2" Radius="8" Opacity="0.08"/>
+            </Border.Shadow>
+            <Grid ColumnDefinitions="*, *, *" ColumnSpacing="10">
+                <Button Grid.Column="0"
+                        Text="🌟 Kapak Yap"
+                        BackgroundColor="#3B82F6"
+                        TextColor="White"
+                        CornerRadius="10"
+                        FontSize="13"
+                        HeightRequest="44"
+                        Clicked="OnSetPrimaryClicked"/>
+                <Button Grid.Column="1"
+                        Text="🗑 Sil"
+                        BackgroundColor="#EF4444"
+                        TextColor="White"
+                        CornerRadius="10"
+                        FontSize="13"
+                        HeightRequest="44"
+                        Clicked="OnDeletePhotoClicked"/>
+                <Button Grid.Column="2"
+                        Text="İptal"
+                        BackgroundColor="{AppThemeBinding Light=#F3F4F6, Dark=#334155}"
+                        TextColor="{AppThemeBinding Light=#374151, Dark=#CBD5E1}"
+                        CornerRadius="10"
+                        FontSize="13"
+                        HeightRequest="44"
+                        Clicked="OnCancelSelectionClicked"/>
+            </Grid>
+        </Border>
+
+    </Grid>
+</ContentPage>

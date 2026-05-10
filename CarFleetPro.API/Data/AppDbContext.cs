@@ -18,6 +18,9 @@ namespace CarFleetPro.API.Data
         public DbSet<Payment> Payments { get; set; } = null!;
         public DbSet<Maintenance> Maintenances { get; set; } = null!;
 
+        // Araç fotoğrafları (çoklu)
+        public DbSet<VehicleImage> VehicleImages { get; set; } = null!;
+
         // Yeni tablolar
         public DbSet<Invoice> Invoices { get; set; } = null!;
         public DbSet<DamageRecord> DamageRecords { get; set; } = null!;
@@ -39,6 +42,21 @@ namespace CarFleetPro.API.Data
             builder.Entity<Customer>()
                 .HasIndex(c => c.IdentityNumber)
                 .IsUnique();
+
+            // VehicleImage → Vehicle
+            builder.Entity<VehicleImage>()
+                .HasOne(vi => vi.Vehicle)
+                .WithMany()
+                .HasForeignKey(vi => vi.VehicleId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // VehicleImage → AppUser
+            builder.Entity<VehicleImage>()
+                .HasOne(vi => vi.UploadedByUser)
+                .WithMany()
+                .HasForeignKey(vi => vi.UploadedByUserId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.SetNull);
 
             // DamageRecord → Vehicle (silme engellemek için Restrict)
             builder.Entity<DamageRecord>()

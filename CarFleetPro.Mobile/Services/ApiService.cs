@@ -506,6 +506,111 @@ namespace CarFleetPro.Mobile.Services
                 return new List<AlertInfo>();
             }
         }
+
+        // ==========================================
+        //  ARAÇ FOTOĞRAFLARI
+        // ==========================================
+
+        /// <summary>
+        /// GET /api/vehicleimage/{vehicleId} — Araçtaki tüm fotoğrafları getir
+        /// </summary>
+        public async Task<List<VehicleImageInfo>> GetVehicleImagesAsync(int vehicleId)
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                return await _httpClient.GetFromJsonAsync<List<VehicleImageInfo>>(
+                    $"VehicleImage/{vehicleId}",
+                    new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                ) ?? new List<VehicleImageInfo>();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[API] VehicleImage List Hatası: {ex.Message}");
+                return new List<VehicleImageInfo>();
+            }
+        }
+
+        /// <summary>
+        /// POST /api/vehicleimage/upload/{vehicleId} — Tekil fotoğraf yükle
+        /// </summary>
+        public async Task<(bool Success, string Message, VehicleImageInfo? Image)> UploadVehicleImageAsync(int vehicleId, string filePath, string fileName, string contentType = "image/jpeg")
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+
+                await using var stream = File.OpenRead(filePath);
+                using var content = new MultipartFormDataContent();
+                var fileContent = new StreamContent(stream);
+                fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(contentType);
+                content.Add(fileContent, "file", fileName);
+
+                var response = await _httpClient.PostAsync($"VehicleImage/upload/{vehicleId}", content);
+                var responseBody = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var image = System.Text.Json.JsonSerializer.Deserialize<VehicleImageInfo>(
+                        responseBody,
+                        new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    return (true, "Fotoğraf yüklendi!", image);
+                }
+
+                var errorMsg = responseBody.Trim().Trim('"');
+                return (int)response.StatusCode switch
+                {
+                    400 => (false, string.IsNullOrEmpty(errorMsg) ? "Geçersiz dosya." : errorMsg, null),
+                    403 => (false, "Bu işlem için yetkiniz yok.", null),
+                    404 => (false, "Araç bulunamadı.", null),
+                    _ => (false, $"Sunucu hatası ({(int)response.StatusCode}).", null)
+                };
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Bağlantı hatası: {ex.Message}", null);
+            }
+        }
+
+        /// <summary>
+        /// DELETE /api/vehicleimage/{imageId} — Fotoğrafı sil
+        /// </summary>
+        public async Task<(bool Success, string Message)> DeleteVehicleImageAsync(int imageId)
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                var response = await _httpClient.DeleteAsync($"VehicleImage/{imageId}");
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode) return (true, "Fotoğraf silindi.");
+                return (false, content.Trim().Trim('"'));
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Bağlantı hatası: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// PUT /api/vehicleimage/{imageId}/set-primary — Birincil fotoğrafı değiştir
+        /// </summary>
+        public async Task<(bool Success, string Message)> SetPrimaryImageAsync(int imageId)
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                var response = await _httpClient.PutAsync($"VehicleImage/{imageId}/set-primary", null);
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode) return (true, "Kapak fotoğrafı güncellendi.");
+                return (false, content.Trim().Trim('"'));
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Bağlantı hatası: {ex.Message}");
+            }
+        }
     }
 
     

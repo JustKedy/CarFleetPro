@@ -86,4 +86,15 @@ namespace CarFleetPro.Mobile.Models
         public string ModelName { get; set; } = string.Empty;
         public int RentCount { get; set; }
     }
+
+    public class VehicleImageInfo
+    {
+        public int VehicleImageId { get; set; }
+        public int VehicleId { get; set; }
+        public string ImageUrl { get; set; } = string.Empty;
+        public string PublicId { get; set; } = string.Empty;
+        public bool IsPrimary { get; set; }
+        public int DisplayOrder { get; set; }
+        public DateTime UploadedAt { get; set; }
+    }
 }

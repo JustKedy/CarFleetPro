@@ -53,6 +53,7 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddScoped<CarFleetPro.API.Services.IEmailService, CarFleetPro.API.Services.SmtpEmailService>();
+builder.Services.AddScoped<CarFleetPro.API.Services.IStorageService, CarFleetPro.API.Services.CloudinaryStorageService>();
 
 builder.Services.AddMemoryCache();
 builder.Services.AddControllers();

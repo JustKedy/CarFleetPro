@@ -142,18 +142,20 @@ namespace CarFleetPro.API.Controllers
             return Ok(new { message = $"{vehicle.PlateNumber} plakalı araç filodan silindi." });
         }
 
+        /// <summary>
+        /// Araç fotoğrafı yükleme artık /api/vehicleimage/upload/{vehicleId} endpoint'inden yapılmaktadır.
+        /// Bu endpoint geriye dönük uyumluluk için bırakılmıştır.
+        /// </summary>
         [HttpPost("upload-image")]
-        [Authorize(Roles = "Yönetici")]  // Sadece yönetici görsel yükleyebilir
-        public IActionResult UploadVehicleImage(IFormFile file)
+        [Authorize(Roles = "Yönetici")]
+        public IActionResult UploadVehicleImage()
         {
-            if (file == null || file.Length == 0)
-                return BadRequest("Lütfen bir görsel seçin.");
-
-            
-            
-            var fakeImageUrl = "https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg";
-
-            return Ok(new { message = "Görsel başarıyla yüklendi", imageUrl = fakeImageUrl });
+            return BadRequest(new
+            {
+                message = "Bu endpoint artık kullanılmıyor.",
+                newEndpoint = "POST /api/vehicleimage/upload/{vehicleId}",
+                multipleEndpoint = "POST /api/vehicleimage/upload-multiple/{vehicleId}"
+            });
         }
 
         [HttpGet("last-updated")]

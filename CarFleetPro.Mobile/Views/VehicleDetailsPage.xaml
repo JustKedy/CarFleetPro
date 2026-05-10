@@ -7,17 +7,83 @@
 
     <Grid RowDefinitions="Auto, *">
 
+        <!-- FOTOĞRAF GALERİSİ ALANI -->
         <Grid Grid.Row="0" HeightRequest="280">
-            <Image Source="clio_large.png" Aspect="AspectFill" />
-            <BoxView Color="#000000" Opacity="0.3" />
 
-            <ImageButton Source="arrow_left_white.svg" 
+            <!-- Fotoğraf yoksa placeholder -->
+            <Image x:Name="PlaceholderImage"
+                   Source="clio_large.png"
+                   Aspect="AspectFill"
+                   IsVisible="True"/>
+
+            <!-- API'den gelen kapak fotoğrafı -->
+            <Image x:Name="PrimaryImage"
+                   Aspect="AspectFill"
+                   IsVisible="False"/>
+
+            <BoxView Color="#000000" Opacity="0.25" />
+
+            <!-- Geri butonu -->
+            <ImageButton Source="arrow_left_white.svg"
                          Clicked="OnBackClicked"
                          HorizontalOptions="Start" VerticalOptions="Start"
                          Margin="20,50,0,0" HeightRequest="30" WidthRequest="30"/>
 
-            <Border HorizontalOptions="End" VerticalOptions="End" 
-                    Margin="0,0,20,20" BackgroundColor="#10B981" Padding="15,5">
+            <!-- Fotoğraf sayacı (sağ üst) -->
+            <Border x:Name="PhotoCountBadge"
+                    HorizontalOptions="End" VerticalOptions="Start"
+                    Margin="0,50,20,0"
+                    BackgroundColor="#00000066"
+                    Padding="10,4"
+                    IsVisible="False">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12"/>
+                </Border.StrokeShape>
+                <Label x:Name="PhotoCountLabel"
+                       Text="1/1"
+                       TextColor="White"
+                       FontSize="12"
+                       FontAttributes="Bold"/>
+            </Border>
+
+            <!-- Fotoğraf yükle butonu (sadece Admin, sağ alt) -->
+            <Border x:Name="UploadButton"
+                    HorizontalOptions="End" VerticalOptions="End"
+                    Margin="0,0,70,15"
+                    BackgroundColor="#3B82F6"
+                    Padding="10,6"
+                    IsVisible="False">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12"/>
+                </Border.StrokeShape>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnUploadPhotoTapped"/>
+                </Border.GestureRecognizers>
+                <HorizontalStackLayout Spacing="5">
+                    <Label Text="📷" FontSize="14"/>
+                    <Label Text="Fotoğraf Ekle" TextColor="White" FontSize="12" FontAttributes="Bold"/>
+                </HorizontalStackLayout>
+            </Border>
+
+            <!-- Tüm fotoğrafları gör butonu (sol alt) -->
+            <Border x:Name="ViewAllButton"
+                    HorizontalOptions="Start" VerticalOptions="End"
+                    Margin="15,0,0,15"
+                    BackgroundColor="#00000066"
+                    Padding="10,6"
+                    IsVisible="False">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12"/>
+                </Border.StrokeShape>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnViewAllPhotosTapped"/>
+                </Border.GestureRecognizers>
+                <Label Text="Tüm Fotoğraflar" TextColor="White" FontSize="12"/>
+            </Border>
+
+            <!-- Durum badge (sağ alt) -->
+            <Border HorizontalOptions="End" VerticalOptions="End"
+                    Margin="0,0,15,15" BackgroundColor="#10B981" Padding="12,5">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="20" />
                 </Border.StrokeShape>
@@ -25,9 +91,11 @@
             </Border>
         </Grid>
 
+        <!-- İÇERİK -->
         <ScrollView Grid.Row="1" Margin="0,-30,0,0">
             <VerticalStackLayout Spacing="20" Padding="20,0,20,30">
 
+                <!-- Araç başlığı -->
                 <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Padding="20">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="20" />
@@ -38,15 +106,7 @@
                     </VerticalStackLayout>
                 </Border>
 
-                <Grid ColumnDefinitions="*, *, *" ColumnSpacing="10">
-                    <Border Grid.Column="0" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Padding="10" HeightRequest="80">
-                        <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
-                            <Label Text="KM" FontSize="12" HorizontalOptions="Center" TextColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}"/>
-                            <Label Text="{Binding Km}" FontAttributes="Bold" FontSize="16" HorizontalOptions="Center"/>
-                        </VerticalStackLayout>
-                    </Border>
-                </Grid>
-
+                <!-- Teknik bilgiler -->
                 <Grid ColumnDefinitions="*, *, *" ColumnSpacing="10">
                     <Border Grid.Column="0" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Padding="10" HeightRequest="80">
                         <Border.StrokeShape>
@@ -77,34 +137,84 @@
                     </Border>
                 </Grid>
 
+                <!-- Fotoğraflar küçük önizleme şeridi -->
+                <Border x:Name="PhotoStripBorder"
+                        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}"
+                        Padding="12"
+                        IsVisible="False">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="15"/>
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Fotoğraflar" FontAttributes="Bold" FontSize="14"
+                               TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
+                        <CollectionView x:Name="PhotoStrip"
+                                        ItemsLayout="HorizontalList"
+                                        HeightRequest="80">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Padding="4,0">
+                                        <Border StrokeThickness="0" HeightRequest="75" WidthRequest="75">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="10"/>
+                                            </Border.StrokeShape>
+                                            <Image Source="{Binding ImageUrl}"
+                                                   Aspect="AspectFill"/>
+                                            <!-- Birincil badge -->
+                                            <Border IsVisible="{Binding IsPrimary}"
+                                                    BackgroundColor="#3B82F6"
+                                                    Padding="3,1"
+                                                    HorizontalOptions="Start"
+                                                    VerticalOptions="End">
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="4"/>
+                                                </Border.StrokeShape>
+                                                <Label Text="★" TextColor="White" FontSize="9"/>
+                                            </Border>
+                                        </Border>
+                                    </Grid>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Border>
+
                 <Label Text="Son Hareketler" FontAttributes="Bold" FontSize="18" Margin="5,10,0,0"/>
 
                 <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Padding="15">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="15" />
                     </Border.StrokeShape>
-                <CollectionView x:Name="HistoryList" VerticalScrollBarVisibility="Never">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Grid ColumnDefinitions="Auto, *, Auto" Padding="0,7">
-                                <BoxView WidthRequest="4" BackgroundColor="{Binding Color}" Grid.Column="0"/>
-                                <VerticalStackLayout Grid.Column="1" Margin="15,0">
-                                    <Label Text="{Binding Title}" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
-                                    <Label Text="{Binding DateRange}" FontSize="12" TextColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}"/>
-                                </VerticalStackLayout>
-                                <Label Grid.Column="2" Text="{Binding Status}" TextColor="#10B981" VerticalOptions="Center" FontSize="12"/>
-                            </Grid>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
+                    <CollectionView x:Name="HistoryList" VerticalScrollBarVisibility="Never">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="Auto, *, Auto" Padding="0,7">
+                                    <BoxView WidthRequest="4" BackgroundColor="{Binding Color}" Grid.Column="0"/>
+                                    <VerticalStackLayout Grid.Column="1" Margin="15,0">
+                                        <Label Text="{Binding Title}" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
+                                        <Label Text="{Binding DateRange}" FontSize="12" TextColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}"/>
+                                    </VerticalStackLayout>
+                                    <Label Grid.Column="2" Text="{Binding Status}" TextColor="#10B981" VerticalOptions="Center" FontSize="12"/>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
                 </Border>
 
+                <!-- Aksiyon butonları -->
                 <Grid ColumnDefinitions="*, *" ColumnSpacing="15" Margin="0,10,0,0">
-                    <Button Grid.Column="0" Text="BAKIMA GÖNDER" Clicked="OnMaintenanceClicked" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" TextColor="#F59E0B" BorderColor="#F59E0B" BorderWidth="1" HeightRequest="55" CornerRadius="12" FontAttributes="Bold"/>
-                    <Button Grid.Column="1" Text="ARACI KİRALA" Clicked="OnRentClicked" BackgroundColor="#3B82F6" TextColor="White" HeightRequest="55" CornerRadius="12" FontAttributes="Bold"/>
+                    <Button Grid.Column="0" Text="BAKIMA GÖNDER" Clicked="OnMaintenanceClicked"
+                            BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}"
+                            TextColor="#F59E0B" BorderColor="#F59E0B" BorderWidth="1"
+                            HeightRequest="55" CornerRadius="12" FontAttributes="Bold"/>
+                    <Button Grid.Column="1" Text="ARACI KİRALA" Clicked="OnRentClicked"
+                            BackgroundColor="#3B82F6" TextColor="White"
+                            HeightRequest="55" CornerRadius="12" FontAttributes="Bold"/>
                 </Grid>
 
             </VerticalStackLayout>
         </ScrollView>
+
     </Grid>
+
 </ContentPage>

@@ -3,6 +3,7 @@ using System;
 using CarFleetPro.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CarFleetPro.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260510132653_AddVehicleImages")]
+    partial class AddVehicleImages
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -126,7 +129,7 @@ namespace CarFleetPro.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CarBrands", (string)null);
+                    b.ToTable("CarBrands");
                 });
 
             modelBuilder.Entity("CarFleetPro.API.Models.CarColor", b =>
@@ -143,7 +146,7 @@ namespace CarFleetPro.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CarColors", (string)null);
+                    b.ToTable("CarColors");
                 });
 
             modelBuilder.Entity("CarFleetPro.API.Models.CarModel", b =>
@@ -163,7 +166,7 @@ namespace CarFleetPro.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CarModels", (string)null);
+                    b.ToTable("CarModels");
                 });
 
             modelBuilder.Entity("CarFleetPro.API.Models.Customer", b =>
@@ -219,7 +222,7 @@ namespace CarFleetPro.API.Migrations
                     b.HasIndex("IdentityNumber")
                         .IsUnique();
 
-                    b.ToTable("Customers", (string)null);
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("CarFleetPro.API.Models.DamageRecord", b =>
@@ -264,7 +267,7 @@ namespace CarFleetPro.API.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("DamageRecords", (string)null);
+                    b.ToTable("DamageRecords");
                 });
 
             modelBuilder.Entity("CarFleetPro.API.Models.Invoice", b =>
@@ -297,7 +300,7 @@ namespace CarFleetPro.API.Migrations
 
                     b.HasIndex("RentalId");
 
-                    b.ToTable("Invoices", (string)null);
+                    b.ToTable("Invoices");
                 });
 
             modelBuilder.Entity("CarFleetPro.API.Models.Maintenance", b =>
@@ -340,7 +343,7 @@ namespace CarFleetPro.API.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("Maintenances", (string)null);
+                    b.ToTable("Maintenances");
                 });
 
             modelBuilder.Entity("CarFleetPro.API.Models.Notification", b =>
@@ -381,7 +384,7 @@ namespace CarFleetPro.API.Migrations
 
                     b.HasIndex("TargetUserId");
 
-                    b.ToTable("Notifications", (string)null);
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("CarFleetPro.API.Models.Payment", b =>
@@ -411,7 +414,7 @@ namespace CarFleetPro.API.Migrations
 
                     b.HasIndex("RentalId");
 
-                    b.ToTable("Payments", (string)null);
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("CarFleetPro.API.Models.Rental", b =>
@@ -474,7 +477,7 @@ namespace CarFleetPro.API.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("Rentals", (string)null);
+                    b.ToTable("Rentals");
                 });
 
             modelBuilder.Entity("CarFleetPro.API.Models.Vehicle", b =>
@@ -551,7 +554,7 @@ namespace CarFleetPro.API.Migrations
                     b.HasIndex("PlateNumber")
                         .IsUnique();
 
-                    b.ToTable("Vehicles", (string)null);
+                    b.ToTable("Vehicles");
                 });
 
             modelBuilder.Entity("CarFleetPro.API.Models.VehicleImage", b =>
@@ -591,7 +594,7 @@ namespace CarFleetPro.API.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("VehicleImages", (string)null);
+                    b.ToTable("VehicleImages");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

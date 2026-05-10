@@ -1,4 +1,4 @@
-﻿using Microsoft.Maui;
+using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Media;
 using Microsoft.Maui.Graphics;
@@ -87,29 +87,19 @@ namespace CarFleetPro.Mobile.Views
 
         public async void OnUploadImageTapped(object? sender, EventArgs e)
         {
-            try
+            // Yeni araç eklerken araç ID'si henüz yok — önce kaydet sonra fotoğraf ekle
+            if (_duzenlenenArac == null)
             {
-                if (MediaPicker.Default.IsCaptureSupported)
-                {
-                    var photos = await MediaPicker.Default.PickPhotosAsync();
-                    var photo = photos?.FirstOrDefault();
+                await DisplayAlertAsync(
+                    "Bilgi",
+                    "Fotoğraf eklemek için önce aracı kaydedin. Kayıt sonrası fotoğraf yükleme ekranına yönlendirileceksiniz.",
+                    "Anladım");
+                return;
+            }
 
-                    if (photo != null)
-                    {
-                        ImageUploadBorder.Content = null;
-                        var selectedImage = new Image
-                        {
-                            Source = ImageSource.FromFile(photo.FullPath),
-                            Aspect = Aspect.AspectFill
-                        };
-                        ImageUploadBorder.Content = selectedImage;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"HATA: {ex.Message}");
-            }
+            // Düzenleme modunda: doğrudan galeri sayfasına git
+            var images = await _apiService.GetVehicleImagesAsync(_duzenlenenArac.Id);
+            await Navigation.PushAsync(new VehiclePhotoGalleryPage(_duzenlenenArac, images, true, _apiService));
         }
 
         private async void OnCancelClicked(object? sender, EventArgs e)
@@ -185,13 +175,31 @@ namespace CarFleetPro.Mobile.Views
 
                 if (success)
                 {
-                    await ShowSuccessToast("AraÃ§ filoya baÅŸarÄ±yla eklendi!");
+                    await ShowSuccessToast("Araç filoya başarıyla eklendi!");
                     WeakReferenceMessenger.Default.Send(new VehicleAddedMessage());
+
+                    // Araç eklendikten sonra fotoğraf eklemek ister misin?
+                    var addPhoto = await DisplayAlert("Fotoğraf Ekle", "Araç başarıyla eklendi! Şimdi fotoğraf eklemek ister misiniz?", "Evet, Ekle", "Hayır");
+
+                    if (addPhoto)
+                    {
+                        // Yeni eklenen aracın ID'sini al
+                        var vehicles = await _apiService.GetVehiclesAsync(forceRefresh: true);
+                        var newVehicle = vehicles.FirstOrDefault(v =>
+                            string.Equals(v.Plaka, request.PlateNumber, StringComparison.OrdinalIgnoreCase));
+
+                        if (newVehicle != null)
+                        {
+                            await Navigation.PushAsync(new VehiclePhotoGalleryPage(newVehicle, new System.Collections.Generic.List<VehicleImageInfo>(), true, _apiService));
+                            return;
+                        }
+                    }
+
                     await Navigation.PopAsync();
                 }
                 else
                 {
-                    await DisplayAlertAsync("Hata", message, "Tamam");
+                    await DisplayAlert("Hata", message, "Tamam");
                 }
             }
         }
