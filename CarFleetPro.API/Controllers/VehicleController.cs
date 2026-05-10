@@ -203,7 +203,8 @@ namespace CarFleetPro.API.Controllers
                     Km = v.Mileage,
                     Durum = v.Status == VehicleStatus.Available ? "MÜSAİT" :
                             v.Status == VehicleStatus.Rented ? "DOLU" : "BAKIMDA",
-                    ResimUrl = v.ImageUrl ?? "https://via.placeholder.com/300"
+                    ResimUrl = v.ImageUrl ?? "https://via.placeholder.com/300",
+                    Branch = v.Branch
                 })
                 .ToListAsync();
 

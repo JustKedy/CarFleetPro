@@ -15,8 +15,14 @@ namespace CarFleetPro.Mobile.ViewModels
         private readonly ApiService _apiService;
 
         public ObservableCollection<Vehicle> AracListesi { get; set; } = [];
+        private List<Vehicle> _tumAraclar = [];
 
         [ObservableProperty] public partial bool IsLoading { get; set; } = true;
+
+        [ObservableProperty] public partial bool IsTumuSelected { get; set; } = true;
+        [ObservableProperty] public partial bool IsMusaitSelected { get; set; } = false;
+        [ObservableProperty] public partial bool IsDoluSelected { get; set; } = false;
+        [ObservableProperty] public partial bool IsBakimdaSelected { get; set; } = false;
 
         public GarageViewModel(ApiService apiService)
         {
@@ -36,8 +42,9 @@ namespace CarFleetPro.Mobile.ViewModels
 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    AracListesi.Clear();
-                    foreach (var vehicle in apiVehicles) { AracListesi.Add(vehicle); }
+                    _tumAraclar.Clear();
+                    _tumAraclar.AddRange(apiVehicles);
+                    FiltreUygula();
                 });
             }
             catch (Exception ex)
@@ -70,6 +77,40 @@ namespace CarFleetPro.Mobile.ViewModels
         {
             if (selectedVehicle is null) return;
             selectedVehicle.IsExpanded = !selectedVehicle.IsExpanded;
+        }
+
+        [RelayCommand]
+        public void Filtrele(string durum)
+        {
+            IsTumuSelected = durum == "Tümü";
+            IsMusaitSelected = durum == "Müsait";
+            IsDoluSelected = durum == "Dolu";
+            IsBakimdaSelected = durum == "Bakımda";
+            FiltreUygula();
+        }
+
+        private void FiltreUygula()
+        {
+            AracListesi.Clear();
+            foreach (var vehicle in _tumAraclar)
+            {
+                if (IsTumuSelected)
+                {
+                    AracListesi.Add(vehicle);
+                }
+                else if (IsMusaitSelected && (vehicle.Durum?.Equals("MÜSAİT", StringComparison.OrdinalIgnoreCase) == true || vehicle.Durum?.Equals("Müsait", StringComparison.OrdinalIgnoreCase) == true))
+                {
+                    AracListesi.Add(vehicle);
+                }
+                else if (IsDoluSelected && (vehicle.Durum?.Equals("DOLU", StringComparison.OrdinalIgnoreCase) == true || vehicle.Durum?.Equals("Dolu", StringComparison.OrdinalIgnoreCase) == true))
+                {
+                    AracListesi.Add(vehicle);
+                }
+                else if (IsBakimdaSelected && (vehicle.Durum?.Equals("BAKIMDA", StringComparison.OrdinalIgnoreCase) == true || vehicle.Durum?.Equals("Bakımda", StringComparison.OrdinalIgnoreCase) == true))
+                {
+                    AracListesi.Add(vehicle);
+                }
+            }
         }
     }
 }

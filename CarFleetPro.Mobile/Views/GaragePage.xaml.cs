@@ -84,13 +84,14 @@ namespace CarFleetPro.Mobile.Views
 
         private async void OnBakimClicked(object? sender, EventArgs e)
         {
-            if (sender is Button btn && btn.BindingContext is Vehicle)
+            if (sender is Button btn && btn.BindingContext is Vehicle vehicle)
             {
                 if (Navigation != null)
                 {
-                    await Navigation.PushAsync(new VehicleMaintenancePage());
+                    await Navigation.PushAsync(new VehicleMaintenancePage(vehicle));
                 }
             }
         }
+
     }
 }

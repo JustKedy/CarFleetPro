@@ -87,7 +87,7 @@ namespace CarFleetPro.Mobile.Views
             {
                 if (Navigation != null)
                 {
-                    await Navigation.PushAsync(new DamageRecordPage());
+                    await Navigation.PushAsync(new DamageRecordPage(secilenArac));
                 }
             }
         }

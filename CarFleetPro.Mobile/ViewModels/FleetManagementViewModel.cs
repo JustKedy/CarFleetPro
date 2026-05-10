@@ -26,10 +26,24 @@ namespace CarFleetPro.Mobile.ViewModels
         [ObservableProperty]
         public partial string SeciliFiltre { get; set; } = "Tümü";
 
+        [ObservableProperty]
+        public partial bool IsAdmin { get; set; } = false;
+
         public FleetManagementViewModel(ApiService apiService)
         {
             _apiService = apiService;
-            _ = VerileriYukle();
+            _ = InitAsync();
+        }
+
+        private async Task InitAsync()
+        {
+            var profile = await _apiService.GetProfileAsync();
+            var role = profile?.Role ?? string.Empty;
+            IsAdmin = role.Equals("Admin", StringComparison.OrdinalIgnoreCase)
+                   || role.Equals("Yönetici", StringComparison.OrdinalIgnoreCase)
+                   || role.Equals("Manager", StringComparison.OrdinalIgnoreCase);
+
+            await VerileriYukle();
         }
 
         private async Task VerileriYukle(bool forceRefresh = false)

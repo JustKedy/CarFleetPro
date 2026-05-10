@@ -198,8 +198,10 @@ namespace CarFleetPro.Mobile.Services
             return new List<Vehicle>();
         }
 
+
         
         
+
         
         public async Task<VehicleDetail?> GetVehicleDetailsAsync(int id)
         {
@@ -292,7 +294,13 @@ namespace CarFleetPro.Mobile.Services
             try
             {
                 await SetAuthorizationHeader();
-                return await _httpClient.GetFromJsonAsync<UserProfile>("Auth/me");
+                var response = await _httpClient.GetAsync("Auth/me");
+                if (!response.IsSuccessStatusCode) return null;
+
+                var content = await response.Content.ReadAsStringAsync();
+                return System.Text.Json.JsonSerializer.Deserialize<UserProfile>(
+                    content,
+                    new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             }
             catch (Exception ex)
             {
@@ -300,6 +308,7 @@ namespace CarFleetPro.Mobile.Services
                 return null;
             }
         }
+
 
         /// <summary>
         /// PUT /api/Auth/profile — Profil güncelle
@@ -461,6 +470,29 @@ namespace CarFleetPro.Mobile.Services
         
         
         
+        // ==========================================
+        //  DASHBOARD
+        // ==========================================
+
+        public async Task<DashboardStats?> GetDashboardStatsAsync(string? branch = null)
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                var url = "Dashboard/stats";
+                if (!string.IsNullOrEmpty(branch) && branch != "Tümü")
+                    url += $"?branch={Uri.EscapeDataString(branch)}";
+
+                return await _httpClient.GetFromJsonAsync<DashboardStats>(url,
+                    new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[API] Dashboard Stats Hatası: {ex.Message}");
+                return null;
+            }
+        }
+
         public async Task<List<AlertInfo>> GetAlertsAsync()
         {
             try

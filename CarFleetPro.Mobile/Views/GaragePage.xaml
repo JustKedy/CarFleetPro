@@ -33,39 +33,147 @@
             <ScrollView Grid.Row="0" HorizontalOptions="Fill" Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Padding="20,15,20,5">
                 <HorizontalStackLayout Spacing="10">
                     <!-- Tümü -->
-                    <Border BackgroundColor="#3B82F6" StrokeThickness="0" HeightRequest="38" Padding="15,0">
+                    <Border StrokeThickness="0" HeightRequest="38" Padding="15,0">
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding IsTumuSelected}" Value="True">
+                                <Setter Property="BackgroundColor" Value="#3B82F6"/>
+                            </DataTrigger>
+                            <DataTrigger TargetType="Border" Binding="{Binding IsTumuSelected}" Value="False">
+                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#E5E7EB, Dark=#1E293B}"/>
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding FiltreleCommand}" CommandParameter="Tümü"/>
+                        </Border.GestureRecognizers>
                         <Border.StrokeShape><RoundRectangle CornerRadius="19"/></Border.StrokeShape>
-                        <Label Text="Tümü" TextColor="White" VerticalOptions="Center" FontAttributes="Bold" FontSize="13"/>
+                        <Label Text="Tümü" VerticalOptions="Center" FontAttributes="Bold" FontSize="13">
+                            <Label.Triggers>
+                                <DataTrigger TargetType="Label" Binding="{Binding IsTumuSelected}" Value="True">
+                                    <Setter Property="TextColor" Value="White"/>
+                                </DataTrigger>
+                                <DataTrigger TargetType="Label" Binding="{Binding IsTumuSelected}" Value="False">
+                                    <Setter Property="TextColor" Value="{AppThemeBinding Light=#4B5563, Dark=#94A3B8}"/>
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
                     </Border>
 
                     <!-- Müsait -->
-                    <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" StrokeThickness="1" Stroke="#10B981" HeightRequest="38" Padding="15,0">
+                    <Border StrokeThickness="1" Stroke="#10B981" HeightRequest="38" Padding="15,0">
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding IsMusaitSelected}" Value="True">
+                                <Setter Property="BackgroundColor" Value="#10B981"/>
+                            </DataTrigger>
+                            <DataTrigger TargetType="Border" Binding="{Binding IsMusaitSelected}" Value="False">
+                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}"/>
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding FiltreleCommand}" CommandParameter="Müsait"/>
+                        </Border.GestureRecognizers>
                         <Border.StrokeShape><RoundRectangle CornerRadius="19"/></Border.StrokeShape>
                         <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
-                            <Ellipse Fill="#10B981" WidthRequest="8" HeightRequest="8"/>
-                            <Label Text="Müsait" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" FontSize="13"/>
+                            <Ellipse WidthRequest="8" HeightRequest="8">
+                                <Ellipse.Triggers>
+                                    <DataTrigger TargetType="Ellipse" Binding="{Binding IsMusaitSelected}" Value="True">
+                                        <Setter Property="Fill" Value="White"/>
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Ellipse" Binding="{Binding IsMusaitSelected}" Value="False">
+                                        <Setter Property="Fill" Value="#10B981"/>
+                                    </DataTrigger>
+                                </Ellipse.Triggers>
+                            </Ellipse>
+                            <Label Text="Müsait" FontSize="13">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding IsMusaitSelected}" Value="True">
+                                        <Setter Property="TextColor" Value="White"/>
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Label" Binding="{Binding IsMusaitSelected}" Value="False">
+                                        <Setter Property="TextColor" Value="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
                         </HorizontalStackLayout>
                     </Border>
 
                     <!-- Dolu -->
-                    <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" StrokeThickness="1" Stroke="#EF4444" HeightRequest="38" Padding="15,0">
+                    <Border StrokeThickness="1" Stroke="#EF4444" HeightRequest="38" Padding="15,0">
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding IsDoluSelected}" Value="True">
+                                <Setter Property="BackgroundColor" Value="#EF4444"/>
+                            </DataTrigger>
+                            <DataTrigger TargetType="Border" Binding="{Binding IsDoluSelected}" Value="False">
+                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}"/>
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding FiltreleCommand}" CommandParameter="Dolu"/>
+                        </Border.GestureRecognizers>
                         <Border.StrokeShape><RoundRectangle CornerRadius="19"/></Border.StrokeShape>
                         <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
-                            <Ellipse Fill="#EF4444" WidthRequest="8" HeightRequest="8"/>
-                            <Label Text="Dolu" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" FontSize="13"/>
+                            <Ellipse WidthRequest="8" HeightRequest="8">
+                                <Ellipse.Triggers>
+                                    <DataTrigger TargetType="Ellipse" Binding="{Binding IsDoluSelected}" Value="True">
+                                        <Setter Property="Fill" Value="White"/>
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Ellipse" Binding="{Binding IsDoluSelected}" Value="False">
+                                        <Setter Property="Fill" Value="#EF4444"/>
+                                    </DataTrigger>
+                                </Ellipse.Triggers>
+                            </Ellipse>
+                            <Label Text="Dolu" FontSize="13">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding IsDoluSelected}" Value="True">
+                                        <Setter Property="TextColor" Value="White"/>
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Label" Binding="{Binding IsDoluSelected}" Value="False">
+                                        <Setter Property="TextColor" Value="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
                         </HorizontalStackLayout>
                     </Border>
 
                     <!-- Bakımda -->
-                    <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" StrokeThickness="1" Stroke="#F59E0B" HeightRequest="38" Padding="15,0">
+                    <Border StrokeThickness="1" Stroke="#F59E0B" HeightRequest="38" Padding="15,0">
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding IsBakimdaSelected}" Value="True">
+                                <Setter Property="BackgroundColor" Value="#F59E0B"/>
+                            </DataTrigger>
+                            <DataTrigger TargetType="Border" Binding="{Binding IsBakimdaSelected}" Value="False">
+                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}"/>
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding FiltreleCommand}" CommandParameter="Bakımda"/>
+                        </Border.GestureRecognizers>
                         <Border.StrokeShape><RoundRectangle CornerRadius="19"/></Border.StrokeShape>
                         <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
-                            <Ellipse Fill="#F59E0B" WidthRequest="8" HeightRequest="8"/>
-                            <Label Text="Bakımda" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" FontSize="13"/>
+                            <Ellipse WidthRequest="8" HeightRequest="8">
+                                <Ellipse.Triggers>
+                                    <DataTrigger TargetType="Ellipse" Binding="{Binding IsBakimdaSelected}" Value="True">
+                                        <Setter Property="Fill" Value="White"/>
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Ellipse" Binding="{Binding IsBakimdaSelected}" Value="False">
+                                        <Setter Property="Fill" Value="#F59E0B"/>
+                                    </DataTrigger>
+                                </Ellipse.Triggers>
+                            </Ellipse>
+                            <Label Text="Bakımda" FontSize="13">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding IsBakimdaSelected}" Value="True">
+                                        <Setter Property="TextColor" Value="White"/>
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Label" Binding="{Binding IsBakimdaSelected}" Value="False">
+                                        <Setter Property="TextColor" Value="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
                         </HorizontalStackLayout>
                     </Border>
                 </HorizontalStackLayout>
             </ScrollView>
+
 
             <CollectionView Grid.Row="1"
                 Margin="0,10,0,0"

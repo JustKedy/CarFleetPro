@@ -48,5 +48,39 @@ namespace CarFleetPro.Mobile.Views
             await DisplayAlertAsync("Bilgi", "Kiralama işlemi başarılı bir şekilde kaydedildi.", "Tamam");
             await Navigation.PopAsync();
         }
+
+        private void OnPrevImageClicked(object? sender, EventArgs e)
+        {
+            if (ImagesCarousel.ItemsSource is IList<string> items && items.Count > 0)
+            {
+                int currentIndex = ImagesCarousel.Position;
+                if (currentIndex > 0)
+                {
+                    ImagesCarousel.Position = currentIndex - 1;
+                }
+                else
+                {
+                    // Loop to the end
+                    ImagesCarousel.Position = items.Count - 1;
+                }
+            }
+        }
+
+        private void OnNextImageClicked(object? sender, EventArgs e)
+        {
+            if (ImagesCarousel.ItemsSource is IList<string> items && items.Count > 0)
+            {
+                int currentIndex = ImagesCarousel.Position;
+                if (currentIndex < items.Count - 1)
+                {
+                    ImagesCarousel.Position = currentIndex + 1;
+                }
+                else
+                {
+                    // Loop to the beginning
+                    ImagesCarousel.Position = 0;
+                }
+            }
+        }
     }
 }

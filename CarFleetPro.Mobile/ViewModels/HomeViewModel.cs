@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using CarFleetPro.Mobile.Services;
 using Microsoft.Maui.Controls;
 using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,11 +13,12 @@ namespace CarFleetPro.Mobile.ViewModels
     {
         private readonly ApiService _apiService;
 
-        
+        // ── Kart istatistikleri ──────────────────────────────────────────────
         [ObservableProperty] public partial int ToplamAracSayisi { get; set; }
         [ObservableProperty] public partial int KiradakiAracSayisi { get; set; }
         [ObservableProperty] public partial int MusaitAracSayisi { get; set; }
 
+        // ── Filo durum yüzdeleri ─────────────────────────────────────────────
         [ObservableProperty] public partial string KiraYuzdesi { get; set; } = "0";
         [ObservableProperty] public partial string MusaitYuzdesi { get; set; } = "0";
         [ObservableProperty] public partial string BakimYuzdesi { get; set; } = "0";
@@ -29,19 +31,53 @@ namespace CarFleetPro.Mobile.ViewModels
             new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }
         };
 
-        [ObservableProperty] public partial int AylikCiro { get; set; }
-        [ObservableProperty] public partial string AracModelAdi { get; set; } = string.Empty;
+        // ── Aylık ciro (sadece Admin görür) ─────────────────────────────────
+        [ObservableProperty] public partial decimal AylikCiro { get; set; }
+        [ObservableProperty] public partial bool IsAdmin { get; set; } = false;
+
+        // ── En çok talep gören modeller ──────────────────────────────────────
+        [ObservableProperty] public partial string AracModelAdi { get; set; } = "-";
         [ObservableProperty] public partial double BarGenisligi { get; set; } = 0;
         [ObservableProperty] public partial int KiralamaSayisi { get; set; }
 
-        
+        [ObservableProperty] public partial string AracModelAdi2 { get; set; } = "-";
+        [ObservableProperty] public partial double BarGenisligi2 { get; set; } = 0;
+        [ObservableProperty] public partial int KiralamaSayisi2 { get; set; }
+
+        // ── Yükleme durumu ───────────────────────────────────────────────────
         [ObservableProperty] public partial bool IsLoading { get; set; } = true;
+
+        // ── Şube filtresi ────────────────────────────────────────────────────
+        private string? _secilenSube = null; // null = Tümü
+
+        // Şube butonlarının aktif renkleri için
+        [ObservableProperty] public partial Color TumuRenk { get; set; } = Color.FromArgb("#0A1128");
+        [ObservableProperty] public partial Color BafraRenk { get; set; } = Colors.Transparent;
+        [ObservableProperty] public partial Color AtakumRenk { get; set; } = Colors.Transparent;
+        [ObservableProperty] public partial Color IlkadimRenk { get; set; } = Colors.Transparent;
 
         public HomeViewModel(ApiService apiService)
         {
             _apiService = apiService;
-            _ = LoadDataAsync();
+            _ = InitAsync();
         }
+
+        private async Task InitAsync()
+        {
+            // Rol kontrolü
+            var profile = await _apiService.GetProfileAsync();
+            System.Diagnostics.Debug.WriteLine($"[HOME VM] Profil: {profile?.FullName}, Rol: '{profile?.Role}'");
+
+            var role = profile?.Role ?? string.Empty;
+            IsAdmin = role.Equals("Admin", StringComparison.OrdinalIgnoreCase)
+                   || role.Equals("Yönetici", StringComparison.OrdinalIgnoreCase)
+                   || role.Equals("Manager", StringComparison.OrdinalIgnoreCase);
+
+            System.Diagnostics.Debug.WriteLine($"[HOME VM] IsAdmin: {IsAdmin}");
+
+            await LoadDataAsync();
+        }
+
 
         [RelayCommand]
         public async Task LoadDataAsync()
@@ -49,23 +85,21 @@ namespace CarFleetPro.Mobile.ViewModels
             if (ToplamAracSayisi == 0) IsLoading = true;
             try
             {
-                var vehicles = await _apiService.GetVehiclesAsync();
+                var stats = await _apiService.GetDashboardStatsAsync(_secilenSube);
+                if (stats == null) return;
 
-                if (vehicles == null || vehicles.Count == 0) return;
+                ToplamAracSayisi = stats.TotalVehicles;
+                KiradakiAracSayisi = stats.RentedVehicles;
+                MusaitAracSayisi = stats.AvailableVehicles;
+                AylikCiro = stats.MonthlyRevenue;
 
-                int total = vehicles.Count;
-                ToplamAracSayisi = total;
-                MusaitAracSayisi = vehicles.Count(v => v.Durum == "MÜSAİT");
-                KiradakiAracSayisi = vehicles.Count(v => v.Durum == "KİRADA" || v.Durum == "DOLU");
-                int bakimdaSayisi = vehicles.Count(v => v.Durum == "BAKIMDA");
+                KiraYuzdesi = ((int)Math.Round(stats.RentedPercentage)).ToString();
+                MusaitYuzdesi = ((int)Math.Round(stats.AvailablePercentage)).ToString();
+                BakimYuzdesi = ((int)Math.Round(stats.MaintenancePercentage)).ToString();
 
-                KiraYuzdesi = ((KiradakiAracSayisi * 100) / total).ToString();
-                MusaitYuzdesi = ((MusaitAracSayisi * 100) / total).ToString();
-                BakimYuzdesi = ((bakimdaSayisi * 100) / total).ToString();
-
-                var c1 = Math.Max(1, KiradakiAracSayisi);
-                var c2 = Math.Max(1, MusaitAracSayisi);
-                var c3 = Math.Max(1, bakimdaSayisi);
+                var c1 = Math.Max(1, stats.RentedVehicles);
+                var c2 = Math.Max(1, stats.AvailableVehicles);
+                var c3 = Math.Max(1, stats.TotalVehicles - stats.RentedVehicles - stats.AvailableVehicles);
 
                 GrafikOranlari = new ColumnDefinitionCollection
                 {
@@ -73,6 +107,39 @@ namespace CarFleetPro.Mobile.ViewModels
                     new ColumnDefinition { Width = new GridLength(c2, GridUnitType.Star) },
                     new ColumnDefinition { Width = new GridLength(c3, GridUnitType.Star) }
                 };
+
+                // En çok talep gören modeller
+                const double MaxBarWidth = 180.0;
+                var topModels = stats.TopModels;
+
+                int maxCount = topModels.Count > 0 ? topModels.Max(m => m.RentCount) : 1;
+                if (maxCount == 0) maxCount = 1;
+
+                if (topModels.Count > 0)
+                {
+                    AracModelAdi = topModels[0].ModelName;
+                    KiralamaSayisi = topModels[0].RentCount;
+                    BarGenisligi = (topModels[0].RentCount / (double)maxCount) * MaxBarWidth;
+                }
+                else
+                {
+                    AracModelAdi = "-";
+                    KiralamaSayisi = 0;
+                    BarGenisligi = 0;
+                }
+
+                if (topModels.Count > 1)
+                {
+                    AracModelAdi2 = topModels[1].ModelName;
+                    KiralamaSayisi2 = topModels[1].RentCount;
+                    BarGenisligi2 = (topModels[1].RentCount / (double)maxCount) * MaxBarWidth;
+                }
+                else
+                {
+                    AracModelAdi2 = "-";
+                    KiralamaSayisi2 = 0;
+                    BarGenisligi2 = 0;
+                }
             }
             catch (Exception ex)
             {
@@ -85,6 +152,24 @@ namespace CarFleetPro.Mobile.ViewModels
         }
 
         [RelayCommand]
-        public void SubeFiltrele(string subeId) {  }
+        public async Task SubeFiltrele(string subeId)
+        {
+            // Şube eşleştirme
+            _secilenSube = subeId switch
+            {
+                "1" => "Bafra Şube",
+                "2" => "Atakum Şube",
+                "3" => "İlkadım Şube",
+                _   => null  // "0" = Tümü
+            };
+
+            // Buton renkleri güncelle
+            TumuRenk    = subeId == "0" ? Color.FromArgb("#0A1128") : Colors.Transparent;
+            BafraRenk   = subeId == "1" ? Color.FromArgb("#0A1128") : Colors.Transparent;
+            AtakumRenk  = subeId == "2" ? Color.FromArgb("#0A1128") : Colors.Transparent;
+            IlkadimRenk = subeId == "3" ? Color.FromArgb("#0A1128") : Colors.Transparent;
+
+            await LoadDataAsync();
+        }
     }
 }

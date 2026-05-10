@@ -17,6 +17,8 @@ namespace CarFleetPro.Mobile.Models
         public string? KiralamaSuresi { get; set; }
         public string? KiralamaTarihi { get; set; }  
         public string? ResimUrl { get; set; }
+        public string? Branch { get; set; }
+
 
         
         [ObservableProperty]
