@@ -57,6 +57,7 @@ namespace CarFleetPro.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Yönetici")]  // Sadece yönetici araç ekleyebilir
         public async Task<IActionResult> AddVehicle([FromBody] CreateVehicleDto dto)
         {
             if (await _context.Vehicles.AnyAsync(v => v.PlateNumber == dto.PlateNumber))
@@ -89,6 +90,7 @@ namespace CarFleetPro.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Yönetici")]  // Sadece yönetici araç güncelleyebilir
         public async Task<IActionResult> UpdateVehicle(int id, [FromBody] CreateVehicleDto dto)
         {
             var vehicle = await _context.Vehicles.FindAsync(id);
@@ -121,6 +123,7 @@ namespace CarFleetPro.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Yönetici")]  // Sadece yönetici araç silebilir
         public async Task<IActionResult> DeleteVehicle(int id)
         {
             var vehicle = await _context.Vehicles.FindAsync(id);
@@ -140,6 +143,7 @@ namespace CarFleetPro.API.Controllers
         }
 
         [HttpPost("upload-image")]
+        [Authorize(Roles = "Yönetici")]  // Sadece yönetici görsel yükleyebilir
         public IActionResult UploadVehicleImage(IFormFile file)
         {
             if (file == null || file.Length == 0)
