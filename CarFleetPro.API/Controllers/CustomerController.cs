@@ -151,7 +151,44 @@ namespace CarFleetPro.API.Controllers
             return Ok(names);
         }
 
+        [HttpPost("guest")]
+        public async Task<IActionResult> AddGuestCustomer([FromBody] CreateCustomerDto dto)
+        {
+            // Aynı telefon numarasıyla kayıt varsa mevcut ID'yi döndür
+            var existing = await _context.Customers
+                .FirstOrDefaultAsync(c => c.PhoneNumber == dto.PhoneNumber);
+
+            if (existing != null)
+                return Ok(new { customerId = existing.CustomerId });
+
+            var customer = new Customer
+            {
+                FirstName           = dto.FirstName,
+                LastName            = dto.LastName,
+                IdentityNumber      = string.IsNullOrWhiteSpace(dto.IdentityNumber)
+                                        ? $"MISAFIR{dto.PhoneNumber.TakeLast(10).Aggregate("", (a, c2) => a + c2)}"
+                                        : dto.IdentityNumber,
+                Email               = string.IsNullOrWhiteSpace(dto.Email)
+                                        ? $"misafir_{dto.PhoneNumber.Replace(" ", "")}@carfleetpro.com"
+                                        : dto.Email,
+                PhoneNumber         = dto.PhoneNumber,
+                DateOfBirth         = dto.DateOfBirth == default ? new DateTime(1990, 1, 1, 0, 0, 0, DateTimeKind.Utc) : dto.DateOfBirth.ToUniversalTime(),
+                DriverLicenseNumber = string.IsNullOrWhiteSpace(dto.DriverLicenseNumber)
+                                        ? $"GS{dto.PhoneNumber.TakeLast(6).Aggregate("", (a, c2) => a + c2)}"
+                                        : dto.DriverLicenseNumber,
+                DriverLicenseExpiry = dto.DriverLicenseExpiry == default ? DateTime.UtcNow.AddYears(5) : dto.DriverLicenseExpiry.ToUniversalTime(),
+                Address             = string.IsNullOrWhiteSpace(dto.Address) ? "Belirtilmedi" : dto.Address,
+                CreatedAt           = DateTime.UtcNow
+            };
+
+            _context.Customers.Add(customer);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { customerId = customer.CustomerId });
+        }
+
         [HttpPost]
+
         public async Task<IActionResult> AddCustomer([FromBody] CreateCustomerDto dto)
         {
             var customer = new Customer

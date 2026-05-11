@@ -12,7 +12,7 @@ namespace CarFleetPro.API.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Yönetici")]
+    [Authorize]
     public class StaffController : ControllerBase
     {
         private readonly UserManager<AppUser> _userManager;
