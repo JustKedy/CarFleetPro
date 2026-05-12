@@ -56,8 +56,8 @@ namespace CarFleetPro.API.Controllers
             double maintenancePct = totalVehicles > 0 ? Math.Round((double)maintenanceVehicles / totalVehicles * 100, 1) : 0;
 
             var topModels = await rentalsQuery
-                .Join(_context.Vehicles, r => r.VehicleId, v => v.VehicleId, (r, v) => new { v.Brand, v.Model })
-                .GroupBy(v => v.Brand + " " + v.Model)
+                .Where(r => r.Vehicle != null && r.Vehicle.Brand != null && r.Vehicle.Model != null)
+                .GroupBy(r => r.Vehicle!.Brand!.Name + " " + r.Vehicle!.Model!.Name)
                 .Select(g => new TopModelDto { ModelName = g.Key, RentCount = g.Count() })
                 .OrderByDescending(x => x.RentCount)
                 .Take(2)

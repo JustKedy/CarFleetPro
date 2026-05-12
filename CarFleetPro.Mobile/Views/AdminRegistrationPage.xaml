@@ -38,13 +38,12 @@
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="8" />
                             </Border.StrokeShape>
-                            <Picker Title="Rol Seçin (Yönetici / Personel)" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" TitleColor="#9CA3AF" BackgroundColor="Transparent">
-                                <Picker.Items>
-                                    <x:String>Yönetici</x:String>
-                                    <x:String>Personel</x:String>
-                                </Picker.Items>
-                            </Picker>
+                            <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                                <Label Grid.Column="0" Text="Yönetici Yetkisi Ver" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" VerticalOptions="Center" />
+                                <Switch x:Name="AdminRoleSwitch" Grid.Column="1" IsToggled="False" OnColor="#3B82F6" VerticalOptions="Center" />
+                            </Grid>
                         </Border>
+
 
                         <Border Stroke="{AppThemeBinding Light=#E5E7EB, Dark=#334155}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light=#F9FAFB, Dark=#263347}" Padding="15,0" HeightRequest="50">
                             <Border.StrokeShape>
@@ -64,22 +63,9 @@
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="8" />
                             </Border.StrokeShape>
-                            <Entry Placeholder="Telefon (Örn: 0555...)" Keyboard="Telephone" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" PlaceholderColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}" BackgroundColor="Transparent"/>
+                            <Entry x:Name="AdminPhoneEntry" Placeholder="Telefon (Örn: 0555...)" Keyboard="Telephone" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" PlaceholderColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}" BackgroundColor="Transparent"/>
                         </Border>
 
-                        <Border Stroke="{AppThemeBinding Light=#E5E7EB, Dark=#334155}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light=#F9FAFB, Dark=#263347}" Padding="15,0" HeightRequest="50">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="8" />
-                            </Border.StrokeShape>
-                            <Picker Title="Sorumlu Şube Seçin" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" TitleColor="#9CA3AF" BackgroundColor="Transparent">
-                                <Picker.Items>
-                                    <x:String>Merkez (Tüm Yetkiler)</x:String>
-                                    <x:String>Bafra Şubesi</x:String>
-                                    <x:String>Atakum Şubesi</x:String>
-                                    <x:String>İlkadım Şubesi</x:String>
-                                </Picker.Items>
-                            </Picker>
-                        </Border>
 
                         <Border Stroke="{AppThemeBinding Light=#E5E7EB, Dark=#334155}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light=#F9FAFB, Dark=#263347}" Padding="15,0" HeightRequest="50">
                             <Border.StrokeShape>

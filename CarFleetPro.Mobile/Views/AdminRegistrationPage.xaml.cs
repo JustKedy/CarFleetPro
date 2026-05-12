@@ -38,7 +38,21 @@ public partial class AdminRegistrationPage : ContentPage
             return;
         }
 
-        var (success, message) = await _apiService.RegisterUserAsync(name, email, password, "Admin");
+        var role = AdminRoleSwitch.IsToggled ? "Yönetici" : "Çalışan";
+        var department = string.Empty;
+        var phone = AdminPhoneEntry.Text?.Trim() ?? string.Empty;
+
+        var request = new CarFleetPro.Mobile.Models.CreateStaffRequest
+        {
+            FullName = name,
+            Email = email,
+            PhoneNumber = phone,
+            Department = department,
+            Role = role,
+            Password = password
+        };
+
+        var (success, message) = await _apiService.CreateStaffAsync(request);
         await DisplayAlertAsync(success ? "Başarılı ✅" : "Hata ❌", message, "Tamam");
 
         if (success && Navigation != null)

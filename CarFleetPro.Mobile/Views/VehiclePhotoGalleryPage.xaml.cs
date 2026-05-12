@@ -51,7 +51,7 @@ public partial class VehiclePhotoGalleryPage : ContentPage
     }
 
     // ─── Fotoğraf Seçildi ─────────────────────────────────────────────────
-    private void OnPhotoSelected(object sender, SelectionChangedEventArgs e)
+    private void OnPhotoSelected(object? sender, SelectionChangedEventArgs e)
     {
         _selectedImage = e.CurrentSelection.FirstOrDefault() as VehicleImageInfo;
 
@@ -71,7 +71,7 @@ public partial class VehiclePhotoGalleryPage : ContentPage
         if (_selectedImage == null) return;
         if (_selectedImage.IsPrimary)
         {
-            await DisplayAlert("Bilgi", "Bu fotoğraf zaten kapak fotoğrafı.", "Tamam");
+            await DisplayAlertAsync("Bilgi", "Bu fotoğraf zaten kapak fotoğrafı.", "Tamam");
             return;
         }
 
@@ -83,11 +83,11 @@ public partial class VehiclePhotoGalleryPage : ContentPage
             foreach (var img in _images) img.IsPrimary = false;
             _selectedImage.IsPrimary = true;
             RefreshGrid();
-            await DisplayAlert("✅", "Kapak fotoğrafı güncellendi.", "Tamam");
+            await DisplayAlertAsync("✅", "Kapak fotoğrafı güncellendi.", "Tamam");
         }
         else
         {
-            await DisplayAlert("Hata ❌", message, "Tamam");
+            await DisplayAlertAsync("Hata ❌", message, "Tamam");
         }
     }
 
@@ -96,7 +96,7 @@ public partial class VehiclePhotoGalleryPage : ContentPage
     {
         if (_selectedImage == null) return;
 
-        var confirm = await DisplayAlert(
+        var confirm = await DisplayAlertAsync(
             "Fotoğrafı Sil",
             "Bu fotoğrafı kalıcı olarak silmek istediğinize emin misiniz?",
             "Evet, Sil", "İptal");
@@ -112,7 +112,7 @@ public partial class VehiclePhotoGalleryPage : ContentPage
         }
         else
         {
-            await DisplayAlert("Hata ❌", message, "Tamam");
+            await DisplayAlertAsync("Hata ❌", message, "Tamam");
         }
     }
 
@@ -129,7 +129,7 @@ public partial class VehiclePhotoGalleryPage : ContentPage
     {
         if (!_isAdmin || _images.Count >= 10) return;
 
-        var action = await DisplayActionSheet(
+        var action = await DisplayActionSheetAsync(
             "Fotoğraf Ekle",
             "İptal",
             null,
@@ -141,13 +141,16 @@ public partial class VehiclePhotoGalleryPage : ContentPage
         try
         {
             if (action == "Galeriden Seç")
-                photo = await MediaPicker.Default.PickPhotoAsync();
+            {
+                var results = await MediaPicker.Default.PickPhotosAsync();
+                photo = results?.FirstOrDefault();
+            }
             else if (action == "Kamerayı Aç" && MediaPicker.Default.IsCaptureSupported)
                 photo = await MediaPicker.Default.CapturePhotoAsync();
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Hata", $"Fotoğraf seçilemedi: {ex.Message}", "Tamam");
+            await DisplayAlertAsync("Hata", $"Fotoğraf seçilemedi: {ex.Message}", "Tamam");
             return;
         }
 
@@ -172,7 +175,7 @@ public partial class VehiclePhotoGalleryPage : ContentPage
         }
         else
         {
-            await DisplayAlert("Hata ❌", message, "Tamam");
+            await DisplayAlertAsync("Hata ❌", message, "Tamam");
         }
     }
 

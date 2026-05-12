@@ -35,7 +35,12 @@ namespace CarFleetPro.API.Controllers
             
             if (!_cache.TryGetValue(VehicleCacheKey, out List<Vehicle>? vehicles) || vehicles == null)
             {
-                vehicles = await _context.Vehicles.ToListAsync();
+                vehicles = await _context.Vehicles
+                    .Include(v => v.Brand)
+                    .Include(v => v.Model)
+                    .Include(v => v.Color)
+                    .Include(v => v.Type)
+                    .ToListAsync();
                 var cacheOptions = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromHours(1));
                 _cache.Set(VehicleCacheKey, vehicles, cacheOptions);
             }
@@ -66,8 +71,8 @@ namespace CarFleetPro.API.Controllers
             var newVehicle = new Vehicle
             {
                 PlateNumber = dto.PlateNumber,
-                Brand = dto.Brand,
-                Model = dto.Model,
+                BrandId = dto.BrandId,
+                ModelId = dto.ModelId,
                 Year = dto.Year,
                 VehicleType = dto.VehicleType,
                 FuelType = dto.FuelType,
@@ -76,9 +81,12 @@ namespace CarFleetPro.API.Controllers
                 Mileage = dto.Mileage,
                 HorsePower = dto.HorsePower,
                 ImageUrl = dto.ImageUrl,
-                Color = dto.Color,
+                ColorId = dto.ColorId,
                 Branch = dto.Branch ?? "Merkez Şube", 
-                Status = dto.Status, 
+                Status = dto.Status,
+                TypeId = dto.SegmentId,
+                BasePrice = dto.BasePrice,
+                MaxDiscountPercentage = dto.MaxDiscountPercentage,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -100,8 +108,8 @@ namespace CarFleetPro.API.Controllers
             _context.Attach(vehicle);
 
             vehicle.PlateNumber = dto.PlateNumber;
-            vehicle.Brand = dto.Brand;
-            vehicle.Model = dto.Model;
+            vehicle.BrandId = dto.BrandId;
+            vehicle.ModelId = dto.ModelId;
             vehicle.Year = dto.Year;
             vehicle.VehicleType = dto.VehicleType;
             vehicle.FuelType = dto.FuelType;
@@ -110,9 +118,12 @@ namespace CarFleetPro.API.Controllers
             vehicle.Mileage = dto.Mileage;
             vehicle.HorsePower = dto.HorsePower;
             vehicle.ImageUrl = dto.ImageUrl;
-            vehicle.Color = dto.Color;
+            vehicle.ColorId = dto.ColorId;
             vehicle.Branch = dto.Branch ?? "Merkez Şube"; 
             vehicle.Status = dto.Status;
+            vehicle.TypeId = dto.SegmentId;
+            vehicle.BasePrice = dto.BasePrice;
+            vehicle.MaxDiscountPercentage = dto.MaxDiscountPercentage;
             vehicle.UpdatedAt = DateTime.UtcNow;
 
             _context.Entry(vehicle).State = EntityState.Modified;
@@ -122,24 +133,47 @@ namespace CarFleetPro.API.Controllers
             return Ok(new { message = "Araç başarıyla güncellendi!", vehicle });
         }
 
+        [HttpPut("{id}/pricing")]
+        [Authorize(Roles = "Yönetici")]
+        public async Task<IActionResult> UpdateVehiclePricing(int id, [FromBody] VehiclePricingUpdateDto dto)
+        {
+            var vehicle = await _context.Vehicles.FindAsync(id);
+            if (vehicle == null) return NotFound("Araç bulunamadı.");
+
+            vehicle.BasePrice = dto.BasePrice;
+            vehicle.MaxDiscountPercentage = dto.MaxDiscountPercentage;
+            vehicle.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+            InvalidateAllCaches();
+
+            return Ok(new { message = "Araç fiyatlandırması güncellendi!", vehicle });
+        }
+
         [HttpDelete("{id}")]
+
         [Authorize(Roles = "Yönetici")]  // Sadece yönetici araç silebilir
         public async Task<IActionResult> DeleteVehicle(int id)
         {
-            var vehicle = await _context.Vehicles.FindAsync(id);
+            var vehicle = await _context.Vehicles.AsTracking().FirstOrDefaultAsync(v => v.VehicleId == id);
             if (vehicle == null) return NotFound("Silinecek araç bulunamadı.");
 
-            
+            // Kiralanmış araç silinemez
             if (vehicle.Status == VehicleStatus.Rented)
                 return BadRequest("Bu araç şu anda kirada olduğu için sistemden silinemez!");
 
-            
-            _context.Attach(vehicle);
-            _context.Vehicles.Remove(vehicle);
-            await _context.SaveChangesAsync();
-            InvalidateAllCaches(); 
+            try
+            {
+                _context.Vehicles.Remove(vehicle);
+                await _context.SaveChangesAsync();
+                InvalidateAllCaches();
 
-            return Ok(new { message = $"{vehicle.PlateNumber} plakalı araç filodan silindi." });
+                return Ok(new { message = $"{vehicle.PlateNumber} plakalı araç filodan silindi." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Silme işlemi sırasında hata: {ex.InnerException?.Message ?? ex.Message}");
+            }
         }
 
         /// <summary>
@@ -202,15 +236,19 @@ namespace CarFleetPro.API.Controllers
                 {
                     Id = v.VehicleId,
                     Plaka = v.PlateNumber,
-                    Marka = v.Brand,
-                    Model = v.Model,
+                    Marka = v.Brand.Name,
+                    Model = v.Model.Name,
                     Hp = v.HorsePower,
                     Yas = currentYear - v.Year,
                     Km = v.Mileage,
                     Durum = v.Status == VehicleStatus.Available ? "MÜSAİT" :
                             v.Status == VehicleStatus.Rented ? "DOLU" : "BAKIMDA",
                     ResimUrl = v.ImageUrl ?? "https://via.placeholder.com/300",
-                    Branch = v.Branch
+                    Branch = v.Branch,
+                    GunlukUcret = v.DailyRate,
+                    Segment = v.Type.Name,
+                    BasePrice = v.BasePrice,
+                    MaxDiscountPercentage = v.MaxDiscountPercentage
                 })
                 .ToListAsync();
 
@@ -351,8 +389,8 @@ namespace CarFleetPro.API.Controllers
             {
                 VehicleId = vehicle.VehicleId,
                 PlateNumber = vehicle.PlateNumber,
-                Brand = vehicle.Brand,
-                Model = vehicle.Model,
+                Brand = vehicle.Brand.Name,
+                Model = vehicle.Model.Name,
                 Year = vehicle.Year,
                 VehicleType = vehicle.VehicleType.ToString(),
                 FuelType = vehicle.FuelType.ToString(),
@@ -362,19 +400,54 @@ namespace CarFleetPro.API.Controllers
                          vehicle.Status == VehicleStatus.Rented ? "DOLU" : "BAKIMDA",
                 Mileage = vehicle.Mileage,
                 HorsePower = vehicle.HorsePower,
-                Color = vehicle.Color,
+                Color = vehicle.Color?.Name,
                 ImageUrl = vehicle.ImageUrl,
                 Branch = vehicle.Branch,
+                Segment = vehicle.Type.Name,
+                BasePrice = vehicle.BasePrice,
+                MaxDiscountPercentage = vehicle.MaxDiscountPercentage,
                 History = history
             };
 
             return Ok(detail);
         }
 
-        
-        
-        
-        
+
+        /// <summary>PATCH /api/Vehicle/{id}/status — Araç durumunu hızlıca değiştir</summary>
+        [HttpPatch("{id}/status")]
+        [Authorize]
+        public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateVehicleStatusDto dto)
+        {
+            var vehicle = await _context.Vehicles.FindAsync(id);
+            if (vehicle == null) return NotFound("Araç bulunamadı.");
+
+            VehicleStatus newStatus = dto.Status.ToUpperInvariant() switch
+            {
+                "MÜSAİT" or "MUSAIT" or "AVAILABLE" => VehicleStatus.Available,
+                "DOLU"   or "RENTED"                 => VehicleStatus.Rented,
+                "BAKIMDA" or "MAINTENANCE"            => VehicleStatus.Maintenance,
+                _ => (VehicleStatus)(-1)
+            };
+
+            if ((int)newStatus == -1)
+                return BadRequest("Geçersiz durum. Kabul edilenler: MÜSAİT, DOLU, BAKIMDA");
+
+            if (vehicle.Status == newStatus)
+                return Ok(new { message = "Araç zaten bu durumda." });
+
+            _context.Attach(vehicle);
+            vehicle.Status    = newStatus;
+            vehicle.UpdatedAt = DateTime.UtcNow;
+            _context.Entry(vehicle).Property(v => v.Status).IsModified    = true;
+            _context.Entry(vehicle).Property(v => v.UpdatedAt).IsModified = true;
+            await _context.SaveChangesAsync();
+            InvalidateAllCaches();
+
+            var durumTr = newStatus == VehicleStatus.Available   ? "Müsait" :
+                          newStatus == VehicleStatus.Rented       ? "Dolu"   : "Bakımda";
+            return Ok(new { message = $"{vehicle.PlateNumber} → {durumTr}" });
+        }
+
         private void InvalidateAllCaches()
         {
             _cache.Remove(VehicleCacheKey);

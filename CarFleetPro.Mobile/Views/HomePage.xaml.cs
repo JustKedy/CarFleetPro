@@ -1,4 +1,4 @@
-﻿using CarFleetPro.Mobile.Models;
+using CarFleetPro.Mobile.Models;
 using CarFleetPro.Mobile.ViewModels;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Maui;

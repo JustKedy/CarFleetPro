@@ -16,13 +16,17 @@ namespace CarFleetPro.API.DTOs
         public string? KiralamaTarihi { get; set; }
         public string? ResimUrl { get; set; }
         public string? Branch { get; set; }
+        public decimal GunlukUcret { get; set; }
+        public string Segment { get; set; } = "Ekonomik";
+        public decimal BasePrice { get; set; }
+        public double MaxDiscountPercentage { get; set; }
     }
 
     public class CreateVehicleDto
     {
         public string PlateNumber { get; set; } = string.Empty;
-        public string Brand { get; set; } = string.Empty;
-        public string Model { get; set; } = string.Empty;
+        public int BrandId { get; set; }
+        public int ModelId { get; set; }
         public int Year { get; set; }
         public Models.VehicleType VehicleType { get; set; }
         public Models.FuelType FuelType { get; set; }
@@ -31,9 +35,12 @@ namespace CarFleetPro.API.DTOs
         public int Mileage { get; set; }
         public int HorsePower { get; set; }
         public string? ImageUrl { get; set; }
-        public string? Color { get; set; }
+        public int? ColorId { get; set; }
         public string? Branch { get; set; }
         public Models.VehicleStatus Status { get; set; }
+        public int SegmentId { get; set; }
+        public decimal BasePrice { get; set; }
+        public double MaxDiscountPercentage { get; set; }
     }
 
     
@@ -56,6 +63,9 @@ namespace CarFleetPro.API.DTOs
         public string? Color { get; set; }
         public string? ImageUrl { get; set; }
         public string Branch { get; set; } = string.Empty;
+        public string Segment { get; set; } = "Ekonomik";
+        public decimal BasePrice { get; set; }
+        public double MaxDiscountPercentage { get; set; }
         public List<VehicleHistoryItemDto> History { get; set; } = new();
     }
 
@@ -68,4 +78,16 @@ namespace CarFleetPro.API.DTOs
         public string? Amount { get; set; } 
         public string Color { get; set; } = "#3B82F6"; 
     }
-}
+
+    public class VehiclePricingUpdateDto
+    {
+        public decimal BasePrice { get; set; }
+        public double MaxDiscountPercentage { get; set; }
+    }
+
+    /// <summary>PATCH /api/Vehicle/{id}/status body</summary>
+    public class UpdateVehicleStatusDto
+    {
+        public string Status { get; set; } = string.Empty;
+    }
+}

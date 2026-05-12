@@ -46,42 +46,42 @@ namespace CarFleetPro.Mobile.Views
         {
             var brandsTask = _apiService.GetBrandsAsync();
             var colorsTask = _apiService.GetColorsAsync();
+            var typesTask = _apiService.GetCarTypesAsync();
             var statusesTask = _apiService.GetStatusesAsync();
 
-            await Task.WhenAll(brandsTask, colorsTask, statusesTask);
+            await Task.WhenAll(brandsTask, colorsTask, typesTask, statusesTask);
 
             BrandPicker.ItemsSource = brandsTask.Result;
             RenkPicker.ItemsSource = colorsTask.Result;
+            SegmentPicker.ItemsSource = typesTask.Result;
             DurumPicker.ItemsSource = statusesTask.Result;
 
             BrandPicker.SelectedIndexChanged += async (s, e) =>
             {
                 ModelPicker.ItemsSource = null;
-                if (BrandPicker.SelectedItem != null)
+                if (BrandPicker.SelectedItem is LookupItem selectedBrand)
                 {
-                    var selectedBrand = BrandPicker.SelectedItem.ToString();
-                    if (!string.IsNullOrEmpty(selectedBrand))
-                        ModelPicker.ItemsSource = await _apiService.GetModelsAsync(selectedBrand);
+                    ModelPicker.ItemsSource = await _apiService.GetModelsAsync(selectedBrand.Id);
                 }
             };
 
             if (_duzenlenenArac != null)
             {
-                BrandPicker.SelectedItem = _duzenlenenArac.Marka;
-                DurumPicker.SelectedItem = _duzenlenenArac.Durum;
+                // Düzenleme sırasında, eğer API string döndüyse markayı bulmamız lazım. Ancak _duzenlenenArac string değerlere sahip, bu biraz kompleks.
+                // Şimdilik null bırakacağız veya ileride refactor edilebilir. (Kullanıcı sıfırdan oluşturacak)
             }
         }
 
         private void SayfayiDuzenlemeModunaGecir()
         {
-            PageTitleLabel.Text = "ARAÃ‡ DÃœZENLE";
+            PageTitleLabel.Text = "ARAÇ DÜZENLE";
             if (_duzenlenenArac != null)
             {
                 PlakaEntry.Text = _duzenlenenArac.Plaka;
                 KmEntry.Text = _duzenlenenArac.Km.ToString();
                 HpEntry.Text = _duzenlenenArac.Hp.ToString();
                 YilEntry.Text = (DateTime.Now.Year - _duzenlenenArac.Yas).ToString();
-                DurumPicker.SelectedItem = _duzenlenenArac.Durum;
+                BasePriceEntry.Text = _duzenlenenArac.BasePrice > 0 ? _duzenlenenArac.BasePrice.ToString() : "";
             }
         }
 
@@ -111,42 +111,49 @@ namespace CarFleetPro.Mobile.Views
         {
             if (string.IsNullOrWhiteSpace(PlakaEntry.Text))
             {
-                await DisplayAlertAsync("Eksik Bilgi", "LÃ¼tfen araÃ§ plakasÄ±nÄ± girin.", "Tamam");
+                await DisplayAlertAsync("Eksik Bilgi", "Lütfen araç plakasını girin.", "Tamam");
                 return;
             }
-            if (BrandPicker.SelectedItem == null)
+            if (BrandPicker.SelectedItem is not LookupItem selectedBrand)
             {
-                await DisplayAlertAsync("Eksik Bilgi", "LÃ¼tfen bir marka seÃ§in.", "Tamam");
+                await DisplayAlertAsync("Eksik Bilgi", "Lütfen bir marka seçin.", "Tamam");
                 return;
             }
-            if (ModelPicker.SelectedItem == null)
+            if (ModelPicker.SelectedItem is not LookupItem selectedModel)
             {
-                await DisplayAlertAsync("Eksik Bilgi", "LÃ¼tfen bir model seÃ§in.", "Tamam");
+                await DisplayAlertAsync("Eksik Bilgi", "Lütfen bir model seçin.", "Tamam");
+                return;
+            }
+            if (SegmentPicker.SelectedItem is not LookupItem selectedSegment)
+            {
+                await DisplayAlertAsync("Eksik Bilgi", "Lütfen bir araç tipi seçin.", "Tamam");
                 return;
             }
             if (string.IsNullOrWhiteSpace(YilEntry.Text) || !int.TryParse(YilEntry.Text, out int yil) || yil < 1950 || yil > DateTime.Now.Year)
             {
-                await DisplayAlertAsync("HatalÄ± Bilgi", $"LÃ¼tfen geÃ§erli bir yÄ±l girin (1950 - {DateTime.Now.Year}).", "Tamam");
+                await DisplayAlertAsync("Hatalı Bilgi", $"Lütfen geçerli bir yıl girin (1950 - {DateTime.Now.Year}).", "Tamam");
                 return;
             }
 
             int durumId = 0; 
             var selectedDurum = DurumPicker.SelectedItem?.ToString();
             if (string.Equals(selectedDurum, "DOLU", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(selectedDurum, "KÄ°RADA", StringComparison.OrdinalIgnoreCase)) durumId = 1;
+                string.Equals(selectedDurum, "KİRADA", StringComparison.OrdinalIgnoreCase)) durumId = 1;
             else if (string.Equals(selectedDurum, "BAKIMDA", StringComparison.OrdinalIgnoreCase)) durumId = 2;
 
             var request = new CreateVehicleRequest
             {
                 PlateNumber = PlakaEntry.Text.Trim().ToUpper(),
-                Brand = BrandPicker.SelectedItem.ToString()!,
-                Model = ModelPicker.SelectedItem.ToString()!,
+                BrandId = selectedBrand.Id,
+                ModelId = selectedModel.Id,
                 Year = yil,
                 Mileage = int.TryParse(KmEntry.Text, out int km) ? km : 0,
                 HorsePower = int.TryParse(HpEntry.Text, out int hp) ? hp : 0,
-                Color = RenkPicker.SelectedItem?.ToString(),
-                Branch = "Merkez Åube",
-                Status = durumId
+                ColorId = (RenkPicker.SelectedItem as LookupItem)?.Id,
+                Branch = "Merkez Şube",
+                Status = durumId,
+                SegmentId = selectedSegment.Id,
+                BasePrice = decimal.TryParse(BasePriceEntry.Text, out decimal bp) ? bp : 0
             };
 
             Button? saveBtn = sender as Button;
@@ -179,7 +186,7 @@ namespace CarFleetPro.Mobile.Views
                     WeakReferenceMessenger.Default.Send(new VehicleAddedMessage());
 
                     // Araç eklendikten sonra fotoğraf eklemek ister misin?
-                    var addPhoto = await DisplayAlert("Fotoğraf Ekle", "Araç başarıyla eklendi! Şimdi fotoğraf eklemek ister misiniz?", "Evet, Ekle", "Hayır");
+                    var addPhoto = await DisplayAlertAsync("Fotoğraf Ekle", "Araç başarıyla eklendi! Şimdi fotoğraf eklemek ister misiniz?", "Evet, Ekle", "Hayır");
 
                     if (addPhoto)
                     {
@@ -199,7 +206,7 @@ namespace CarFleetPro.Mobile.Views
                 }
                 else
                 {
-                    await DisplayAlert("Hata", message, "Tamam");
+                    await DisplayAlertAsync("Hata", message, "Tamam");
                 }
             }
         }

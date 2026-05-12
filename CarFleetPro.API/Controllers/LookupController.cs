@@ -94,7 +94,7 @@ namespace CarFleetPro.API.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IMemoryCache _cache;
-        private const string CacheKey = "alias_brands_strings";
+        private const string CacheKey = "alias_brands_objects";
 
         public CarBrandsController(AppDbContext context, IMemoryCache cache)
         {
@@ -105,21 +105,15 @@ namespace CarFleetPro.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            if (!_cache.TryGetValue(CacheKey, out List<string>? brandNames) || brandNames == null)
+            if (!_cache.TryGetValue(CacheKey, out object? brands) || brands == null)
             {
-                brandNames = await _context.CarBrands
-                    .OrderBy(b => b.Name)
-                    .Select(b => b.Name)
-                    .ToListAsync();
-                _cache.Set(CacheKey, brandNames, TimeSpan.FromHours(24));
+                brands = await _context.CarBrands.OrderBy(b => b.Name).ToListAsync();
+                _cache.Set(CacheKey, brands, TimeSpan.FromHours(24));
             }
-            return Ok(brandNames);
+            return Ok(brands);
         }
     }
 
-    
-    
-    
     [Route("api/CarModels")]
     [ApiController]
     public class CarModelsController : ControllerBase
@@ -133,40 +127,31 @@ namespace CarFleetPro.API.Controllers
             _cache = cache;
         }
 
-        [HttpGet("{brandName}")]
-        public async Task<IActionResult> GetByBrandName(string brandName)
+        [HttpGet("{brandId}")]
+        public async Task<IActionResult> GetByBrandId(int brandId)
         {
-            var cacheKey = $"alias_models_{brandName.ToLower()}";
+            var cacheKey = $"alias_models_obj_{brandId}";
 
-            if (!_cache.TryGetValue(cacheKey, out List<string>? modelNames) || modelNames == null)
+            if (!_cache.TryGetValue(cacheKey, out object? models) || models == null)
             {
-                var brand = await _context.CarBrands
-                    .FirstOrDefaultAsync(b => b.Name.ToLower() == brandName.ToLower());
-
-                if (brand == null) return Ok(new List<string>());
-
-                modelNames = await _context.CarModels
-                    .Where(m => m.BrandId == brand.Id)
+                models = await _context.CarModels
+                    .Where(m => m.BrandId == brandId)
                     .OrderBy(m => m.Name)
-                    .Select(m => m.Name)
                     .ToListAsync();
 
-                _cache.Set(cacheKey, modelNames, TimeSpan.FromHours(24));
+                _cache.Set(cacheKey, models, TimeSpan.FromHours(24));
             }
-            return Ok(modelNames);
+            return Ok(models);
         }
     }
 
-    
-    
-    
     [Route("api/CarColors")]
     [ApiController]
     public class CarColorsController : ControllerBase
     {
         private readonly AppDbContext _context;
         private readonly IMemoryCache _cache;
-        private const string CacheKey = "alias_colors_strings";
+        private const string CacheKey = "alias_colors_objects";
 
         public CarColorsController(AppDbContext context, IMemoryCache cache)
         {
@@ -177,21 +162,15 @@ namespace CarFleetPro.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            if (!_cache.TryGetValue(CacheKey, out List<string>? colorNames) || colorNames == null)
+            if (!_cache.TryGetValue(CacheKey, out object? colors) || colors == null)
             {
-                colorNames = await _context.CarColors
-                    .OrderBy(c => c.Name)
-                    .Select(c => c.Name)
-                    .ToListAsync();
-                _cache.Set(CacheKey, colorNames, TimeSpan.FromHours(24));
+                colors = await _context.CarColors.OrderBy(c => c.Name).ToListAsync();
+                _cache.Set(CacheKey, colors, TimeSpan.FromHours(24));
             }
-            return Ok(colorNames);
+            return Ok(colors);
         }
     }
 
-    
-    
-    
     [Route("api/VehicleStatuses")]
     [ApiController]
     public class VehicleStatusesController : ControllerBase
@@ -201,6 +180,32 @@ namespace CarFleetPro.API.Controllers
         {
             var statuses = new List<string> { "MÜSAİT", "DOLU", "BAKIMDA" };
             return Ok(statuses);
+        }
+    }
+
+    [Route("api/CarTypes")]
+    [ApiController]
+    public class CarTypesController : ControllerBase
+    {
+        private readonly AppDbContext _context;
+        private readonly IMemoryCache _cache;
+        private const string CacheKey = "alias_types_objects";
+
+        public CarTypesController(AppDbContext context, IMemoryCache cache)
+        {
+            _context = context;
+            _cache = cache;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            if (!_cache.TryGetValue(CacheKey, out object? types) || types == null)
+            {
+                types = await _context.CarTypes.OrderBy(c => c.Name).ToListAsync();
+                _cache.Set(CacheKey, types, TimeSpan.FromHours(24));
+            }
+            return Ok(types);
         }
     }
 }

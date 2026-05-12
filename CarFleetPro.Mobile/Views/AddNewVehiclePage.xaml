@@ -74,14 +74,14 @@
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="8" />
                                 </Border.StrokeShape>
-                                <Picker x:Name="BrandPicker" Title="Marka" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" TitleColor="#9CA3AF" BackgroundColor="Transparent" />
+                                <Picker x:Name="BrandPicker" Title="Marka" ItemDisplayBinding="{Binding Name}" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" TitleColor="#9CA3AF" BackgroundColor="Transparent" />
                             </Border>
 
                             <Border Grid.Column="1" Stroke="{AppThemeBinding Light=#E5E7EB, Dark=#334155}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light=#F9FAFB, Dark=#263347}" Padding="15,0" HeightRequest="50">
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="8" />
                                 </Border.StrokeShape>
-                                <Picker x:Name="ModelPicker" Title="Model" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" TitleColor="#9CA3AF" BackgroundColor="Transparent" />
+                                <Picker x:Name="ModelPicker" Title="Model" ItemDisplayBinding="{Binding Name}" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" TitleColor="#9CA3AF" BackgroundColor="Transparent" />
                             </Border>
                         </Grid>
 
@@ -97,7 +97,7 @@
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="8" />
                                 </Border.StrokeShape>
-                                <Picker x:Name="RenkPicker" Title="Renk" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" TitleColor="#9CA3AF" BackgroundColor="Transparent" />
+                                <Picker x:Name="RenkPicker" Title="Renk" ItemDisplayBinding="{Binding Name}" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" TitleColor="#9CA3AF" BackgroundColor="Transparent" />
 
                             </Border>
                         </Grid>
@@ -117,20 +117,28 @@
                             </Border>
                         </Grid>
 
-                        <Border Stroke="{AppThemeBinding Light=#E5E7EB, Dark=#334155}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light=#F9FAFB, Dark=#263347}" Padding="15,0" HeightRequest="50">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="8" />
-                            </Border.StrokeShape>
-                            <Picker x:Name="DurumPicker" Title="Günlük Kiralama Fiyatı (₺)" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" TitleColor="#9CA3AF" BackgroundColor="Transparent" />
+                        <Grid ColumnDefinitions="*, *" ColumnSpacing="15">
+                            <Border Grid.Column="0" Stroke="{AppThemeBinding Light=#E5E7EB, Dark=#334155}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light=#F9FAFB, Dark=#263347}" Padding="15,0" HeightRequest="50">
+                                <Border.StrokeShape><RoundRectangle CornerRadius="8" /></Border.StrokeShape>
+                                <Picker x:Name="DurumPicker" Title="Durum" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" TitleColor="#9CA3AF" BackgroundColor="Transparent" />
+                            </Border>
+                            <Border Grid.Column="1" Stroke="{AppThemeBinding Light=#E5E7EB, Dark=#334155}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light=#F9FAFB, Dark=#263347}" Padding="15,0" HeightRequest="50">
+                                <Border.StrokeShape><RoundRectangle CornerRadius="8" /></Border.StrokeShape>
+                                <Picker x:Name="SegmentPicker" Title="Araç Tipi" ItemDisplayBinding="{Binding Name}" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" TitleColor="#9CA3AF" BackgroundColor="Transparent" />
+                            </Border>
+                        </Grid>
 
+                        <Border Stroke="{AppThemeBinding Light=#E5E7EB, Dark=#334155}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light=#F9FAFB, Dark=#263347}" Padding="15,0" HeightRequest="50">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="8" /></Border.StrokeShape>
+                            <Entry x:Name="BasePriceEntry" Placeholder="Varsayılan Günlük Ücret (Baz)" Keyboard="Numeric" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" PlaceholderColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}" BackgroundColor="Transparent"/>
                         </Border>
 
                     </VerticalStackLayout>
                 </Border>
 
                 <Grid ColumnDefinitions="*, *" ColumnSpacing="15" Margin="20, 10, 20, 10">
-                    <Button Grid.Column="0" Text="Sigorta Bitiş" Clicked="OnCancelClicked" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" TextColor="#EF4444" BorderColor="#EF4444" BorderWidth="1" FontAttributes="Bold" CornerRadius="8" HeightRequest="50" />
-                    <Button x:Name="SubmitButton" Grid.Column="1" Text="Muayene Bitiş" Clicked="OnSaveClicked" BackgroundColor="#3B82F6" TextColor="White" FontAttributes="Bold" CornerRadius="8" HeightRequest="50" />
+                    <Button Grid.Column="0" Text="İPTAL" Clicked="OnCancelClicked" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" TextColor="#EF4444" BorderColor="#EF4444" BorderWidth="1" FontAttributes="Bold" CornerRadius="8" HeightRequest="50" />
+                    <Button x:Name="SubmitButton" Grid.Column="1" Text="ARACI KAYDET" Clicked="OnSaveClicked" BackgroundColor="#3B82F6" TextColor="White" FontAttributes="Bold" CornerRadius="8" HeightRequest="50" />
                 </Grid>
 
             </VerticalStackLayout>

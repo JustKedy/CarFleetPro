@@ -62,7 +62,7 @@
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="10"/>
                                 </Border.StrokeShape>
-                                <Entry Placeholder="Örn: Kampanya Duyurusu" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
+                                <Entry x:Name="TitleEntry" Placeholder="Örn: Kampanya Duyurusu" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
                             </Border>
                         </VerticalStackLayout>
 
@@ -72,7 +72,7 @@
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="10"/>
                                 </Border.StrokeShape>
-                                <Editor Placeholder="Mesajınızı buraya yazın..." TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
+                                <Editor x:Name="MessageEditor" Placeholder="Mesajınızı buraya yazın..." TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
                             </Border>
                         </VerticalStackLayout>
 
@@ -83,7 +83,7 @@
                     </VerticalStackLayout>
                 </Border>
 
-                <Button Text="BİLDİRİMİ GÖNDER" BackgroundColor="#3B82F6" TextColor="White" FontAttributes="Bold" CornerRadius="8" HeightRequest="55" Margin="0,10,0,20"/>
+                <Button Text="BİLDİRİMİ GÖNDER" Clicked="OnSendNotificationClicked" BackgroundColor="#3B82F6" TextColor="White" FontAttributes="Bold" CornerRadius="8" HeightRequest="55" Margin="0,10,0,20"/>
             </VerticalStackLayout>
         </ScrollView>
     </Grid>

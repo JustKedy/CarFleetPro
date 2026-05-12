@@ -19,7 +19,7 @@
                         <Label Text="CARFLEET" FontSize="14" TextColor="White" FontAttributes="Bold" />
                         <Label Text="PRO" FontSize="14" TextColor="#3B82F6" FontAttributes="Bold" />
                     </HorizontalStackLayout>
-                    <Label Text="PERSONEL YÖNETİMİ" FontSize="26" TextColor="White" HorizontalOptions="Center" Margin="0,5,0,0"/>
+                    <Label Text="ÇALIŞAN YÖNETİMİ" FontSize="26" TextColor="White" HorizontalOptions="Center" Margin="0,5,0,0"/>
                 </VerticalStackLayout>
             </Grid>
         </Border>
@@ -29,10 +29,10 @@
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="12" />
                 </Border.StrokeShape>
-                <Entry Placeholder="Personel Ara (İsim, Görev)..." TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" PlaceholderColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}" Margin="15,0" VerticalOptions="Center" />
+                <Entry Placeholder="Çalışan Ara (İsim, Görev)..." TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" PlaceholderColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}" Margin="15,0" VerticalOptions="Center" />
             </Border>
 
-            <Button Grid.Column="1" Text="YENİ EKLE" Clicked="OnAddNewStaffClicked" BackgroundColor="#3B82F6" TextColor="White" FontAttributes="Bold" CornerRadius="12" HeightRequest="50" Padding="15,0"/>
+            <Button x:Name="AddNewButton" Grid.Column="1" Text="YENİ EKLE" Clicked="OnAddNewStaffClicked" BackgroundColor="#3B82F6" TextColor="White" FontAttributes="Bold" CornerRadius="12" HeightRequest="50" Padding="15,0" IsVisible="False"/>
         </Grid>
 
         <CollectionView x:Name="StaffList" Grid.Row="2" Margin="20,0" VerticalScrollBarVisibility="Never" SelectionMode="Single">
@@ -56,15 +56,31 @@
 
                             <!-- Detaylar -->
                             <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
-                                <Label Text="Personel Adı" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" FontSize="16" />
-                                <Label Text="Admin / Yönetici" FontSize="12" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}" />
+                                <Label Text="{Binding FullName}" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" FontSize="16" />
+                                <Label Text="{Binding Role}" FontSize="12" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}" />
                             </VerticalStackLayout>
 
                             <!-- Düzenle Butonu -->
-                            <ImageButton Grid.Column="2" Source="edit_icon.svg" BackgroundColor="Transparent" HeightRequest="24" WidthRequest="24" VerticalOptions="Center"/>
-                            
+                            <ImageButton Grid.Column="2"
+                                         Source="edit.svg"
+                                         Clicked="OnEditStaffClicked"
+                                         CommandParameter="{Binding .}"
+                                         BackgroundColor="#E0F2FE"
+                                         CornerRadius="10"
+                                         HeightRequest="38" WidthRequest="38"
+                                         Padding="9"
+                                         VerticalOptions="Center"/>
+
                             <!-- Sil Butonu -->
-                            <ImageButton Grid.Column="3" Source="trash_icon.svg" BackgroundColor="Transparent" HeightRequest="24" WidthRequest="24" VerticalOptions="Center"/>
+                            <ImageButton Grid.Column="3"
+                                         Source="trash.svg"
+                                         Clicked="OnDeleteStaffClicked"
+                                         CommandParameter="{Binding .}"
+                                         BackgroundColor="#FEE2E2"
+                                         CornerRadius="10"
+                                         HeightRequest="38" WidthRequest="38"
+                                         Padding="9"
+                                         VerticalOptions="Center"/>
                         </Grid>
                     </Border>
                 </DataTemplate>

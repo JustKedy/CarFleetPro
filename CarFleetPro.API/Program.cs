@@ -11,6 +11,8 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
     npgsqlOptions =>
@@ -120,7 +122,7 @@ using (var scope = app.Services.CreateScope())
         }
 
         // İlk admin kullanıcıyı oluştur (yoksa)
-        var adminEmail = app.Configuration["AdminSeed:Email"] ?? "admin@carfleetpro.com";
+        var adminEmail = app.Configuration["AdminSeed:Email"] ?? "Alper@carfleet.com";
         var adminPassword = app.Configuration["AdminSeed:Password"] ?? "Admin123!";
 
         var existingAdmin = await userManager.FindByEmailAsync(adminEmail);

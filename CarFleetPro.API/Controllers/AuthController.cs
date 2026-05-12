@@ -4,6 +4,7 @@ using CarFleetPro.API.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -19,17 +20,23 @@ namespace CarFleetPro.API.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
         private readonly IEmailService _emailService;
+        private readonly IMemoryCache _cache;
+        private readonly ILogger<AuthController> _logger;
 
         public AuthController(
             UserManager<AppUser> userManager,
             RoleManager<IdentityRole> roleManager,
             IConfiguration configuration,
-            IEmailService emailService)
+            IEmailService emailService,
+            IMemoryCache cache,
+            ILogger<AuthController> logger)
         {
-            _userManager = userManager;
-            _roleManager = roleManager;
+            _userManager   = userManager;
+            _roleManager   = roleManager;
             _configuration = configuration;
-            _emailService = emailService;
+            _emailService  = emailService;
+            _cache         = cache;
+            _logger        = logger;
         }
 
         /// <summary>
@@ -242,53 +249,83 @@ namespace CarFleetPro.API.Controllers
         }
 
         [HttpPost("forgot-password")]
+        [AllowAnonymous]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
         {
+            // Kullanıcı yoksa bile aynı mesajı dön (enum güvenliği)
             var user = await _userManager.FindByEmailAsync(dto.Email);
-
             if (user == null)
-                return Ok(new { message = "Eğer bu e-posta adresi kayıtlıysa, şifre sıfırlama kodu gönderildi." });
+                return Ok(new { message = "Eğer bu e-posta kayıtlıysa, doğrulama kodu gönderildi." });
 
+            // 6 haneli OTP
+            var otp   = new Random().Next(100000, 999999).ToString();
+            // Identity password-reset token (reset-password adımında kullanılacak)
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var resetCode = new Random().Next(100000, 999999).ToString();
 
-            user.SecurityStamp = token;
-            await _userManager.UpdateAsync(user);
+            // OTP ve token'ı 15 dakika cache'e al
+            var cacheKey = $"otp:{dto.Email.ToLowerInvariant()}";
+            _cache.Set(cacheKey, (Otp: otp, Token: token),
+                new MemoryCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(15) });
 
             var emailBody = $@"
-                <h2>CarFleetPro — Şifre Sıfırlama</h2>
-                <p>Merhaba {user.FullName},</p>
-                <p>Şifre sıfırlama talebiniz alındı. Aşağıdaki kodu uygulamaya girip yeni şifrenizi belirleyebilirsiniz:</p>
-                <h1 style='color: #3B82F6; text-align: center; font-size: 36px;'>{resetCode}</h1>
-                <p>Bu kod 15 dakika geçerlidir.</p>
-                <p>Eğer bu talebi siz yapmadıysanız, bu e-postayı görmezden gelebilirsiniz.</p>
-                <hr>
-                <p style='color: #9CA3AF; font-size: 12px;'>CarFleetPro Filo Yönetim Sistemi</p>";
+<!DOCTYPE html>
+<html>
+<body style='font-family:Arial,sans-serif; background:#f3f4f6; margin:0; padding:20px;'>
+  <div style='max-width:480px; margin:0 auto; background:#ffffff; border-radius:16px; padding:32px; box-shadow:0 2px 12px rgba(0,0,0,.08);'>
+    <h2 style='color:#0A1128; margin-bottom:4px;'>CarFleet<span style='color:#3B82F6;'>Pro</span></h2>
+    <p style='color:#6B7280; font-size:13px; margin-top:0;'>Araç Kiralama & Filo Yönetimi</p>
+    <hr style='border:none; border-top:1px solid #E5E7EB; margin:20px 0;'/>
+    <p style='color:#1F2937;'>Merhaba <strong>{user.FullName}</strong>,</p>
+    <p style='color:#4B5563;'>Şifre sıfırlama talebiniz alındı. Aşağıdaki 6 haneli kodu uygulamaya girerek şifrenizi sıfırlayabilirsiniz.</p>
+    <div style='background:#EFF6FF; border:2px solid #3B82F6; border-radius:12px; padding:24px; text-align:center; margin:24px 0;'>
+      <span style='font-size:42px; font-weight:900; letter-spacing:10px; color:#1D4ED8;'>{otp}</span>
+    </div>
+    <p style='color:#9CA3AF; font-size:13px;'>⏱️ Bu kod <strong>15 dakika</strong> geçerlidir.</p>
+    <p style='color:#9CA3AF; font-size:13px;'>Eğer bu isteği siz yapmadıysanız, bu e-postayı görmezden gelebilirsiniz.</p>
+    <hr style='border:none; border-top:1px solid #E5E7EB; margin:20px 0;'/>
+    <p style='color:#D1D5DB; font-size:11px; text-align:center;'>CarFleetPro Filo Yönetim Sistemi</p>
+  </div>
+</body>
+</html>";
 
             try
             {
                 await _emailService.SendEmailAsync(dto.Email, "CarFleetPro — Şifre Sıfırlama Kodu", emailBody);
+                _logger.LogInformation("[ForgotPassword] OTP gönderildi: {Email}", dto.Email);
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"[EMAIL] Gönderim hatası: {ex.Message}");
+                _logger.LogError(ex, "[ForgotPassword] E-posta gönderilemedi: {Email}", dto.Email);
+                return StatusCode(500, "E-posta gönderilemedi. Lütfen daha sonra tekrar deneyin.");
             }
 
-            return Ok(new { message = "Eğer bu e-posta adresi kayıtlıysa, şifre sıfırlama kodu gönderildi.", token = token });
+            return Ok(new { message = "Doğrulama kodu e-posta adresinize gönderildi." });
         }
 
         [HttpPost("reset-password")]
+        [AllowAnonymous]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
         {
+            var cacheKey = $"otp:{dto.Email.ToLowerInvariant()}";
+
+            if (!_cache.TryGetValue(cacheKey, out (string Otp, string Token) cached))
+                return BadRequest("Doğrulama kodunun süresi dolmuş veya geçersiz. Lütfen yeniden kod isteyin.");
+
+            if (cached.Otp != dto.Token)
+                return BadRequest("Girdiğiniz kod yanlış. Lütfen e-postanızı kontrol edin.");
+
             var user = await _userManager.FindByEmailAsync(dto.Email);
             if (user == null) return BadRequest("Geçersiz işlem.");
 
-            var result = await _userManager.ResetPasswordAsync(user, dto.Token, dto.NewPassword);
+            var result = await _userManager.ResetPasswordAsync(user, cached.Token, dto.NewPassword);
             if (!result.Succeeded)
             {
                 var errors = string.Join(", ", result.Errors.Select(e => e.Description));
                 return BadRequest(errors);
             }
+
+            // Kullanılan OTP'yi temizle
+            _cache.Remove(cacheKey);
 
             return Ok(new { message = "Şifreniz başarıyla sıfırlandı! Yeni şifrenizle giriş yapabilirsiniz." });
         }

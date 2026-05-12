@@ -5,165 +5,317 @@
              BackgroundColor="{AppThemeBinding Light=#F3F4F6, Dark=#0F172A}"
              Shell.NavBarIsVisible="False">
 
-    <ScrollView VerticalScrollBarVisibility="Never">
-        <VerticalStackLayout Spacing="0">
+    <Grid RowDefinitions="Auto, *">
 
-            <!-- Header -->
-            <Border BackgroundColor="#0A1128" StrokeThickness="0" Padding="0,0,0,25">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="0,0,30,30"/>
-                </Border.StrokeShape>
+        <!-- ══════════════════ HEADER ══════════════════ -->
+        <Border Grid.Row="0" BackgroundColor="#0A1128" StrokeThickness="0" Padding="0,0,0,20">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="0,0,28,28"/>
+            </Border.StrokeShape>
+            <Grid RowDefinitions="75, Auto, Auto">
 
-                <Grid RowDefinitions="Auto, Auto, Auto">
-                    <!-- Top Nav -->
-                    <Grid Grid.Row="0" HeightRequest="75" Padding="20,10,20,0">
-                        <ImageButton Source="arrow_back_white.svg"
-                                     Clicked="OnBackClicked"
-                                     BackgroundColor="Transparent"
-                                     WidthRequest="30" HeightRequest="30"
-                                     HorizontalOptions="Start" VerticalOptions="Center"/>
-                        <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="4">
-                            <HorizontalStackLayout HorizontalOptions="Center" Spacing="0">
-                                <Label Text="CARFLEET" FontSize="13" TextColor="White" FontAttributes="Bold"/>
-                                <Label Text="PRO"      FontSize="13" TextColor="#EF4444" FontAttributes="Bold"/>
-                            </HorizontalStackLayout>
-                            <Label Text="HASAR KAYITLARI" FontSize="22" TextColor="White" HorizontalOptions="Center"/>
-                        </VerticalStackLayout>
-                    </Grid>
-
-                    <!-- Araç Resmi -->
-                    <Border Grid.Row="1" Margin="20,10,20,0" StrokeThickness="0" HeightRequest="190">
-                        <Border.StrokeShape><RoundRectangle CornerRadius="16"/></Border.StrokeShape>
-                        <Grid>
-                            <Image x:Name="AracResim" Aspect="AspectFill" HeightRequest="190"/>
-                            <!-- Karartma -->
-                            <BoxView BackgroundColor="#00000066" CornerRadius="16"/>
-                        </Grid>
-                    </Border>
-
-                    <!-- Araç Adı & Plaka -->
-                    <VerticalStackLayout Grid.Row="2" Margin="0,12,0,0" Spacing="3">
-                        <Label x:Name="AracAdLabel"
-                               Text="- -"
-                               TextColor="White" FontSize="22" FontAttributes="Bold"
-                               HorizontalOptions="Center"/>
-                        <Label x:Name="AracPlakaLabel"
-                               Text="-"
-                               TextColor="#EF4444" FontSize="14"
-                               HorizontalOptions="Center" Opacity="0.9"/>
+                <!-- Top Nav Bar -->
+                <Grid Grid.Row="0" Padding="20,10,20,0">
+                    <ImageButton Source="arrow_back_white.svg"
+                                 Clicked="OnBackClicked"
+                                 BackgroundColor="Transparent"
+                                 WidthRequest="30" HeightRequest="30"
+                                 HorizontalOptions="Start" VerticalOptions="Center"/>
+                    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="3">
+                        <HorizontalStackLayout HorizontalOptions="Center" Spacing="0">
+                            <Label Text="CARFLEET" FontSize="13" TextColor="White" FontAttributes="Bold"/>
+                            <Label Text="PRO"      FontSize="13" TextColor="#EF4444" FontAttributes="Bold"/>
+                        </HorizontalStackLayout>
+                        <Label Text="HASAR KAYITLARI" FontSize="20" TextColor="White" HorizontalOptions="Center"/>
                     </VerticalStackLayout>
                 </Grid>
-            </Border>
 
-            <!-- Form -->
-            <VerticalStackLayout Padding="20" Spacing="20">
-
-                <!-- Araç Özeti -->
-                <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}"
-                        Padding="16" StrokeThickness="0">
+                <!-- Araç Bilgi Kartı -->
+                <Border Grid.Row="1" Margin="20,8,20,0"
+                        BackgroundColor="#1E2A4A" StrokeThickness="0" Padding="14,10">
                     <Border.StrokeShape><RoundRectangle CornerRadius="14"/></Border.StrokeShape>
-                    <Border.Shadow><Shadow Brush="Black" Offset="0,2" Radius="6" Opacity="0.08"/></Border.Shadow>
-                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" RowSpacing="8" ColumnSpacing="10">
-                        <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="2">
-                            <Label Text="Marka / Model" FontSize="11" TextColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}"/>
-                            <Label x:Name="MarkaModelLabel" Text="-" FontSize="14" FontAttributes="Bold"
-                                   TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
-                        </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="2" HorizontalOptions="End">
-                            <Label Text="Kilometre" FontSize="11" TextColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}" HorizontalOptions="End"/>
-                            <Label x:Name="KmLabel" Text="-" FontSize="14" FontAttributes="Bold"
-                                   TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" HorizontalOptions="End"/>
-                        </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Row="1" Grid.Column="0" Spacing="2">
-                            <Label Text="Yıl" FontSize="11" TextColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}"/>
-                            <Label x:Name="YilLabel" Text="-" FontSize="14" FontAttributes="Bold"
-                                   TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
-                        </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Row="1" Grid.Column="1" Spacing="2" HorizontalOptions="End">
-                            <Label Text="Durum" FontSize="11" TextColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}" HorizontalOptions="End"/>
-                            <Label x:Name="DurumLabel" Text="-" FontSize="14" FontAttributes="Bold"
-                                   TextColor="#EF4444" HorizontalOptions="End"/>
+                    <Grid ColumnDefinitions="50, *" ColumnSpacing="12">
+                        <Border Grid.Column="0" WidthRequest="46" HeightRequest="46" StrokeThickness="0"
+                                BackgroundColor="#0A1128">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                            <Grid>
+                                <Image Source="{AppThemeBinding Light=car.svg, Dark=carnegatif.svg}"
+                                       HeightRequest="26" WidthRequest="26"
+                                       HorizontalOptions="Center" VerticalOptions="Center"/>
+                                <Image x:Name="AracResimMini" Aspect="AspectFill"/>
+                            </Grid>
+                        </Border>
+                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                            <Label x:Name="AracAdLabel" Text="- -"
+                                   TextColor="White" FontSize="16" FontAttributes="Bold"/>
+                            <Label x:Name="AracPlakaLabel" Text="-"
+                                   TextColor="#EF4444" FontSize="13"/>
                         </VerticalStackLayout>
                     </Grid>
                 </Border>
 
-                <!-- Hasar Bilgileri Başlık -->
-                <Label Text="Hasar Bilgileri" FontSize="17" FontAttributes="Bold"
-                       TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" Margin="0,5,0,0"/>
-
-                <!-- Hasar Türü -->
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Hasar Türü / Tipi" FontSize="12"
-                           TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}"/>
-                    <Border HeightRequest="52" Padding="15,0" StrokeThickness="1"
-                            Stroke="{AppThemeBinding Light=#D1D5DB, Dark=#334155}"
-                            BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}">
-                        <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
-                        <Entry x:Name="HasarTuruEntry"
-                               Placeholder="Ör: Çarpışma, Çizik, Cam Kırılması..."
-                               TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"
-                               PlaceholderColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}"/>
+                <!-- Durum İstatistik Çubukları -->
+                <Grid Grid.Row="2" Margin="20,10,20,0" ColumnDefinitions="*,*,*" ColumnSpacing="10">
+                    <Border Grid.Column="0" BackgroundColor="#1E2A4A" Padding="8,6" StrokeThickness="0">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                        <VerticalStackLayout Spacing="1" HorizontalOptions="Center">
+                            <Label x:Name="KmLabel" Text="-" FontSize="13" FontAttributes="Bold"
+                                   TextColor="White" HorizontalOptions="Center"/>
+                            <Label Text="KM" FontSize="10" TextColor="#94A3B8" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
                     </Border>
+                    <Border Grid.Column="1" BackgroundColor="#1E2A4A" Padding="8,6" StrokeThickness="0">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                        <VerticalStackLayout Spacing="1" HorizontalOptions="Center">
+                            <Label x:Name="YilLabel" Text="-" FontSize="13" FontAttributes="Bold"
+                                   TextColor="White" HorizontalOptions="Center"/>
+                            <Label Text="YIL" FontSize="10" TextColor="#94A3B8" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="2" BackgroundColor="#1E2A4A" Padding="8,6" StrokeThickness="0">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                        <VerticalStackLayout Spacing="1" HorizontalOptions="Center">
+                            <Label x:Name="DurumLabel" Text="-" FontSize="13" FontAttributes="Bold"
+                                   TextColor="#EF4444" HorizontalOptions="Center"/>
+                            <Label Text="DURUM" FontSize="10" TextColor="#94A3B8" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+
+            </Grid>
+        </Border>
+
+        <!-- ══════════════════ ANA İÇERİK ══════════════════ -->
+        <Grid Grid.Row="1">
+
+            <!-- ──── LİSTE GÖRÜNÜMÜ ──── -->
+            <Grid x:Name="ListGrid" RowDefinitions="Auto, *" IsVisible="True">
+
+                <!-- Liste Başlık + Yeni Ekle Butonu -->
+                <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Padding="20,18,20,8">
+                    <VerticalStackLayout Grid.Column="0" Spacing="1" VerticalOptions="Center">
+                        <Label Text="Hasar Geçmişi" FontSize="18" FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
+                        <Label x:Name="KayitSayisiLabel" Text="Yükleniyor..." FontSize="12"
+                               TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}"/>
+                    </VerticalStackLayout>
+                    <Button Grid.Column="1"
+                            Text="+ YENİ KAYIT"
+                            Clicked="OnYeniKayitClicked"
+                            BackgroundColor="#EF4444"
+                            TextColor="White"
+                            FontAttributes="Bold"
+                            FontSize="12"
+                            CornerRadius="10"
+                            HeightRequest="40"
+                            Padding="14,0"/>
+                </Grid>
+
+                <!-- Kayıt Yok Mesajı -->
+                <VerticalStackLayout x:Name="BosListePanel" Grid.Row="1"
+                                     IsVisible="False"
+                                     VerticalOptions="Center" HorizontalOptions="Center" Spacing="12">
+                    <Image Source="alert_triangle.svg" HeightRequest="56" WidthRequest="56" Opacity="0.35"/>
+                    <Label Text="Bu araç için henüz hasar kaydı yok."
+                           FontSize="14" TextColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}"
+                           HorizontalOptions="Center"/>
                 </VerticalStackLayout>
 
-                <!-- Tarih & Maliyet -->
-                <Grid ColumnDefinitions="*,*" ColumnSpacing="15">
-                    <VerticalStackLayout Grid.Column="0" Spacing="8">
-                        <Label Text="Hasar Tarihi" FontSize="12"
-                               TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}"/>
-                        <Border HeightRequest="52" Padding="10,0" StrokeThickness="1"
-                                Stroke="{AppThemeBinding Light=#D1D5DB, Dark=#334155}"
-                                BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}">
-                            <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
-                            <DatePicker x:Name="HasarTarihiPicker"
-                                        Format="dd.MM.yyyy"
-                                        TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
-                        </Border>
-                    </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Column="1" Spacing="8">
-                        <Label Text="Tahmini Maliyet (TL)" FontSize="12"
-                               TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}"/>
+                <!-- Hasar Kayıtları Listesi -->
+                <CollectionView x:Name="DamageList"
+                                Grid.Row="1"
+                                Margin="20,0,20,20"
+                                VerticalScrollBarVisibility="Never">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}"
+                                    Margin="0,5" Padding="0" StrokeThickness="0">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="14"/>
+                                </Border.StrokeShape>
+                                <Border.Shadow>
+                                    <Shadow Brush="Black" Offset="0,2" Radius="6" Opacity="0.07"/>
+                                </Border.Shadow>
+
+                                <!-- Sol renkli şerit: hasar türü renk göstergesi -->
+                                <Grid ColumnDefinitions="5, *" Padding="0">
+                                    <BoxView Grid.Column="0" BackgroundColor="#EF4444"
+                                             CornerRadius="14,0,0,14"/>
+                                    <Grid Grid.Column="1" RowDefinitions="Auto, Auto" Padding="14,12">
+
+                                        <!-- Üst: Hasar Türü + Durum Badge -->
+                                        <Grid Grid.Row="0" ColumnDefinitions="*, Auto">
+                                            <VerticalStackLayout Grid.Column="0" Spacing="3">
+                                                <Label Text="{Binding DamageType}"
+                                                       FontSize="15" FontAttributes="Bold"
+                                                       TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
+                                                <Label Text="{Binding DamageDate, StringFormat='📅 {0:dd.MM.yyyy}'}"
+                                                       FontSize="12"
+                                                       TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}"/>
+                                            </VerticalStackLayout>
+
+                                            <Border Grid.Column="1" Padding="10,4" StrokeThickness="0"
+                                                    VerticalOptions="Start">
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="8"/>
+                                                </Border.StrokeShape>
+                                                <Border.Triggers>
+                                                    <DataTrigger TargetType="Border" Binding="{Binding Status}" Value="Pending">
+                                                        <Setter Property="BackgroundColor" Value="#FEE2E2"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Border" Binding="{Binding Status}" Value="UnderRepair">
+                                                        <Setter Property="BackgroundColor" Value="#FEF3C7"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Border" Binding="{Binding Status}" Value="Repaired">
+                                                        <Setter Property="BackgroundColor" Value="#D1FAE5"/>
+                                                    </DataTrigger>
+                                                </Border.Triggers>
+                                                <Label Text="{Binding Status}" FontSize="11" FontAttributes="Bold">
+                                                    <Label.Triggers>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding Status}" Value="Pending">
+                                                            <Setter Property="TextColor" Value="#B91C1C"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding Status}" Value="UnderRepair">
+                                                            <Setter Property="TextColor" Value="#92400E"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding Status}" Value="Repaired">
+                                                            <Setter Property="TextColor" Value="#065F46"/>
+                                                        </DataTrigger>
+                                                    </Label.Triggers>
+                                                </Label>
+                                            </Border>
+                                        </Grid>
+
+                                        <!-- Alt: Açıklama + Maliyet -->
+                                        <Grid Grid.Row="1" ColumnDefinitions="*, Auto" Margin="0,10,0,0">
+                                            <Label Grid.Column="0"
+                                                   Text="{Binding Description}"
+                                                   FontSize="12"
+                                                   TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}"
+                                                   MaxLines="2"
+                                                   LineBreakMode="TailTruncation"/>
+                                            <Label Grid.Column="1"
+                                                   Text="{Binding EstimatedCost, StringFormat='{0:N0} ₺'}"
+                                                   FontSize="15" FontAttributes="Bold"
+                                                   TextColor="#EF4444"
+                                                   VerticalOptions="Center"/>
+                                        </Grid>
+
+                                    </Grid>
+                                </Grid>
+
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </Grid>
+
+            <!-- ──── FORM GÖRÜNÜMÜ ──── -->
+            <ScrollView x:Name="FormScrollView" IsVisible="False" VerticalScrollBarVisibility="Never">
+                <VerticalStackLayout Padding="20" Spacing="18">
+
+                    <!-- Form Başlık -->
+                    <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12" Margin="0,4,0,4">
+                        <ImageButton Grid.Column="0"
+                                     Source="arrow_back_white.svg"
+                                     Clicked="OnFormGeriClicked"
+                                     BackgroundColor="#EF4444"
+                                     WidthRequest="36" HeightRequest="36"
+                                     CornerRadius="10"/>
+                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                            <Label Text="Yeni Hasar Kaydı" FontSize="17" FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
+                            <Label x:Name="FormAracPlaka" Text="-" FontSize="12"
+                                   TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}"/>
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <!-- Hasar Türü -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Hasar Türü / Tipi *" FontSize="13"
+                               TextColor="{AppThemeBinding Light=#374151, Dark=#CBD5E1}"/>
                         <Border HeightRequest="52" Padding="15,0" StrokeThickness="1"
                                 Stroke="{AppThemeBinding Light=#D1D5DB, Dark=#334155}"
                                 BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}">
                             <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
-                            <Entry x:Name="MaliyetEntry"
-                                   Placeholder="0.00"
-                                   Keyboard="Numeric"
+                            <Entry x:Name="HasarTuruEntry"
+                                   Placeholder="Ör: Çarpışma, Çizik, Cam Kırılması, Göçük..."
                                    TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"
                                    PlaceholderColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}"/>
                         </Border>
                     </VerticalStackLayout>
-                </Grid>
 
-                <!-- Açıklama -->
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Hasar Detayları / Notlar" FontSize="12"
-                           TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}"/>
-                    <Border HeightRequest="110" Padding="15,10" StrokeThickness="1"
-                            Stroke="{AppThemeBinding Light=#D1D5DB, Dark=#334155}"
-                            BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}">
-                        <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
-                        <Editor x:Name="AciklamaEditor"
-                                Placeholder="Hasar nasıl oluştu, hangi parçalar etkilendi..."
-                                TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"
-                                PlaceholderColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}"
-                                AutoSize="TextChanges"/>
-                    </Border>
+                    <!-- Tarih & Maliyet -->
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <VerticalStackLayout Grid.Column="0" Spacing="8">
+                            <Label Text="Hasar Tarihi" FontSize="13"
+                                   TextColor="{AppThemeBinding Light=#374151, Dark=#CBD5E1}"/>
+                            <Border HeightRequest="52" Padding="10,0" StrokeThickness="1"
+                                    Stroke="{AppThemeBinding Light=#D1D5DB, Dark=#334155}"
+                                    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}">
+                                <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                                <DatePicker x:Name="HasarTarihiPicker"
+                                            Format="dd.MM.yyyy"
+                                            TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
+                            </Border>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Spacing="8">
+                            <Label Text="Tahmini Maliyet (₺)" FontSize="13"
+                                   TextColor="{AppThemeBinding Light=#374151, Dark=#CBD5E1}"/>
+                            <Border HeightRequest="52" Padding="15,0" StrokeThickness="1"
+                                    Stroke="{AppThemeBinding Light=#D1D5DB, Dark=#334155}"
+                                    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}">
+                                <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                                <Entry x:Name="MaliyetEntry"
+                                       Placeholder="0.00"
+                                       Keyboard="Numeric"
+                                       TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"
+                                       PlaceholderColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}"/>
+                            </Border>
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <!-- Açıklama -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Hasar Detayları / Notlar" FontSize="13"
+                               TextColor="{AppThemeBinding Light=#374151, Dark=#CBD5E1}"/>
+                        <Border Padding="15,12" StrokeThickness="1"
+                                Stroke="{AppThemeBinding Light=#D1D5DB, Dark=#334155}"
+                                BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                            <Editor x:Name="AciklamaEditor"
+                                    Placeholder="Hasar nasıl oluştu, hangi parçalar etkilendi, notlar..."
+                                    TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"
+                                    PlaceholderColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}"
+                                    AutoSize="TextChanges"
+                                    MinimumHeightRequest="90"/>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- Kaydet Butonu -->
+                    <Button x:Name="HasarKaydetBtn"
+                            Text="HASARI KAYDET"
+                            BackgroundColor="#EF4444"
+                            TextColor="White"
+                            FontAttributes="Bold"
+                            FontSize="15"
+                            CornerRadius="14"
+                            HeightRequest="55"
+                            Margin="0,8,0,30"
+                            Clicked="OnHasarKaydetClicked"/>
+
                 </VerticalStackLayout>
+            </ScrollView>
 
-                <!-- Kaydet Butonu -->
-                <Button Text="HASARI KAYDET"
-                        BackgroundColor="#EF4444"
-                        TextColor="White"
-                        FontAttributes="Bold"
-                        CornerRadius="14"
-                        HeightRequest="55"
-                        Margin="0,15,0,30"
-                        Clicked="OnHasarKaydetClicked"/>
+            <!-- Yükleniyor Göstergesi -->
+            <ActivityIndicator x:Name="YukleniyorGostergesi"
+                               IsRunning="False" IsVisible="False"
+                               Color="#EF4444"
+                               WidthRequest="40" HeightRequest="40"
+                               HorizontalOptions="Center" VerticalOptions="Center"/>
 
-            </VerticalStackLayout>
-        </VerticalStackLayout>
-    </ScrollView>
+        </Grid>
 
+    </Grid>
 </ContentPage>

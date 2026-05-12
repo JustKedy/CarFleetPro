@@ -126,7 +126,7 @@ namespace CarFleetPro.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CarBrands", (string)null);
+                    b.ToTable("CarBrands");
                 });
 
             modelBuilder.Entity("CarFleetPro.API.Models.CarColor", b =>
@@ -143,7 +143,7 @@ namespace CarFleetPro.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CarColors", (string)null);
+                    b.ToTable("CarColors");
                 });
 
             modelBuilder.Entity("CarFleetPro.API.Models.CarModel", b =>
@@ -163,7 +163,24 @@ namespace CarFleetPro.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CarModels", (string)null);
+                    b.ToTable("CarModels");
+                });
+
+            modelBuilder.Entity("CarFleetPro.API.Models.CarType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CarTypes");
                 });
 
             modelBuilder.Entity("CarFleetPro.API.Models.Customer", b =>
@@ -219,7 +236,7 @@ namespace CarFleetPro.API.Migrations
                     b.HasIndex("IdentityNumber")
                         .IsUnique();
 
-                    b.ToTable("Customers", (string)null);
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("CarFleetPro.API.Models.DamageRecord", b =>
@@ -264,7 +281,7 @@ namespace CarFleetPro.API.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("DamageRecords", (string)null);
+                    b.ToTable("DamageRecords");
                 });
 
             modelBuilder.Entity("CarFleetPro.API.Models.Invoice", b =>
@@ -297,7 +314,7 @@ namespace CarFleetPro.API.Migrations
 
                     b.HasIndex("RentalId");
 
-                    b.ToTable("Invoices", (string)null);
+                    b.ToTable("Invoices");
                 });
 
             modelBuilder.Entity("CarFleetPro.API.Models.Maintenance", b =>
@@ -340,7 +357,7 @@ namespace CarFleetPro.API.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("Maintenances", (string)null);
+                    b.ToTable("Maintenances");
                 });
 
             modelBuilder.Entity("CarFleetPro.API.Models.Notification", b =>
@@ -381,7 +398,7 @@ namespace CarFleetPro.API.Migrations
 
                     b.HasIndex("TargetUserId");
 
-                    b.ToTable("Notifications", (string)null);
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("CarFleetPro.API.Models.Payment", b =>
@@ -411,7 +428,36 @@ namespace CarFleetPro.API.Migrations
 
                     b.HasIndex("RentalId");
 
-                    b.ToTable("Payments", (string)null);
+                    b.ToTable("Payments");
+                });
+
+            modelBuilder.Entity("CarFleetPro.API.Models.PricePolicy", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("BasePrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<double>("MaxDiscountPercentage")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("TargetType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("TargetValue")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PricePolicies");
                 });
 
             modelBuilder.Entity("CarFleetPro.API.Models.Rental", b =>
@@ -474,7 +520,7 @@ namespace CarFleetPro.API.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("Rentals", (string)null);
+                    b.ToTable("Rentals");
                 });
 
             modelBuilder.Entity("CarFleetPro.API.Models.Vehicle", b =>
@@ -485,16 +531,18 @@ namespace CarFleetPro.API.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("VehicleId"));
 
+                    b.Property<decimal>("BasePrice")
+                        .HasColumnType("numeric");
+
                     b.Property<string>("Branch")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Brand")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("BrandId")
+                        .HasColumnType("integer");
 
-                    b.Property<string>("Color")
-                        .HasColumnType("text");
+                    b.Property<int?>("ColorId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -517,12 +565,14 @@ namespace CarFleetPro.API.Migrations
                     b.Property<DateTime>("InsuranceExpiry")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<double>("MaxDiscountPercentage")
+                        .HasColumnType("double precision");
+
                     b.Property<int>("Mileage")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Model")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("ModelId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("PhotoUrl")
                         .HasColumnType("text");
@@ -537,6 +587,9 @@ namespace CarFleetPro.API.Migrations
                     b.Property<int>("TransmissionType")
                         .HasColumnType("integer");
 
+                    b.Property<int>("TypeId")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -548,10 +601,18 @@ namespace CarFleetPro.API.Migrations
 
                     b.HasKey("VehicleId");
 
+                    b.HasIndex("BrandId");
+
+                    b.HasIndex("ColorId");
+
+                    b.HasIndex("ModelId");
+
                     b.HasIndex("PlateNumber")
                         .IsUnique();
 
-                    b.ToTable("Vehicles", (string)null);
+                    b.HasIndex("TypeId");
+
+                    b.ToTable("Vehicles");
                 });
 
             modelBuilder.Entity("CarFleetPro.API.Models.VehicleImage", b =>
@@ -591,7 +652,7 @@ namespace CarFleetPro.API.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("VehicleImages", (string)null);
+                    b.ToTable("VehicleImages");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -735,7 +796,7 @@ namespace CarFleetPro.API.Migrations
                     b.HasOne("CarFleetPro.API.Models.Vehicle", "Vehicle")
                         .WithMany()
                         .HasForeignKey("VehicleId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ReportedByUser");
@@ -811,6 +872,40 @@ namespace CarFleetPro.API.Migrations
                     b.Navigation("User");
 
                     b.Navigation("Vehicle");
+                });
+
+            modelBuilder.Entity("CarFleetPro.API.Models.Vehicle", b =>
+                {
+                    b.HasOne("CarFleetPro.API.Models.CarBrand", "Brand")
+                        .WithMany()
+                        .HasForeignKey("BrandId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CarFleetPro.API.Models.CarColor", "Color")
+                        .WithMany()
+                        .HasForeignKey("ColorId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("CarFleetPro.API.Models.CarModel", "Model")
+                        .WithMany()
+                        .HasForeignKey("ModelId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CarFleetPro.API.Models.CarType", "Type")
+                        .WithMany()
+                        .HasForeignKey("TypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Brand");
+
+                    b.Navigation("Color");
+
+                    b.Navigation("Model");
+
+                    b.Navigation("Type");
                 });
 
             modelBuilder.Entity("CarFleetPro.API.Models.VehicleImage", b =>

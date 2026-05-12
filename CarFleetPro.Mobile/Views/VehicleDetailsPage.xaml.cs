@@ -147,11 +147,11 @@ public partial class VehicleDetailsPage : ContentPage
         // Mevcut fotoğraf sayısı kontrolü
         if (_vehicleImages.Count >= 10)
         {
-            await DisplayAlert("Limit", "Bu araç için maksimum 10 fotoğraf yüklenebilir.", "Tamam");
+            await DisplayAlertAsync("Limit", "Bu araç için maksimum 10 fotoğraf yüklenebilir.", "Tamam");
             return;
         }
 
-        var action = await DisplayActionSheet(
+        var action = await DisplayActionSheetAsync(
             "Fotoğraf Ekle",
             "İptal",
             null,
@@ -163,13 +163,16 @@ public partial class VehicleDetailsPage : ContentPage
         try
         {
             if (action == "Galeriden Seç")
-                photo = await MediaPicker.Default.PickPhotoAsync();
+            {
+                var results = await MediaPicker.Default.PickPhotosAsync();
+                photo = results?.FirstOrDefault();
+            }
             else if (action == "Kamerayı Aç" && MediaPicker.Default.IsCaptureSupported)
                 photo = await MediaPicker.Default.CapturePhotoAsync();
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Hata", $"Fotoğraf seçilemedi: {ex.Message}", "Tamam");
+            await DisplayAlertAsync("Hata", $"Fotoğraf seçilemedi: {ex.Message}", "Tamam");
             return;
         }
 
@@ -219,11 +222,11 @@ public partial class VehicleDetailsPage : ContentPage
                 }
             }
 
-            await DisplayAlert("✅ Başarılı", message, "Tamam");
+            await DisplayAlertAsync("✅ Başarılı", message, "Tamam");
         }
         else
         {
-            await DisplayAlert("Hata ❌", message, "Tamam");
+            await DisplayAlertAsync("Hata ❌", message, "Tamam");
         }
     }
 
@@ -242,14 +245,14 @@ public partial class VehicleDetailsPage : ContentPage
 
     private async void OnMaintenanceClicked(object? sender, EventArgs e)
     {
-        var confirm = await DisplayAlert("Bakıma Gönder",
+        var confirm = await DisplayAlertAsync("Bakıma Gönder",
             $"{_selectedVehicle.Plaka} plakalı aracı bakıma göndermek istediğinize emin misiniz?",
             "Evet", "İptal");
 
         if (!confirm) return;
 
         var (success, message) = await _apiService.SendToMaintenanceAsync(_selectedVehicle.Id);
-        await DisplayAlert(success ? "Başarılı ✅" : "Hata ❌", message, "Tamam");
+        await DisplayAlertAsync(success ? "Başarılı ✅" : "Hata ❌", message, "Tamam");
 
         if (success && Navigation is not null)
             await Navigation.PopAsync();

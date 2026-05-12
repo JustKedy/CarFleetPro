@@ -93,5 +93,13 @@ namespace CarFleetPro.Mobile.Views
             }
         }
 
+        private void OnSegmentCheckedChanged(object sender, CheckedChangedEventArgs e)
+        {
+            if (BindingContext is GarageViewModel vm)
+            {
+                vm.SegmentToggledCommand.Execute(null);
+            }
+        }
+
     }
 }

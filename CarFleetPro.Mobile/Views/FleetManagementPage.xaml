@@ -174,8 +174,11 @@
                                             <Border.StrokeShape>
                                                 <RoundRectangle CornerRadius="8"/>
                                             </Border.StrokeShape>
-                                            <Image Source="{AppThemeBinding Light=car.svg, Dark=carnegatif.svg}" HeightRequest="30" WidthRequest="30"
-                                                   HorizontalOptions="Center" VerticalOptions="Center"/>
+                                            <Grid>
+                                                <Image Source="{AppThemeBinding Light=car.svg, Dark=carnegatif.svg}" HeightRequest="30" WidthRequest="30"
+                                                       HorizontalOptions="Center" VerticalOptions="Center"/>
+                                                <Image Source="{Binding ResimUrl}" Aspect="AspectFill" />
+                                            </Grid>
                                         </Border>
 
                                         <VerticalStackLayout Grid.Column="1" Margin="15,0,0,0" VerticalOptions="Center" Spacing="2">
@@ -222,8 +225,6 @@
                                                 <Label Text="Düzenle" FontSize="11" HorizontalOptions="Center" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}"/>
                                             </VerticalStackLayout>
 
-
-                                            
                                             <VerticalStackLayout Grid.Column="1" Spacing="5" IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:FleetManagementViewModel}}, Path=IsAdmin}">
                                                 <VerticalStackLayout.GestureRecognizers>
                                                     <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FleetManagementViewModel}}, Path=SilCommand}" CommandParameter="{Binding .}"/>
@@ -235,8 +236,6 @@
                                                 <Label Text="Sil" FontSize="11" HorizontalOptions="Center" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}"/>
                                             </VerticalStackLayout>
 
-
-                                            
                                             <VerticalStackLayout Grid.Column="2" Spacing="5">
                                                 <VerticalStackLayout.GestureRecognizers>
                                                     <TapGestureRecognizer Tapped="OnHasarKayitlariClicked"/>
@@ -248,7 +247,6 @@
                                                 <Label Text="Hasar" FontSize="11" HorizontalOptions="Center" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}"/>
                                             </VerticalStackLayout>
 
-                                            
                                             <VerticalStackLayout Grid.Column="3" Spacing="5">
                                                 <VerticalStackLayout.GestureRecognizers>
                                                     <TapGestureRecognizer Tapped="OnBakimKayitlariClicked"/>
@@ -261,6 +259,92 @@
                                             </VerticalStackLayout>
                                             
                                         </Grid>
+
+                                        <!-- Hızlı Durum Değiştir -->
+                                        <VerticalStackLayout Spacing="8">
+                                            <Label Text="HIZLI DURUM DEĞİŞTİR" FontSize="10" FontAttributes="Bold"
+                                                   TextColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}"
+                                                   CharacterSpacing="1"/>
+                                            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+
+                                                <!-- MÜSAİT -->
+                                                <Border Grid.Column="0" StrokeThickness="2" HeightRequest="38">
+                                                    <Border.StrokeShape><RoundRectangle CornerRadius="19"/></Border.StrokeShape>
+                                                    <Border.Stroke><SolidColorBrush Color="#10B981"/></Border.Stroke>
+                                                    <Border.Triggers>
+                                                        <DataTrigger TargetType="Border" Binding="{Binding Durum}" Value="MÜSAİT">
+                                                            <Setter Property="BackgroundColor" Value="#10B981"/>
+                                                        </DataTrigger>
+                                                    </Border.Triggers>
+                                                    <Border.GestureRecognizers>
+                                                        <TapGestureRecognizer
+                                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FleetManagementViewModel}}, Path=DurumDegistirCommand}"
+                                                            CommandParameter="{Binding Id, StringFormat='{0}|MÜSAİT'}"/>
+                                                    </Border.GestureRecognizers>
+                                                    <Label Text="✓ Müsait" FontSize="12" FontAttributes="Bold"
+                                                           TextColor="#10B981"
+                                                           HorizontalOptions="Center" VerticalOptions="Center">
+                                                        <Label.Triggers>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding Durum}" Value="MÜSAİT">
+                                                                <Setter Property="TextColor" Value="White"/>
+                                                            </DataTrigger>
+                                                        </Label.Triggers>
+                                                    </Label>
+                                                </Border>
+
+                                                <!-- BAKIMDA -->
+                                                <Border Grid.Column="1" StrokeThickness="2" HeightRequest="38">
+                                                    <Border.StrokeShape><RoundRectangle CornerRadius="19"/></Border.StrokeShape>
+                                                    <Border.Stroke><SolidColorBrush Color="#F59E0B"/></Border.Stroke>
+                                                    <Border.Triggers>
+                                                        <DataTrigger TargetType="Border" Binding="{Binding Durum}" Value="BAKIMDA">
+                                                            <Setter Property="BackgroundColor" Value="#F59E0B"/>
+                                                        </DataTrigger>
+                                                    </Border.Triggers>
+                                                    <Border.GestureRecognizers>
+                                                        <TapGestureRecognizer
+                                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FleetManagementViewModel}}, Path=DurumDegistirCommand}"
+                                                            CommandParameter="{Binding Id, StringFormat='{0}|BAKIMDA'}"/>
+                                                    </Border.GestureRecognizers>
+                                                    <Label Text="🔧 Bakımda" FontSize="12" FontAttributes="Bold"
+                                                           TextColor="#F59E0B"
+                                                           HorizontalOptions="Center" VerticalOptions="Center">
+                                                        <Label.Triggers>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding Durum}" Value="BAKIMDA">
+                                                                <Setter Property="TextColor" Value="White"/>
+                                                            </DataTrigger>
+                                                        </Label.Triggers>
+                                                    </Label>
+                                                </Border>
+
+                                                <!-- DOLU -->
+                                                <Border Grid.Column="2" StrokeThickness="2" HeightRequest="38">
+                                                    <Border.StrokeShape><RoundRectangle CornerRadius="19"/></Border.StrokeShape>
+                                                    <Border.Stroke><SolidColorBrush Color="#EF4444"/></Border.Stroke>
+                                                    <Border.Triggers>
+                                                        <DataTrigger TargetType="Border" Binding="{Binding Durum}" Value="DOLU">
+                                                            <Setter Property="BackgroundColor" Value="#EF4444"/>
+                                                        </DataTrigger>
+                                                    </Border.Triggers>
+                                                    <Border.GestureRecognizers>
+                                                        <TapGestureRecognizer
+                                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FleetManagementViewModel}}, Path=DurumDegistirCommand}"
+                                                            CommandParameter="{Binding Id, StringFormat='{0}|DOLU'}"/>
+                                                    </Border.GestureRecognizers>
+                                                    <Label Text="🚗 Dolu" FontSize="12" FontAttributes="Bold"
+                                                           TextColor="#EF4444"
+                                                           HorizontalOptions="Center" VerticalOptions="Center">
+                                                        <Label.Triggers>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding Durum}" Value="DOLU">
+                                                                <Setter Property="TextColor" Value="White"/>
+                                                            </DataTrigger>
+                                                        </Label.Triggers>
+                                                    </Label>
+                                                </Border>
+
+                                            </Grid>
+                                        </VerticalStackLayout>
+
                                     </VerticalStackLayout>
                                 </VerticalStackLayout>
                             </Border>

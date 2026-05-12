@@ -76,7 +76,7 @@ namespace CarFleetPro.Mobile.Views
             {
                 if (Navigation != null)
                 {
-                    await Navigation.PushAsync(new VehicleMaintenancePage());
+                    await Navigation.PushAsync(new VehicleMaintenancePage(secilenArac));
                 }
             }
         }

@@ -28,6 +28,30 @@
             <VerticalStackLayout Padding="0, 10, 0, 10">
 
                 
+                <!-- ADMIN PANEL ENTRY -->
+                <Border x:Name="AdminPanelBorder" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Padding="15" Margin="20, 10, 20, 10" Stroke="Transparent" StrokeThickness="0">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.15"/>
+                    </Border.Shadow>
+                    
+                    <Grid ColumnDefinitions="Auto, *, Auto">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnAdminMenuTapped" />
+                        </Grid.GestureRecognizers>
+                        <Image Grid.Column="0" Source="{AppThemeBinding Light=settingspozitif.svg, Dark=settingsnegatif.svg}" HeightRequest="28" WidthRequest="28" HorizontalOptions="Center" VerticalOptions="Center"/>
+
+                        <VerticalStackLayout Grid.Column="1" Margin="15,0,0,0" VerticalOptions="Center">
+                            <Label Text="Yönetici Paneli" FontAttributes="Bold" FontSize="15" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" />
+                            <Label Text="Filo ve operasyon yönetimi" FontSize="11" TextColor="#3B82F6" />
+                        </VerticalStackLayout>
+                        <Image Grid.Column="2" Source="{AppThemeBinding Light=arrow_right_black.svg, Dark=arrow_right_white.svg}" HeightRequest="16" WidthRequest="16" VerticalOptions="Center"/>
+                    </Grid>
+                </Border>
+
+                <!-- Profile Card (Original) -->
                 <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Padding="15" Margin="20, 10, 20, 10" Stroke="Transparent" StrokeThickness="0">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="12" />
@@ -49,8 +73,8 @@
                                 <Image x:Name="ProfileIcon" Source="{AppThemeBinding Light=user_black.svg, Dark=user_white.svg}" HeightRequest="35" WidthRequest="35" HorizontalOptions="Center" VerticalOptions="Center"/>
                             </Border>
                             <VerticalStackLayout Grid.Column="1" Margin="15,0,0,0" VerticalOptions="Center">
-                                <Label Text="Kadir Gürbüz" FontAttributes="Bold" FontSize="18" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" />
-                                <Label Text="Yetki: Sistem Yöneticisi" FontSize="12" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}" />
+                                <Label x:Name="ProfileNameLabel" Text="Yükleniyor..." FontAttributes="Bold" FontSize="18" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" />
+                                <Label x:Name="ProfileRoleLabel" Text="" FontSize="12" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}" />
                             </VerticalStackLayout>
                             <Image x:Name="ProfileArrowIcon" Grid.Column="2" Source="{AppThemeBinding Light=arrow_right_black.svg, Dark=arrow_right_white.svg}" HeightRequest="16" WidthRequest="16" VerticalOptions="Center"/>
                         </Grid>
@@ -81,7 +105,6 @@
                     <VerticalStackLayout Spacing="10">
                         <Grid ColumnDefinitions="*, Auto">
                             <Label Grid.Column="0" Text="Bildirim Tercihleri" FontSize="14" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}"/>
-                            <Button Grid.Column="1" Text="Hepsini Yönet" FontSize="11" Padding="10,0" HeightRequest="25" CornerRadius="5" BackgroundColor="#3B82F6" TextColor="White" Clicked="OnManageNotificationsClicked"/>
                         </Grid>
                         
                         <Grid ColumnDefinitions="*, Auto">
@@ -142,55 +165,14 @@
                     </Grid>
                 </Border>
 
-                <!-- FINANS SECTION -->
-                <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Padding="15" Margin="20, 10, 20, 10" Stroke="Transparent" StrokeThickness="0">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="12" />
-                    </Border.StrokeShape>
-                    <Border.Shadow>
-                        <Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.15"/>
-                    </Border.Shadow>
-
-                    <Grid ColumnDefinitions="Auto, *, Auto">
-                        <Grid.GestureRecognizers>
-                            <TapGestureRecognizer Tapped="OnInvoiceTapped" />
-                        </Grid.GestureRecognizers>
-                        <Border Grid.Column="0" WidthRequest="70" BackgroundColor="Transparent" StrokeThickness="0" VerticalOptions="Center">
-                            <Image Source="{AppThemeBinding Light=invoicepozitif.svg, Dark=invoicenegatif.svg}" HeightRequest="22" WidthRequest="22" HorizontalOptions="Center" VerticalOptions="Center"/>
-                        </Border>
-
-                        <Label Grid.Column="1" Text="Faturalar ve Ödemeler" Margin="15,0,0,0" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" FontSize="15" VerticalOptions="Center"/>
-                        <Image x:Name="InvoiceArrowIcon" Grid.Column="2" Source="{AppThemeBinding Light=arrow_right_black.svg, Dark=arrow_right_white.svg}" HeightRequest="16" WidthRequest="16" VerticalOptions="Center"/>
-                    </Grid>
-                </Border>
-
-                <!-- ADD ADMIN SECTION -->
-                <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Padding="15" Margin="20, 10, 20, 10" Stroke="Transparent" StrokeThickness="0">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="12" />
-                    </Border.StrokeShape>
-                    <Border.Shadow>
-                        <Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.15"/>
-                    </Border.Shadow>
-
-                    <Grid ColumnDefinitions="Auto, *, Auto">
-                        <Grid.GestureRecognizers>
-                            <TapGestureRecognizer Tapped="OnAddAdminTapped" />
-                        </Grid.GestureRecognizers>
-                        <Border Grid.Column="0" WidthRequest="70" BackgroundColor="Transparent" StrokeThickness="0" VerticalOptions="Center">
-                            <Image Source="{AppThemeBinding Light=pluspozitif.svg, Dark=plusnegatif.svg}" HeightRequest="22" WidthRequest="22" HorizontalOptions="Center" VerticalOptions="Center"/>
-                        </Border>
-
-                        <Label Grid.Column="1" Text="Personel Yönetimi" Margin="15,0,0,0" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" FontSize="15" VerticalOptions="Center"/>
-                        <Image x:Name="StaffArrowIcon" Grid.Column="2" Source="{AppThemeBinding Light=arrow_right_black.svg, Dark=arrow_right_white.svg}" HeightRequest="16" WidthRequest="16" VerticalOptions="Center"/>
-                    </Grid>
-                </Border>
-
                 <VerticalStackLayout Margin="20, 20, 20, 10" Spacing="15">
                     <Border BackgroundColor="#EF4444" StrokeThickness="0" HeightRequest="55" Padding="20,0">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="12" />
                         </Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnLogoutTapped" />
+                        </Border.GestureRecognizers>
                         <Grid ColumnDefinitions="Auto, *">
                             <Image Grid.Column="0" Source="logout.svg" HeightRequest="24" WidthRequest="24" VerticalOptions="Center"/>
                             <Label Grid.Column="1" Text="ÇIKIŞ YAP" FontAttributes="Bold" TextColor="White" FontSize="16" HorizontalOptions="Center" VerticalOptions="Center" Margin="-24,0,0,0"/>

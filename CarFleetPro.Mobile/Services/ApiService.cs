@@ -48,22 +48,30 @@ namespace CarFleetPro.Mobile.Services
         
         
 
-        public async Task<List<string>> GetBrandsAsync()
+        public async Task<List<LookupItem>> GetBrandsAsync()
         {
-            try { return await _httpClient.GetFromJsonAsync<List<string>>("CarBrands") ?? new List<string>(); }
-            catch { return new List<string>(); }
+            try { return await _httpClient.GetFromJsonAsync<List<LookupItem>>("Lookup/brands") ?? new(); }
+            catch { return new(); }
         }
 
-        public async Task<List<string>> GetModelsAsync(string brand)
+        public async Task<List<LookupItem>> GetModelsAsync(int brandId)
         {
-            try { return await _httpClient.GetFromJsonAsync<List<string>>($"CarModels/{brand}") ?? new List<string>(); }
-            catch { return new List<string>(); }
+            try { return await _httpClient.GetFromJsonAsync<List<LookupItem>>($"Lookup/models/{brandId}") ?? new(); }
+            catch { return new(); }
         }
 
-        public async Task<List<string>> GetColorsAsync()
+        public async Task<List<LookupItem>> GetCarTypesAsync()
         {
-            try { return await _httpClient.GetFromJsonAsync<List<string>>("CarColors") ?? new List<string>(); }
-            catch { return new List<string>(); }
+            // API'deki CarTypes alias'ını güncelleyip obje dönmesini sağlamak veya LookupController'a yeni endpoint eklemek gerekiyor. 
+            // Şimdilik API'deki alias'ı kullanacağız ama API'yi güncelleyeceğiz.
+            try { return await _httpClient.GetFromJsonAsync<List<LookupItem>>("CarTypes") ?? new(); }
+            catch { return new(); }
+        }
+
+        public async Task<List<LookupItem>> GetColorsAsync()
+        {
+            try { return await _httpClient.GetFromJsonAsync<List<LookupItem>>("Lookup/colors") ?? new(); }
+            catch { return new(); }
         }
 
         public async Task<List<string>> GetStatusesAsync()
@@ -136,20 +144,26 @@ namespace CarFleetPro.Mobile.Services
             catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
         }
 
-        public async Task<bool> DeleteVehicleAsync(int id)
+        public async Task<(bool Success, string Message)> DeleteVehicleAsync(int id)
         {
             try
             {
                 await SetAuthorizationHeader();
                 var response = await _httpClient.DeleteAsync($"Vehicle/{id}");
-                if (response.IsSuccessStatusCode) { _cachedVehicles = null; _cachedETag = null; return true; }
-                System.Diagnostics.Debug.WriteLine($"[API] DELETE Hata: {response.StatusCode}");
-                return false;
+                if (response.IsSuccessStatusCode) 
+                { 
+                    _cachedVehicles = null; 
+                    _cachedETag = null; 
+                    return (true, "Araç başarıyla silindi."); 
+                }
+                
+                var errorMsg = await response.Content.ReadAsStringAsync();
+                return (false, string.IsNullOrEmpty(errorMsg) ? $"Sunucu hatası: {response.StatusCode}" : errorMsg);
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"[API] DELETE Exception: {ex.Message}");
-                return false;
+                return (false, $"Bağlantı hatası: {ex.Message}");
             }
         }
 
@@ -232,6 +246,26 @@ namespace CarFleetPro.Mobile.Services
             }
             catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
         }
+
+        /// <summary>PATCH /api/Vehicle/{id}/status — MÜSAİT | DOLU | BAKIMDA</summary>
+        public async Task<(bool Success, string Message)> UpdateVehicleStatusAsync(int id, string status)
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                var response = await _httpClient.PatchAsJsonAsync($"Vehicle/{id}/status", new { Status = status });
+                var content  = await response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    _cachedVehicles = null;
+                    _cachedETag     = null;
+                    return (true, content.Trim().Trim('"'));
+                }
+                return (false, content.Trim().Trim('"'));
+            }
+            catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
+        }
+
 
         // ==========================================
         //  GİRİŞ / KAYIT / OTURUM
@@ -347,26 +381,21 @@ namespace CarFleetPro.Mobile.Services
         }
 
         /// <summary>
-        /// POST /api/Auth/forgot-password — Şifre sıfırlama kodu gönder
+        /// POST /api/Auth/forgot-password — 6 haneli OTP e-postayla gönderilir
         /// </summary>
-        public async Task<(bool Success, string Message, string? Token)> ForgotPasswordAsync(string email)
+        public async Task<(bool Success, string Message)> ForgotPasswordAsync(string email)
         {
             try
             {
-                var data = new { Email = email };
-                var response = await _httpClient.PostAsJsonAsync("Auth/forgot-password", data);
-                var content = await response.Content.ReadAsStringAsync();
+                var response = await _httpClient.PostAsJsonAsync("Auth/forgot-password", new { Email = email });
+                var content  = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
-                {
-                    // Token'ı al (dev modda kullanıcıya reset için lazım)
-                    var result = System.Text.Json.JsonSerializer.Deserialize<ForgotPasswordResponse>(
-                        content, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                    return (true, "Şifre sıfırlama kodu e-posta adresinize gönderildi!", result?.Token);
-                }
-                return (false, content.Trim().Trim('"'), null);
+                    return (true, "Doğrulama kodu e-posta adresinize gönderildi.");
+
+                return (false, content.Trim().Trim('"'));
             }
-            catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}", null); }
+            catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
         }
 
         
@@ -462,6 +491,73 @@ namespace CarFleetPro.Mobile.Services
             }
             catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
         }
+
+        /// <summary>
+        /// Anlık kiralama: Müşteri kaydı gerektirmez.
+        /// Ad-soyad ve telefon ile önce müşteriyi bulur veya oluşturur, sonra kiralar.
+        /// </summary>
+        public async Task<(bool Success, string Message)> CreateRentalWithGuestAsync(
+            string firstName, string lastName, string phone,
+            int vehicleId, DateTime startDate, DateTime endDate,
+            decimal depositAmount, string notes,
+            string tc = "", string licenseNo = "",
+            DateTime licenseExpiry = default, string address = "Belirtilmedi")
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+
+                // 1. Telefon ile müşteriyi bul veya anlık oluştur
+                var guestData = new
+                {
+                    FirstName           = firstName.Trim(),
+                    LastName            = lastName.Trim(),
+                    PhoneNumber         = phone.Trim(),
+                    Email               = $"misafir_{phone.Trim().Replace(" ", "")}@carfleetpro.com",
+                    IdentityNumber      = string.IsNullOrWhiteSpace(tc)
+                                            ? $"MISAFIR{phone.Trim().Replace(" ", "").Replace("+", "").TakeLast(10).Aggregate("", (a, c) => a + c)}"
+                                            : tc.Trim(),
+                    Address             = string.IsNullOrWhiteSpace(address) ? "Belirtilmedi" : address,
+                    DateOfBirth         = new DateTime(1990, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    DriverLicenseNumber = string.IsNullOrWhiteSpace(licenseNo)
+                                            ? $"GS{phone.Trim().Replace(" ", "").TakeLast(6).Aggregate("", (a, c) => a + c)}"
+                                            : licenseNo.Trim(),
+                    DriverLicenseExpiry = licenseExpiry == default ? DateTime.UtcNow.AddYears(5) : licenseExpiry.ToUniversalTime()
+                };
+
+                var guestResponse = await _httpClient.PostAsJsonAsync("Customer/guest", guestData);
+                var guestContent  = await guestResponse.Content.ReadAsStringAsync();
+
+                int customerId;
+                if (guestResponse.IsSuccessStatusCode)
+                {
+                    var created = System.Text.Json.JsonSerializer.Deserialize<CustomerIdResult>(
+                        guestContent,
+                        new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    customerId = created?.CustomerId ?? 0;
+                }
+                else if ((int)guestResponse.StatusCode == 409)
+                {
+                    // Zaten kayıtlı → mevcut ID'yi döndürür
+                    var existing = System.Text.Json.JsonSerializer.Deserialize<CustomerIdResult>(
+                        guestContent,
+                        new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    customerId = existing?.CustomerId ?? 0;
+                }
+                else
+                {
+                    return (false, $"Müşteri kaydı oluşturulamadı: {guestContent.Trim().Trim('"')}");
+                }
+
+                if (customerId == 0) return (false, "Müşteri ID alınamadı.");
+
+                // 2. Kirala
+                return await CreateRentalAsync(customerId, vehicleId, startDate, endDate, depositAmount, notes);
+            }
+            catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
+        }
+
+        private class CustomerIdResult { public int CustomerId { get; set; } }
 
         
         
@@ -611,6 +707,455 @@ namespace CarFleetPro.Mobile.Services
                 return (false, $"Bağlantı hatası: {ex.Message}");
             }
         }
+
+        // ==========================================
+        //  KİRALAMA (RENTAL) EK METODLAR
+        // ==========================================
+
+        public async Task<List<RentalInfo>> GetRentalsAsync()
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                return await _httpClient.GetFromJsonAsync<List<RentalInfo>>("Rental") ?? new List<RentalInfo>();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[API] GetRentalsAsync Hatası: {ex.Message}");
+                return new List<RentalInfo>();
+            }
+        }
+
+        public async Task<RentalInfo?> GetRentalDetailAsync(int id)
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                return await _httpClient.GetFromJsonAsync<RentalInfo>($"Rental/{id}");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[API] GetRentalDetailAsync Hatası: {ex.Message}");
+                return null;
+            }
+        }
+
+        public async Task<(bool Success, string Message)> CompleteRentalAsync(int id, string? notes = null)
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                var data = new { Notes = notes };
+                var response = await _httpClient.PutAsJsonAsync($"Rental/{id}/complete", data);
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode) return (true, "Kiralama başarıyla tamamlandı.");
+                return (false, content.Trim().Trim('"'));
+            }
+            catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
+        }
+
+        public async Task<(bool Success, string Message)> CancelRentalAsync(int id, string reason)
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                var data = new { Notes = reason };
+                var response = await _httpClient.PutAsJsonAsync($"Rental/{id}/cancel", data);
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode) return (true, "Kiralama iptal edildi.");
+                return (false, content.Trim().Trim('"'));
+            }
+            catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
+        }
+
+        // ==========================================
+        //  BAKIM (MAINTENANCE)
+        // ==========================================
+
+        public async Task<List<MaintenanceInfo>> GetMaintenancesAsync()
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                return await _httpClient.GetFromJsonAsync<List<MaintenanceInfo>>("Maintenance") ?? new List<MaintenanceInfo>();
+            }
+            catch { return new List<MaintenanceInfo>(); }
+        }
+
+        public async Task<(bool Success, string Message)> CreateMaintenanceAsync(CreateMaintenanceRequest request)
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                var response = await _httpClient.PostAsJsonAsync("Maintenance", request);
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode) return (true, "Bakım kaydı eklendi.");
+                return (false, content.Trim().Trim('"'));
+            }
+            catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
+        }
+
+        public async Task<(bool Success, string Message)> UpdateMaintenanceAsync(int id, UpdateMaintenanceRequest request)
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                var response = await _httpClient.PutAsJsonAsync($"Maintenance/{id}", request);
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode) return (true, "Bakım kaydı güncellendi.");
+                return (false, content.Trim().Trim('"'));
+            }
+            catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
+        }
+
+        public async Task<(bool Success, string Message)> EndMaintenanceAsync(int vehicleId, decimal cost, string notes)
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                var data = new { Cost = cost, Notes = notes };
+                var response = await _httpClient.PutAsJsonAsync($"Vehicle/{vehicleId}/maintenance/end", data);
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode) return (true, "Araç bakımdan çıkarıldı.");
+                return (false, content.Trim().Trim('"'));
+            }
+            catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
+        }
+
+        // ==========================================
+        //  HASAR KAYDI (DAMAGE RECORD)
+        // ==========================================
+
+        public async Task<List<DamageInfo>> GetDamageRecordsAsync()
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                return await _httpClient.GetFromJsonAsync<List<DamageInfo>>("DamageRecord") ?? new List<DamageInfo>();
+            }
+            catch { return new List<DamageInfo>(); }
+        }
+
+        public async Task<(bool Success, string Message)> CreateDamageRecordAsync(CreateDamageRecordRequest request)
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                var response = await _httpClient.PostAsJsonAsync("DamageRecord", request);
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode) return (true, "Hasar kaydı eklendi.");
+                return (false, content.Trim().Trim('"'));
+            }
+            catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
+        }
+
+        public async Task<(bool Success, string Message)> UpdateDamageRecordAsync(int id, UpdateDamageRecordRequest request)
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                var response = await _httpClient.PutAsJsonAsync($"DamageRecord/{id}", request);
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode) return (true, "Hasar kaydı güncellendi.");
+                return (false, content.Trim().Trim('"'));
+            }
+            catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
+        }
+
+        // ==========================================
+        //  FATURA (INVOICE)
+        // ==========================================
+
+        public async Task<List<InvoiceInfo>> GetInvoicesAsync()
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                var response = await _httpClient.GetAsync("Invoice");
+                var body = await response.Content.ReadAsStringAsync();
+                System.Diagnostics.Debug.WriteLine($"[API] GetInvoicesAsync → {(int)response.StatusCode}: {body[..Math.Min(200, body.Length)]}");
+                if (!response.IsSuccessStatusCode) return new List<InvoiceInfo>();
+                return System.Text.Json.JsonSerializer.Deserialize<List<InvoiceInfo>>(
+                    body, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true })
+                    ?? new List<InvoiceInfo>();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[API] GetInvoicesAsync HATA: {ex.Message}");
+                return new List<InvoiceInfo>();
+            }
+        }
+
+        public async Task<(bool Success, string Message)> CreateInvoiceAsync(CreateInvoiceRequest request)
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                var response = await _httpClient.PostAsJsonAsync("Invoice", request);
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode) return (true, "Fatura oluşturuldu.");
+                return (false, content.Trim().Trim('"'));
+            }
+            catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
+        }
+
+        public async Task<(bool Success, string Message)> UpdateInvoiceAsync(int id, UpdateInvoiceRequest request)
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                var response = await _httpClient.PutAsJsonAsync($"Invoice/{id}", request);
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode) return (true, "Fatura güncellendi.");
+                return (false, content.Trim().Trim('"'));
+            }
+            catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
+        }
+
+        // ==========================================
+        //  BİLDİRİM (NOTIFICATION)
+        // ==========================================
+
+        public async Task<List<NotificationInfo>> GetNotificationsAsync()
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                return await _httpClient.GetFromJsonAsync<List<NotificationInfo>>("Notification") ?? new List<NotificationInfo>();
+            }
+            catch { return new List<NotificationInfo>(); }
+        }
+
+        public async Task<(bool Success, string Message)> SendNotificationAsync(SendNotificationRequest request)
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                var response = await _httpClient.PostAsJsonAsync("Notification/send", request);
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode) return (true, "Bildirim gönderildi.");
+                return (false, content.Trim().Trim('"'));
+            }
+            catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
+        }
+
+        public async Task<(bool Success, string Message)> MarkNotificationReadAsync(int id)
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                var response = await _httpClient.PutAsync($"Notification/{id}/read", null);
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode) return (true, "Okundu olarak işaretlendi.");
+                return (false, content.Trim().Trim('"'));
+            }
+            catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
+        }
+
+        // ==========================================
+        //  PERSONEL (STAFF)
+        // ==========================================
+
+        public async Task<List<StaffInfo>> GetStaffAsync()
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                var response = await _httpClient.GetAsync("Staff");
+                var body = await response.Content.ReadAsStringAsync();
+                System.Diagnostics.Debug.WriteLine($"[API] GetStaffAsync → {(int)response.StatusCode}: {body[..Math.Min(300, body.Length)]}");
+                if (!response.IsSuccessStatusCode) return new List<StaffInfo>();
+                return System.Text.Json.JsonSerializer.Deserialize<List<StaffInfo>>(
+                    body, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true })
+                    ?? new List<StaffInfo>();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[API] GetStaffAsync HATA: {ex.Message}");
+                return new List<StaffInfo>();
+            }
+        }
+
+        public async Task<(bool Success, string Message)> UpdateStaffAsync(string id, UpdateStaffRequest request)
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                var response = await _httpClient.PutAsJsonAsync($"Staff/{id}", request);
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode) return (true, "Personel bilgileri güncellendi.");
+                return (false, content.Trim().Trim('"'));
+            }
+            catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
+        }
+
+        public async Task<(bool Success, string Message)> ToggleStaffActiveAsync(string id)
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                var response = await _httpClient.PutAsync($"Staff/{id}/toggle-active", null);
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode) return (true, "Personel durumu güncellendi.");
+                return (false, content.Trim().Trim('"'));
+            }
+            catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
+        }
+
+        public async Task<(bool Success, string Message)> DeleteStaffAsync(string id)
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                var response = await _httpClient.DeleteAsync($"Staff/{id}");
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode) return (true, "Personel silindi.");
+                return (false, content.Trim().Trim('"'));
+            }
+            catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
+        }
+
+        public async Task<(bool Success, string Message)> CreateStaffAsync(CreateStaffRequest request)
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                var response = await _httpClient.PostAsJsonAsync("Auth/admin/create-staff", request);
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode) return (true, "Yeni personel hesabı oluşturuldu.");
+
+                if (string.IsNullOrWhiteSpace(content))
+                {
+                    if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                        return (false, "Bu işlem için 'Yönetici' yetkiniz bulunmuyor.");
+                    if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                        return (false, "Oturum süreniz dolmuş. Lütfen tekrar giriş yapın.");
+                    
+                    return (false, $"İşlem başarısız (Hata Kodu: {(int)response.StatusCode})");
+                }
+
+                return (false, content.Trim().Trim('"'));
+            }
+            catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
+        }
+
+        // ==========================================
+        //  BİLDİRİM AYARLARI
+        // ==========================================
+
+        public async Task<(bool Success, string Message)> UpdateNotificationSettingsAsync(bool maintenance, bool rental, bool availability)
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                var data = new { MaintenanceAlerts = maintenance, RentalExpiryAlerts = rental, InstantAvailabilityAlerts = availability };
+                var response = await _httpClient.PutAsJsonAsync("Auth/notifications", data);
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode) return (true, "Bildirim ayarları güncellendi.");
+                return (false, content.Trim().Trim('"'));
+            }
+            catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
+        }
+
+        // ==========================================
+        //  MÜŞTERİ (CUSTOMER) EK METODLAR
+        // ==========================================
+
+        public async Task<(bool Success, string Message)> AddCustomerAsync(CreateCustomerRequest request)
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                var response = await _httpClient.PostAsJsonAsync("Customer", request);
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode) return (true, "Müşteri eklendi.");
+                return (false, content.Trim().Trim('"'));
+            }
+            catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
+        }
+
+        public async Task<CustomerDetail?> GetCustomerDetailAsync(int id)
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                return await _httpClient.GetFromJsonAsync<CustomerDetail>($"Customer/{id}");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[API] GetCustomerDetailAsync Hatası: {ex.Message}");
+                return null;
+            }
+        }
+
+        // ==========================================
+        //  FİYAT POLİTİKASI (PRICE POLICY)
+        // ==========================================
+
+        public async Task<List<PricePolicy>> GetPricePoliciesAsync()
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                return await _httpClient.GetFromJsonAsync<List<PricePolicy>>("PricePolicy") ?? new List<PricePolicy>();
+            }
+            catch { return new List<PricePolicy>(); }
+        }
+
+        public async Task<(bool Success, string Message)> SavePricePolicyAsync(PricePolicy policy)
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                var response = await _httpClient.PostAsJsonAsync("PricePolicy", policy);
+                if (response.IsSuccessStatusCode) return (true, "Politika başarıyla kaydedildi.");
+                
+                var error = await response.Content.ReadAsStringAsync();
+                return (false, string.IsNullOrEmpty(error) ? $"Hata: {response.StatusCode}" : error);
+            }
+            catch (Exception ex) { return (false, ex.Message); }
+        }
+
+        public async Task<(bool Success, string Message)> UpdateVehiclePricingAsync(int id, decimal basePrice, double maxDiscount)
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                var response = await _httpClient.PutAsJsonAsync($"Vehicle/{id}/pricing", new Dictionary<string, object> 
+                { 
+                    { "basePrice", basePrice }, 
+                    { "maxDiscountPercentage", maxDiscount } 
+                });
+                if (response.IsSuccessStatusCode)
+                {
+                    // Mobil önbelleği temizle ki bir sonraki veri çekiminde taze gelsin
+                    _cachedVehicles = null;
+                    _cachedETag = null;
+                    return (true, "Fiyatlandırma güncellendi.");
+                }
+                
+                var error = await response.Content.ReadAsStringAsync();
+                return (false, string.IsNullOrEmpty(error) ? $"Hata: {response.StatusCode}" : error);
+            }
+            catch (Exception ex) { return (false, ex.Message); }
+        }
     }
 
     
@@ -627,5 +1172,14 @@ namespace CarFleetPro.Mobile.Services
     {
         public string Message { get; set; } = string.Empty;
         public string? Token { get; set; }
+    }
+
+    public class PricePolicy
+    {
+        public int Id { get; set; }
+        public string TargetType { get; set; } = "Global";
+        public string? TargetValue { get; set; }
+        public decimal BasePrice { get; set; }
+        public double MaxDiscountPercentage { get; set; }
     }
 }

@@ -17,6 +17,12 @@ namespace CarFleetPro.Mobile.Models
         public string FullName { get; set; } = string.Empty;
     }
 
+    public class LookupItem
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+    }
+
     public class AlertInfo
     {
         public string AlertType { get; set; } = string.Empty;
@@ -74,7 +80,8 @@ namespace CarFleetPro.Mobile.Models
         public int TotalVehicles { get; set; }
         public int AvailableVehicles { get; set; }
         public int RentedVehicles { get; set; }
-        public decimal MonthlyRevenue { get; set; }
+        public int MaintenanceVehicles { get; set; }
+        public decimal? MonthlyRevenue { get; set; }
         public double RentedPercentage { get; set; }
         public double AvailablePercentage { get; set; }
         public double MaintenancePercentage { get; set; }
@@ -96,5 +103,203 @@ namespace CarFleetPro.Mobile.Models
         public bool IsPrimary { get; set; }
         public int DisplayOrder { get; set; }
         public DateTime UploadedAt { get; set; }
+    }
+
+    public class RentalInfo
+    {
+        public int RentalId { get; set; }
+        public string CustomerName { get; set; } = string.Empty;
+        public string VehiclePlate { get; set; } = string.Empty;
+        public string VehicleName { get; set; } = string.Empty;
+        public DateTime StartDate { get; set; }
+        public DateTime PlannedEndDate { get; set; }
+        public DateTime? ActualEndDate { get; set; }
+        public decimal DailyRate { get; set; }
+        public decimal TotalAmount { get; set; }
+        public decimal DepositAmount { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public string Notes { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; }
+    }
+
+    public class MaintenanceInfo
+    {
+        public int MaintenanceId { get; set; }
+        public int VehicleId { get; set; }
+        public string VehiclePlate { get; set; } = string.Empty;
+        public string VehicleName { get; set; } = string.Empty;
+        public string MaintenanceType { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public DateTime StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public DateTime? NextInspectionDate { get; set; }
+        public decimal Cost { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; }
+    }
+
+    public class CreateMaintenanceRequest
+    {
+        public int VehicleId { get; set; }
+        public string MaintenanceType { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public DateTime StartDate { get; set; }
+        public DateTime? NextInspectionDate { get; set; }
+        public decimal Cost { get; set; }
+    }
+
+    public class UpdateMaintenanceRequest
+    {
+        public string Status { get; set; } = string.Empty;
+        public DateTime? EndDate { get; set; }
+        public DateTime? NextInspectionDate { get; set; }
+        public decimal? Cost { get; set; }
+    }
+
+    public class DamageInfo
+    {
+        public int DamageRecordId { get; set; }
+        public int VehicleId { get; set; }
+        public string VehiclePlate { get; set; } = string.Empty;
+        public string VehicleName { get; set; } = string.Empty;
+        public string DamageType { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public DateTime DamageDate { get; set; }
+        public decimal EstimatedCost { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public string? PhotoUrl { get; set; }
+        public DateTime CreatedAt { get; set; }
+    }
+
+    public class CreateDamageRecordRequest
+    {
+        public int VehicleId { get; set; }
+        public string DamageType { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public DateTime DamageDate { get; set; }
+        public decimal EstimatedCost { get; set; }
+        public string? PhotoUrl { get; set; }
+    }
+
+    public class UpdateDamageRecordRequest
+    {
+        public string Status { get; set; } = string.Empty;
+        public decimal? EstimatedCost { get; set; }
+        public string? PhotoUrl { get; set; }
+    }
+
+    public class InvoiceInfo
+    {
+        public int InvoiceId { get; set; }
+        public int RentalId { get; set; }
+        public string CustomerName { get; set; } = string.Empty;
+        public string VehiclePlate { get; set; } = string.Empty;
+        public decimal Amount { get; set; }
+        public DateTime IssuedAt { get; set; }
+        public DateTime? PaidAt { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public string Notes { get; set; } = string.Empty;
+    }
+
+    public class CreateInvoiceRequest
+    {
+        public int RentalId { get; set; }
+        public decimal Amount { get; set; }
+        public string Notes { get; set; } = string.Empty;
+    }
+
+    public class UpdateInvoiceRequest
+    {
+        public string Status { get; set; } = string.Empty;
+        public string? Notes { get; set; }
+    }
+
+    public class NotificationInfo
+    {
+        public int NotificationId { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
+        public bool IsRead { get; set; }
+        public DateTime SentAt { get; set; }
+        public int? RelatedVehicleId { get; set; }
+        public int? RelatedRentalId { get; set; }
+    }
+
+    public class SendNotificationRequest
+    {
+        public string Title { get; set; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
+        public string? TargetUserId { get; set; }
+        public int? RelatedVehicleId { get; set; }
+        public int? RelatedRentalId { get; set; }
+    }
+
+    public class StaffInfo
+    {
+        public string Id { get; set; } = string.Empty;
+        public string FullName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string PhoneNumber { get; set; } = string.Empty;
+        public string Role { get; set; } = string.Empty;
+        public string Department { get; set; } = string.Empty;
+        public bool IsActive { get; set; }
+        public DateTime CreatedAt { get; set; }
+    }
+
+    public class UpdateStaffRequest
+    {
+        public string FullName { get; set; } = string.Empty;
+        public string PhoneNumber { get; set; } = string.Empty;
+        public string Role { get; set; } = string.Empty;
+        public string Department { get; set; } = string.Empty;
+        public bool IsActive { get; set; }
+    }
+
+    public class CreateStaffRequest
+    {
+        public string FullName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public string PhoneNumber { get; set; } = string.Empty;
+        public string Department { get; set; } = string.Empty;
+        public string Role { get; set; } = string.Empty;
+    }
+
+    public class CustomerDetail : CustomerInfo
+    {
+        public string IdentityNumber { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public DateTime DateOfBirth { get; set; }
+        public string DriverLicenseNumber { get; set; } = string.Empty;
+        public DateTime DriverLicenseExpiry { get; set; }
+        public string Address { get; set; } = string.Empty;
+        public bool IsBlacklisted { get; set; }
+        public List<RentalHistoryItem> RentalHistory { get; set; } = new();
+    }
+
+    public class RentalHistoryItem
+    {
+        public int RentalId { get; set; }
+        public string VehicleName { get; set; } = string.Empty;
+        public string PlateNumber { get; set; } = string.Empty;
+        public DateTime StartDate { get; set; }
+        public DateTime PlannedEndDate { get; set; }
+        public decimal TotalAmount { get; set; }
+        public string Status { get; set; } = string.Empty;
+    }
+
+    public class CreateCustomerRequest
+    {
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string IdentityNumber { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string PhoneNumber { get; set; } = string.Empty;
+        public DateTime DateOfBirth { get; set; }
+        public string DriverLicenseNumber { get; set; } = string.Empty;
+        public DateTime DriverLicenseExpiry { get; set; }
+        public string Address { get; set; } = string.Empty;
     }
 }

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="CarFleetPro.Mobile.Views.PricePolicyPage"
+             BackgroundColor="{AppThemeBinding Light=#F3F4F6, Dark=#0F172A}"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="110, *">
+
+        <!-- Header -->
+        <Border Grid.Row="0" BackgroundColor="#0A1128" StrokeThickness="0">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="0, 0, 20, 20" />
+            </Border.StrokeShape>
+            <Grid ColumnDefinitions="30, *, 30" Padding="20,0">
+                <ImageButton Grid.Column="0" Source="arrow_left_white.svg" Clicked="OnBackClicked" HeightRequest="25" WidthRequest="25" VerticalOptions="Center"/>
+                <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center" Spacing="5">
+                    <HorizontalStackLayout HorizontalOptions="Center" Spacing="0">
+                        <Label Text="CARFLEET" FontSize="14" TextColor="White" FontAttributes="Bold" />
+                        <Label Text="PRO" FontSize="14" TextColor="#3B82F6" FontAttributes="Bold" />
+                    </HorizontalStackLayout>
+                    <Label Text="FİYAT POLİTİKASI" FontSize="22" TextColor="White" HorizontalOptions="Center" Margin="0,5,0,0"/>
+                </VerticalStackLayout>
+            </Grid>
+        </Border>
+
+        <!-- Content -->
+        <ScrollView Grid.Row="1" VerticalScrollBarVisibility="Never">
+            <VerticalStackLayout Padding="20" Spacing="20">
+
+                <Label Text="Global Fiyat Ayarları" FontSize="18" FontAttributes="Bold" 
+                       TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
+
+                <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Padding="20" StrokeThickness="0">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="15"/></Border.StrokeShape>
+                    <Border.Shadow><Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.1"/></Border.Shadow>
+                    
+                    <VerticalStackLayout Spacing="20">
+                        <!-- Vehicle Selection -->
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Araç Grubu / Model" FontSize="12" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}"/>
+                            <Border HeightRequest="50" Padding="15,0" StrokeThickness="1" Stroke="{AppThemeBinding Light=#D1D5DB, Dark=#334155}" BackgroundColor="{AppThemeBinding Light=#F9FAFB, Dark=#0F172A}">
+                                <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                                <Picker x:Name="VehicleGroupPicker" Title="Tüm Araçlar" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}">
+                                    <Picker.ItemsSource>
+                                        <x:Array Type="{x:Type x:String}">
+                                            <x:String>Tüm Araçlar</x:String>
+                                            <x:String>Ekonomik</x:String>
+                                            <x:String>Konfor</x:String>
+                                            <x:String>Premium</x:String>
+                                            <x:String>SUV</x:String>
+                                            <x:String>Araca Özel</x:String>
+                                        </x:Array>
+                                    </Picker.ItemsSource>
+                                    <Picker.SelectedIndex>0</Picker.SelectedIndex>
+                                </Picker>
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Specific Vehicle Selection (Hidden by default) -->
+                        <VerticalStackLayout x:Name="SpecificVehicleLayout" Spacing="8" IsVisible="False">
+                            <Label Text="Spesifik Araç Seçin" FontSize="12" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}"/>
+                            <Border HeightRequest="50" Padding="15,0" StrokeThickness="1" Stroke="{AppThemeBinding Light=#D1D5DB, Dark=#334155}" BackgroundColor="{AppThemeBinding Light=#F9FAFB, Dark=#0F172A}">
+                                <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                                <Picker x:Name="VehiclePicker" Title="Araç Seçin" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" ItemDisplayBinding="{Binding DisplayName}"/>
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Base Price Adjustment -->
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Günlük Baz Fiyat (₺)" FontSize="12" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}"/>
+                            <Border HeightRequest="50" Padding="15,0" StrokeThickness="1" Stroke="{AppThemeBinding Light=#D1D5DB, Dark=#334155}" BackgroundColor="{AppThemeBinding Light=#F9FAFB, Dark=#0F172A}">
+                                <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                                <Entry x:Name="BasePriceEntry" Text="1500" Keyboard="Numeric" Placeholder="Örn: 1500" 
+                                       TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
+                            </Border>
+                            <Label Text="* Seçili araç grubu için uygulanacak standart günlük ücret." FontSize="11" TextColor="#6B7280"/>
+                        </VerticalStackLayout>
+
+                        <BoxView HeightRequest="1" BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#334155}" Margin="0,5"/>
+
+                        <!-- Discount Limit -->
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Maksimum İndirim Oranı (%)" FontSize="12" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}"/>
+                            <Border HeightRequest="50" Padding="15,0" StrokeThickness="1" Stroke="{AppThemeBinding Light=#D1D5DB, Dark=#334155}" BackgroundColor="{AppThemeBinding Light=#F9FAFB, Dark=#0F172A}">
+                                <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                                <Entry x:Name="MaxDiscountEntry" Text="20" Keyboard="Numeric" Placeholder="Örn: 20" 
+                                       TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
+                            </Border>
+                            <Label Text="* Personelin yapabileceği maksimum indirim yüzdesi." FontSize="11" TextColor="#6B7280"/>
+                        </VerticalStackLayout>
+
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Info Box -->
+                <Border BackgroundColor="#DBEAFE" Padding="15" StrokeThickness="0">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                    <HorizontalStackLayout Spacing="10">
+                        <Label Text="ℹ️" FontSize="20" VerticalOptions="Center"/>
+                        <Label Text="Bu değişiklikler onaylandığı andan itibaren tüm yeni kiralama işlemlerinde geçerli olacaktır. Mevcut sözleşmeler etkilenmez." 
+                               FontSize="12" TextColor="#1E40AF" LineBreakMode="WordWrap" MaxLines="3" WidthRequest="280"/>
+                    </HorizontalStackLayout>
+                </Border>
+
+                <Button Text="POLİTİKAYI GÜNCELLE" Clicked="OnUpdateClicked" BackgroundColor="#3B82F6" TextColor="White" 
+                        FontAttributes="Bold" CornerRadius="10" HeightRequest="55" Margin="0,10,0,30"/>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

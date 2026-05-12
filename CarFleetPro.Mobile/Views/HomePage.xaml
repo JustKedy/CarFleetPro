@@ -20,7 +20,7 @@
                     <Label Text="CARFLEET" FontSize="14" TextColor="White" FontAttributes="Bold" />
                     <Label Text="PRO"      FontSize="14" TextColor="#3B82F6" FontAttributes="Bold" />
                 </HorizontalStackLayout>
-                <Label Text="GÖSTERGE PANELİ" FontSize="24" TextColor="White"
+                <Label Text="ANA SAYFA" FontSize="24" TextColor="White"
                        HorizontalOptions="Center" Margin="0,5,0,0"/>
             </VerticalStackLayout>
         </Border>
@@ -33,18 +33,7 @@
                                      IsVisible="{Binding IsLoading, Converter={StaticResource InverseBoolConverter}}">
 
                     
-                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Margin="20,5,0,5">
-                        <HorizontalStackLayout Spacing="10">
-                            <Button Text="Tümü"         Command="{Binding SubeFiltreleCommand}" CommandParameter="0"
-                                    BackgroundColor="{Binding TumuRenk}"    TextColor="White" CornerRadius="20" HeightRequest="40" Padding="20,0" />
-                            <Button Text="Bafra Şube"   Command="{Binding SubeFiltreleCommand}" CommandParameter="1"
-                                    BackgroundColor="{Binding BafraRenk}"   TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" BorderColor="{AppThemeBinding Light=#D1D5DB, Dark=#334155}" BorderWidth="1" CornerRadius="20" HeightRequest="40" Padding="15,0" />
-                            <Button Text="Atakum Şube"  Command="{Binding SubeFiltreleCommand}" CommandParameter="2"
-                                    BackgroundColor="{Binding AtakumRenk}"  TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" BorderColor="{AppThemeBinding Light=#D1D5DB, Dark=#334155}" BorderWidth="1" CornerRadius="20" HeightRequest="40" Padding="15,0" />
-                            <Button Text="İlkadım Şube" Command="{Binding SubeFiltreleCommand}" CommandParameter="3"
-                                    BackgroundColor="{Binding IlkadimRenk}" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" BorderColor="{AppThemeBinding Light=#D1D5DB, Dark=#334155}" BorderWidth="1" CornerRadius="20" HeightRequest="40" Padding="15,0" />
-                        </HorizontalStackLayout>
-                    </ScrollView>
+
 
                     
                     <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*"

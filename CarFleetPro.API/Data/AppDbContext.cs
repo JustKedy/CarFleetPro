@@ -30,6 +30,9 @@ namespace CarFleetPro.API.Data
         public DbSet<CarBrand> CarBrands { get; set; } = null!;
         public DbSet<CarModel> CarModels { get; set; } = null!;
         public DbSet<CarColor> CarColors { get; set; } = null!;
+        public DbSet<PricePolicy> PricePolicies { get; set; } = null!;
+        public DbSet<CarType> CarTypes { get; set; } = null!;
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -42,6 +45,32 @@ namespace CarFleetPro.API.Data
             builder.Entity<Customer>()
                 .HasIndex(c => c.IdentityNumber)
                 .IsUnique();
+
+            // Vehicle → Lookups
+            builder.Entity<Vehicle>()
+                .HasOne(v => v.Brand)
+                .WithMany()
+                .HasForeignKey(v => v.BrandId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Vehicle>()
+                .HasOne(v => v.Model)
+                .WithMany()
+                .HasForeignKey(v => v.ModelId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Vehicle>()
+                .HasOne(v => v.Color)
+                .WithMany()
+                .HasForeignKey(v => v.ColorId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            builder.Entity<Vehicle>()
+                .HasOne(v => v.Type)
+                .WithMany()
+                .HasForeignKey(v => v.TypeId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // VehicleImage → Vehicle
             builder.Entity<VehicleImage>()
@@ -58,12 +87,26 @@ namespace CarFleetPro.API.Data
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            // DamageRecord → Vehicle (silme engellemek için Restrict)
+            // DamageRecord → Vehicle (Cascade: araç silinince hasar kayıtları da silinir)
             builder.Entity<DamageRecord>()
                 .HasOne(d => d.Vehicle)
                 .WithMany()
                 .HasForeignKey(d => d.VehicleId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Rental → Vehicle (Cascade: araç silinince kiralamalar da silinir)
+            builder.Entity<Rental>()
+                .HasOne(r => r.Vehicle)
+                .WithMany()
+                .HasForeignKey(r => r.VehicleId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Maintenance → Vehicle (Cascade: araç silinince bakım kayıtları da silinir)
+            builder.Entity<Maintenance>()
+                .HasOne(m => m.Vehicle)
+                .WithMany()
+                .HasForeignKey(m => m.VehicleId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             // Invoice → Rental
             builder.Entity<Invoice>()

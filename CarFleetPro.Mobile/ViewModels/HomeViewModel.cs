@@ -47,15 +47,6 @@ namespace CarFleetPro.Mobile.ViewModels
         // ── Yükleme durumu ───────────────────────────────────────────────────
         [ObservableProperty] public partial bool IsLoading { get; set; } = true;
 
-        // ── Şube filtresi ────────────────────────────────────────────────────
-        private string? _secilenSube = null; // null = Tümü
-
-        // Şube butonlarının aktif renkleri için
-        [ObservableProperty] public partial Color TumuRenk { get; set; } = Color.FromArgb("#0A1128");
-        [ObservableProperty] public partial Color BafraRenk { get; set; } = Colors.Transparent;
-        [ObservableProperty] public partial Color AtakumRenk { get; set; } = Colors.Transparent;
-        [ObservableProperty] public partial Color IlkadimRenk { get; set; } = Colors.Transparent;
-
         public HomeViewModel(ApiService apiService)
         {
             _apiService = apiService;
@@ -85,13 +76,13 @@ namespace CarFleetPro.Mobile.ViewModels
             if (ToplamAracSayisi == 0) IsLoading = true;
             try
             {
-                var stats = await _apiService.GetDashboardStatsAsync(_secilenSube);
+                var stats = await _apiService.GetDashboardStatsAsync();
                 if (stats == null) return;
 
                 ToplamAracSayisi = stats.TotalVehicles;
                 KiradakiAracSayisi = stats.RentedVehicles;
                 MusaitAracSayisi = stats.AvailableVehicles;
-                AylikCiro = stats.MonthlyRevenue;
+                AylikCiro = stats.MonthlyRevenue ?? 0m;
 
                 KiraYuzdesi = ((int)Math.Round(stats.RentedPercentage)).ToString();
                 MusaitYuzdesi = ((int)Math.Round(stats.AvailablePercentage)).ToString();
@@ -149,27 +140,6 @@ namespace CarFleetPro.Mobile.ViewModels
             {
                 IsLoading = false;
             }
-        }
-
-        [RelayCommand]
-        public async Task SubeFiltrele(string subeId)
-        {
-            // Şube eşleştirme
-            _secilenSube = subeId switch
-            {
-                "1" => "Bafra Şube",
-                "2" => "Atakum Şube",
-                "3" => "İlkadım Şube",
-                _   => null  // "0" = Tümü
-            };
-
-            // Buton renkleri güncelle
-            TumuRenk    = subeId == "0" ? Color.FromArgb("#0A1128") : Colors.Transparent;
-            BafraRenk   = subeId == "1" ? Color.FromArgb("#0A1128") : Colors.Transparent;
-            AtakumRenk  = subeId == "2" ? Color.FromArgb("#0A1128") : Colors.Transparent;
-            IlkadimRenk = subeId == "3" ? Color.FromArgb("#0A1128") : Colors.Transparent;
-
-            await LoadDataAsync();
         }
     }
 }

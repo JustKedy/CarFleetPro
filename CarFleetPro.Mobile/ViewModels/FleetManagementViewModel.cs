@@ -110,22 +110,53 @@ namespace CarFleetPro.Mobile.ViewModels
 
                 if (cevap)
                 {
-                    
-                    bool apiBasarili = await _apiService.DeleteVehicleAsync(secilenArac.Id);
+                    var (apiBasarili, mesaj) = await _apiService.DeleteVehicleAsync(secilenArac.Id);
 
                     if (apiBasarili)
                     {
-                        
                         _tumAraclar.Remove(secilenArac);
                         AracListesi.Remove(secilenArac);
-                        
                         await page.DisplayAlertAsync("Başarılı", "Araç başarıyla filodan silindi.", "Tamam");
                     }
                     else
                     {
-                        
-                        await page.DisplayAlertAsync("Hata", "Araç silinirken veritabanı tarafında bir sorun oluştu.", "Tamam");
+                        await page.DisplayAlertAsync("Hata", mesaj, "Tamam");
                     }
+                }
+            }
+        }
+
+        /// <summary>
+        /// CommandParameter formatı: "{vehicleId}|{yeniDurum}"  örn: "25|MÜSAİT"
+        /// </summary>
+        [RelayCommand]
+        public async Task DurumDegistir(string? param)
+        {
+            if (string.IsNullOrEmpty(param)) return;
+
+            var parts = param.Split('|');
+            if (parts.Length != 2 || !int.TryParse(parts[0], out int vehicleId)) return;
+
+            var yeniDurum = parts[1]; // MÜSAİT | DOLU | BAKIMDA
+
+            if (Application.Current?.Windows.Count > 0)
+            {
+                var page = Application.Current.Windows[0].Page!;
+                var (basarili, mesaj) = await _apiService.UpdateVehicleStatusAsync(vehicleId, yeniDurum);
+
+                if (basarili)
+                {
+                    // Listedeki aracın durumunu anında güncelle (yeniden yüklemeye gerek kalmadan)
+                    var arac = _tumAraclar.FirstOrDefault(a => a.Id == vehicleId);
+                    if (arac != null)
+                    {
+                        arac.Durum = yeniDurum;
+                        await VerileriYukle(forceRefresh: true);
+                    }
+                }
+                else
+                {
+                    await page.DisplayAlertAsync("Hata", mesaj, "Tamam");
                 }
             }
         }

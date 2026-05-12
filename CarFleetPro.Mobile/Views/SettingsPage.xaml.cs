@@ -1,9 +1,12 @@
 using CarFleetPro.Mobile.Services;
+using Microsoft.Maui.Storage;
 
 namespace CarFleetPro.Mobile.Views;
 
 public partial class SettingsPage : ContentPage
 {
+    private readonly ApiService _apiService;
+
     private bool _maintenanceNotificationsEnabled = true;
     private bool _rentalNotificationsEnabled = true;
     private bool _availabilityNotificationsEnabled;
@@ -11,15 +14,43 @@ public partial class SettingsPage : ContentPage
     public SettingsPage()
     {
         InitializeComponent();
+        _apiService = new ApiService();
         UpdateThemeUi();
     }
 
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
         UpdateThemeUi();
+        await LoadProfileCard();
     }
 
+    // ── Profil kartını API'den doldur ────────────────────────────────────────
+    private async Task LoadProfileCard()
+    {
+        try
+        {
+            var profile = await _apiService.GetProfileAsync();
+            if (profile != null)
+            {
+                ProfileNameLabel.Text = profile.FullName;
+                ProfileRoleLabel.Text = profile.Role switch
+                {
+                    "Yönetici" => "Yetki: Sistem Yöneticisi",
+                    "Çalışan"  => "Yetki: Çalışan",
+                    _          => $"Yetki: {profile.Role}"
+                };
+
+                AdminPanelBorder.IsVisible = profile.Role == "Yönetici";
+            }
+        }
+        catch
+        {
+            ProfileNameLabel.Text = "—";
+        }
+    }
+
+    // ── Tema ─────────────────────────────────────────────────────────────────
     private void UpdateThemeUi()
     {
         var isDark = ThemeService.IsDark;
@@ -32,8 +63,6 @@ public partial class SettingsPage : ContentPage
         PasswordIcon.Source = $"lock_{suffix}.svg";
         ProfileArrowIcon.Source = $"arrow_right_{suffix}.svg";
         PasswordArrowIcon.Source = $"arrow_right_{suffix}.svg";
-        InvoiceArrowIcon.Source = $"arrow_right_{suffix}.svg";
-        StaffArrowIcon.Source = $"arrow_right_{suffix}.svg";
 
         MaintenanceNotifIcon.Source = GetBellIcon(_maintenanceNotificationsEnabled, isDark);
         RentalNotifIcon.Source = GetBellIcon(_rentalNotificationsEnabled, isDark);
@@ -53,46 +82,48 @@ public partial class SettingsPage : ContentPage
         UpdateThemeUi();
     }
 
+    // ── Navigasyon ───────────────────────────────────────────────────────────
+    private async void OnAdminMenuTapped(object? sender, EventArgs e)
+    {
+        await Navigation.PushAsync(new AdminMenuPage());
+    }
+
     private async void OnProfileTapped(object? sender, EventArgs e)
     {
         if (Navigation != null)
-        {
             await Navigation.PushAsync(new ProfileSettingsPage());
-        }
     }
 
     private async void OnChangePasswordTapped(object? sender, EventArgs e)
     {
         if (Navigation != null)
-        {
             await Navigation.PushAsync(new ChangePasswordPage());
-        }
     }
 
-    private async void OnAddAdminTapped(object? sender, EventArgs e)
+    // ── Çıkış Yap ────────────────────────────────────────────────────────────
+    private async void OnLogoutTapped(object? sender, EventArgs e)
     {
-        if (Navigation != null)
+        bool confirm = await DisplayAlertAsync(
+            "Çıkış Yap",
+            "Hesabınızdan çıkış yapmak istediğinize emin misiniz?",
+            "Evet, Çık",
+            "İptal");
+
+        if (!confirm) return;
+
+        // JWT token'ı temizle
+        SecureStorage.Default.Remove("jwt_token");
+
+        // LoginPage'e root olarak geç (geri dönüş olmasın)
+        if (Application.Current?.Windows.Count > 0)
         {
-            await Navigation.PushAsync(new StaffManagementPage());
+            var window = Application.Current.Windows[0];
+            var loginPage = new NavigationPage(new LoginPage());
+            window.Page = loginPage;
         }
     }
 
-    private async void OnInvoiceTapped(object? sender, EventArgs e)
-    {
-        if (Navigation != null)
-        {
-            await Navigation.PushAsync(new InvoicePage());
-        }
-    }
-
-    private async void OnManageNotificationsClicked(object? sender, EventArgs e)
-    {
-        if (Navigation != null)
-        {
-            await Navigation.PushAsync(new NotificationManagementPage());
-        }
-    }
-
+    // ── Bildirim toggleları ──────────────────────────────────────────────────
     private void ToggleNotificationIcon(Image icon, ref bool enabled)
     {
         enabled = !enabled;
