@@ -168,33 +168,6 @@ namespace CarFleetPro.Mobile.Views
         // ─────────────────────────────────────────
         private void OnRateChanged(object? sender, TextChangedEventArgs e)
         {
-            if (_bazFiyat <= 0 || _tabanFiyat <= 0)
-            {
-                HesaplaToplamTutar();
-                return;
-            }
-
-            if (!decimal.TryParse(GunlukUcretEntry.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal girilen))
-            {
-                HesaplaToplamTutar();
-                return;
-            }
-
-            // Tavan (Baz) ve Taban sınırı
-            if (girilen > _bazFiyat)
-            {
-                GunlukUcretEntry.Text = _bazFiyat.ToString("0.##", CultureInfo.InvariantCulture);
-                GunlukUcretEntry.CursorPosition = GunlukUcretEntry.Text.Length;
-                return; // TextChanged yeniden tetiklenecek
-            }
-
-            if (girilen < _tabanFiyat)
-            {
-                GunlukUcretEntry.Text = _tabanFiyat.ToString("0.##", CultureInfo.InvariantCulture);
-                GunlukUcretEntry.CursorPosition = GunlukUcretEntry.Text.Length;
-                return;
-            }
-
             HesaplaToplamTutar();
         }
 
@@ -255,14 +228,11 @@ namespace CarFleetPro.Mobile.Views
             if (!decimal.TryParse(GunlukUcretEntry.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal girilenFiyat))
             { await DisplayAlertAsync("Uyarı", "Geçerli bir günlük ücret giriniz.", "Tamam"); return; }
 
-            decimal bazFiyat = _vehicle.GunlukUcret;
-            decimal tabanFiyat = bazFiyat * 0.8m;
+            if (_bazFiyat > 0 && girilenFiyat > _bazFiyat)
+            { await DisplayAlertAsync("Uyarı", $"Günlük ücret baz fiyattan ({_bazFiyat:N2} ₺) yüksek olamaz.", "Tamam"); return; }
 
-            if (girilenFiyat > bazFiyat)
-            { await DisplayAlertAsync("Uyarı", $"Günlük ücret baz fiyattan ({bazFiyat:N2} ₺) yüksek olamaz.", "Tamam"); return; }
-
-            if (girilenFiyat < tabanFiyat)
-            { await DisplayAlertAsync("Uyarı", $"Günlük ücret taban fiyattan ({tabanFiyat:N2} ₺) düşük olamaz.", "Tamam"); return; }
+            if (_tabanFiyat > 0 && girilenFiyat < _tabanFiyat)
+            { await DisplayAlertAsync("Uyarı", $"Günlük ücret taban fiyattan ({_tabanFiyat:N2} ₺) düşük olamaz.", "Tamam"); return; }
 
             var startDate = StartDatePicker.Date.GetValueOrDefault(DateTime.Today);
             var endDate   = EndDatePicker.Date.GetValueOrDefault(DateTime.Today.AddDays(1));
