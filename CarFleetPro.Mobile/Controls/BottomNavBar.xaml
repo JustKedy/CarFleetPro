@@ -8,10 +8,10 @@
             <RoundRectangle CornerRadius="20,20,0,0" />
         </Border.StrokeShape>
 
-        <!-- Kusursuz konumlandÄ±rma iÃ§in tÃ¼m kapsayÄ±cÄ±yÄ± yÃ¶neten Grid -->
+        <!-- Kusursuz konumlandirma icin tum kapsayiciyi yoneten Grid -->
         <Grid x:Name="ContainerGrid" SizeChanged="OnNavGridSizeChanged">
             
-            <!-- GÃ¶sterge, ContainerGrid'in en solundan (X=0) baÅŸlar ve matematiksel olarak hedefe kaydÄ±rÄ±lÄ±r -->
+            <!-- Gosterge, ContainerGrid'in en solundan (X=0) baslar ve matematiksel olarak hedefe kaydirilir -->
             <Border x:Name="SlidingIndicator" 
                     BackgroundColor="Transparent" Stroke="#3B82F6" StrokeThickness="1.5" 
                     WidthRequest="50" HeightRequest="42"
@@ -21,7 +21,7 @@
                 </Border.StrokeShape>
             </Border>
 
-            <!-- Ä°konlar NavGrid iÃ§erisindedir ve z-index ile gÃ¶stergenin Ã¼stÃ¼nde yer alÄ±r -->
+            <!-- Ikonlar NavGrid icerisindedir ve z-index ile gostergenin ustunde yer alir -->
             <Grid x:Name="NavGrid" ColumnDefinitions="*, *, *, *">
                 <Border x:Name="HomeBorder" Grid.Column="0" BackgroundColor="Transparent" StrokeThickness="0" Padding="12, 8" HorizontalOptions="Center" VerticalOptions="Center" ZIndex="1">
                     <Border.GestureRecognizers>

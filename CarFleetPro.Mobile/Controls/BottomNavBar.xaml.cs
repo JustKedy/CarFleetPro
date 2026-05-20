@@ -1,4 +1,4 @@
-﻿using Microsoft.Maui.Controls;
+using Microsoft.Maui.Controls;
 using System;
 using System.Threading.Tasks;
 using CarFleetPro.Mobile.Views;
@@ -9,7 +9,7 @@ public partial class BottomNavBar : ContentView
 {
     private bool _isFirstLoad = true;
 
-    // Global deÄŸiÅŸken sayesinde sayfalar arasÄ± geÃ§iÅŸlerde son durumu kaybetmeyiz
+    // Global degisken sayesinde sayfalar arasi gecislerde son durumu kaybetmeyiz
     private static string _globalSelectedTab = "Home";
 
     public static readonly BindableProperty SelectedTabProperty =
@@ -33,7 +33,7 @@ public partial class BottomNavBar : ContentView
     public BottomNavBar()
     {
         InitializeComponent();
-        SelectedTab = _globalSelectedTab; // Ä°lk aÃ§Ä±lÄ±ÅŸta son durumu al
+        SelectedTab = _globalSelectedTab; // Ilk acilista son durumu al
     }
 
     private static void OnSelectedTabChanged(BindableObject bindable, object oldValue, object newValue)
@@ -78,7 +78,7 @@ public partial class BottomNavBar : ContentView
             };
         }
 
-        SlideIndicator(false); // Rol deÄŸiÅŸtiÄŸinde animasyonsuz anÄ±nda oturttur
+        SlideIndicator(false); // Rol degistiginde animasyonsuz aninda oturttur
     }
 
     private void OnNavGridSizeChanged(object? sender, EventArgs e)
@@ -137,7 +137,7 @@ public partial class BottomNavBar : ContentView
             {
                 "Home" => 0,
                 "Garage" => 1,
-                "Settings" => 2, // List (2) olmadÄ±ÄŸÄ± iÃ§in Settings (2) olur
+                "Settings" => 2, // List (2) olmadigi icin Settings (2) olur
                 _ => 0
             };
         }
@@ -158,7 +158,7 @@ public partial class BottomNavBar : ContentView
         double indicatorWidth = SlidingIndicator.WidthRequest; // 50
         double targetX = targetCenter - (indicatorWidth / 2);
 
-        // OlasÄ± Ã§akÄ±ÅŸmalarÄ± ve hatalarÄ± Ã¶nlemek iÃ§in Ã§alÄ±ÅŸan tÃ¼m animasyonlarÄ± temizle
+        // Olasi cakismalari ve hatalari onlemek icin calisan tum animasyonlari temizle
         SlidingIndicator.CancelAnimations();
 
         if (animated)
@@ -182,7 +182,7 @@ public partial class BottomNavBar : ContentView
     {
         if (SelectedTab == tabName) return;
         
-        SelectedTab = tabName; // Bu, anÄ±nda UpdateUI ve SlideIndicator tetikler! Animasyon TIKLANDIÄI AN baÅŸlar.
+        SelectedTab = tabName; // Bu, aninda UpdateUI ve SlideIndicator tetikler! Animasyon TIKLANDIGI AN baslar.
 
         Border targetBorder = tabName switch
         {
@@ -195,7 +195,7 @@ public partial class BottomNavBar : ContentView
 
         _ = AnimateIcon(targetBorder);
         
-        // KullanÄ±cÄ± animasyonu hissetsin diye yarÄ±m saniyenin onda biri kadar bekle (tepkisellik)
+        // Kullanici animasyonu hissetsin diye yarim saniyenin onda biri kadar bekle (tepkisellik)
         await Task.Delay(50);
         
         try
