@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:CarFleetPro.Mobile.Controls"
              xmlns:vm="clr-namespace:CarFleetPro.Mobile.ViewModels"
+             xmlns:microcharts="clr-namespace:Microcharts.Maui;assembly=Microcharts.Maui"
              x:DataType="vm:HomeViewModel"
              x:Class="CarFleetPro.Mobile.Views.HomePage"
              BackgroundColor="{AppThemeBinding Light=#F3F4F6, Dark=#0F172A}"
@@ -87,31 +88,7 @@
                         <Border.Shadow><Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.1"/></Border.Shadow>
                         <VerticalStackLayout Spacing="15">
                             <Label Text="Filo Durum Analizi" FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
-                            <Border HeightRequest="12" StrokeThickness="0">
-                                <Border.StrokeShape><RoundRectangle CornerRadius="6"/></Border.StrokeShape>
-                                <Grid ColumnDefinitions="{Binding GrafikOranlari, FallbackValue='5*, 3*, 1*'}">
-                                    <BoxView Grid.Column="0" BackgroundColor="#3B82F6"/>
-                                    <BoxView Grid.Column="1" BackgroundColor="#10B981"/>
-                                    <BoxView Grid.Column="2" BackgroundColor="#F59E0B"/>
-                                </Grid>
-                            </Border>
-                            <HorizontalStackLayout Spacing="15" HorizontalOptions="Center">
-                                <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
-                                    <Ellipse Fill="#3B82F6" WidthRequest="10" HeightRequest="10"/>
-                                    <Label Text="{Binding KiraYuzdesi, StringFormat='Kirada ({0}%)', FallbackValue='Kirada (%60)'}"
-                                           FontSize="12" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}"/>
-                                </HorizontalStackLayout>
-                                <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
-                                    <Ellipse Fill="#10B981" WidthRequest="10" HeightRequest="10"/>
-                                    <Label Text="{Binding MusaitYuzdesi, StringFormat='Müsait ({0}%)', FallbackValue='Müsait (%30)'}"
-                                           FontSize="12" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}"/>
-                                </HorizontalStackLayout>
-                                <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
-                                    <Ellipse Fill="#F59E0B" WidthRequest="10" HeightRequest="10"/>
-                                    <Label Text="{Binding BakimYuzdesi, StringFormat='Bakımda ({0}%)', FallbackValue='Bakımda (%10)'}"
-                                           FontSize="12" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}"/>
-                                </HorizontalStackLayout>
-                            </HorizontalStackLayout>
+                            <microcharts:ChartView Chart="{Binding FiloDurumGrafigi}" HeightRequest="200" BackgroundColor="Transparent"/>
                         </VerticalStackLayout>
                     </Border>
 
@@ -121,30 +98,7 @@
                         <Border.Shadow><Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.1"/></Border.Shadow>
                         <VerticalStackLayout Spacing="15">
                             <Label Text="En Çok Talep Gören Modeller" FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
-
-                            <Grid ColumnDefinitions="80,*,40" VerticalOptions="Center">
-                                <Label Grid.Column="0" Text="{Binding AracModelAdi, FallbackValue='-'}"
-                                       FontSize="13" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}" VerticalOptions="Center"/>
-                                <Border Grid.Column="1" BackgroundColor="{AppThemeBinding Light=#F3F4F6, Dark=#0F172A}" HeightRequest="8" StrokeThickness="0" VerticalOptions="Center">
-                                    <Border.StrokeShape><RoundRectangle CornerRadius="4"/></Border.StrokeShape>
-                                    <BoxView BackgroundColor="#3B82F6" HorizontalOptions="Start"
-                                             WidthRequest="{Binding BarGenisligi, FallbackValue='0'}"/>
-                                </Border>
-                                <Label Grid.Column="2" Text="{Binding KiralamaSayisi, StringFormat='{0} Kez', FallbackValue='0 Kez'}"
-                                       FontSize="12" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"
-                                       HorizontalOptions="End" VerticalOptions="Center"/>
-                            </Grid>
-
-                            <Grid ColumnDefinitions="80,*,40" VerticalOptions="Center">
-                                <Label Grid.Column="0" Text="{Binding AracModelAdi2, FallbackValue='-'}" FontSize="13" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}" VerticalOptions="Center"/>
-                                <Border Grid.Column="1" BackgroundColor="{AppThemeBinding Light=#F3F4F6, Dark=#0F172A}" HeightRequest="8" StrokeThickness="0" VerticalOptions="Center">
-                                    <Border.StrokeShape><RoundRectangle CornerRadius="4"/></Border.StrokeShape>
-                                    <BoxView BackgroundColor="#10B981" HorizontalOptions="Start"
-                                             WidthRequest="{Binding BarGenisligi2, FallbackValue='0'}"/>
-                                </Border>
-                                <Label Grid.Column="2" Text="{Binding KiralamaSayisi2, StringFormat='{0} Kez', FallbackValue='0 Kez'}" FontSize="12" FontAttributes="Bold"
-                                       TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" HorizontalOptions="End" VerticalOptions="Center"/>
-                            </Grid>
+                            <microcharts:ChartView Chart="{Binding PopulerAracGrafigi}" HeightRequest="200" BackgroundColor="Transparent"/>
                         </VerticalStackLayout>
                     </Border>
 

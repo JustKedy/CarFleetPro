@@ -68,4 +68,10 @@ public partial class LoginPage : ContentPage
             await Navigation.PushAsync(new ForgotPasswordPage());
         }
     }
+
+    private void OnTogglePasswordTapped(object? sender, EventArgs e)
+    {
+        PasswordEntry.IsPassword = !PasswordEntry.IsPassword;
+        TogglePasswordLabel.Text = PasswordEntry.IsPassword ? "👁️" : "🙈";
+    }
 }

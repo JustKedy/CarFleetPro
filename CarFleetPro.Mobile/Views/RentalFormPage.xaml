@@ -45,8 +45,9 @@
                     <Grid Grid.Row="2" RowDefinitions="Auto, Auto">
                         <Grid Grid.Row="0" HeightRequest="220">
                             <CarouselView x:Name="ImagesCarousel" HeightRequest="220"
-                                          HorizontalOptions="Fill" IndicatorView="indicatorView"
-                                          Loop="False" PeekAreaInsets="20">
+                                           HorizontalOptions="Fill" IndicatorView="indicatorView"
+                                           Loop="False" PeekAreaInsets="20"
+                                           PositionChanged="OnCarouselPositionChanged">
                                 <CarouselView.ItemTemplate>
                                     <DataTemplate x:DataType="x:String">
                                         <Border Margin="10,0" StrokeThickness="0" HeightRequest="220">
@@ -56,17 +57,11 @@
                                     </DataTemplate>
                                 </CarouselView.ItemTemplate>
                             </CarouselView>
-                            <Border BackgroundColor="#CC000000" StrokeThickness="0" WidthRequest="36" HeightRequest="36"
-                                    HorizontalOptions="Start" VerticalOptions="Center" Margin="18,0">
-                                <Border.StrokeShape><RoundRectangle CornerRadius="18"/></Border.StrokeShape>
-                                <ImageButton Source="arrow_back_white.svg" BackgroundColor="Transparent"
-                                             WidthRequest="18" HeightRequest="18" Clicked="OnPrevImageClicked"/>
-                            </Border>
-                            <Border BackgroundColor="#CC000000" StrokeThickness="0" WidthRequest="36" HeightRequest="36"
-                                    HorizontalOptions="End" VerticalOptions="Center" Margin="18,0">
-                                <Border.StrokeShape><RoundRectangle CornerRadius="18"/></Border.StrokeShape>
-                                <ImageButton Source="arrow_forward_white.svg" BackgroundColor="Transparent"
-                                             WidthRequest="18" HeightRequest="18" Clicked="OnNextImageClicked"/>
+                            <!-- Sağ Üst Köşede Şık Sayaç Rozeti -->
+                            <Border BackgroundColor="#CC000000" StrokeThickness="0" Padding="8,4"
+                                    HorizontalOptions="End" VerticalOptions="Start" Margin="25,12">
+                                <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                                <Label x:Name="ImageCounterLabel" Text="1 / 1" TextColor="White" FontSize="11" FontAttributes="Bold"/>
                             </Border>
                         </Grid>
                         <IndicatorView x:Name="indicatorView" Grid.Row="1" HorizontalOptions="Center"
@@ -126,6 +121,43 @@
                                        TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
                             </VerticalStackLayout>
                         </Grid>
+                        <BoxView HeightRequest="1" BackgroundColor="{AppThemeBinding Light=#F3F4F6, Dark=#334155}"/>
+                        <Grid ColumnDefinitions="*, *" ColumnSpacing="16">
+                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                <Label Text="T.C. Kimlik No" FontSize="11"
+                                       TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}"/>
+                                <Label x:Name="RenterTcLabel" Text="-" FontSize="14" FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                <Label Text="Telefon" FontSize="11"
+                                       TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}"/>
+                                <Label x:Name="RenterPhoneLabel" Text="-" FontSize="14" FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
+                            </VerticalStackLayout>
+                        </Grid>
+                        <BoxView HeightRequest="1" BackgroundColor="{AppThemeBinding Light=#F3F4F6, Dark=#334155}"/>
+                        <Grid ColumnDefinitions="*, *" ColumnSpacing="16">
+                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                <Label Text="Ehliyet Seri No" FontSize="11"
+                                       TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}"/>
+                                <Label x:Name="RenterLicenseLabel" Text="-" FontSize="14" FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                <Label Text="Ehliyet Geçerlilik" FontSize="11"
+                                       TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}"/>
+                                <Label x:Name="RenterLicenseExpiryLabel" Text="-" FontSize="14" FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"/>
+                            </VerticalStackLayout>
+                        </Grid>
+                        <BoxView HeightRequest="1" BackgroundColor="{AppThemeBinding Light=#F3F4F6, Dark=#334155}"/>
+                        <VerticalStackLayout Spacing="2">
+                            <Label Text="Adres" FontSize="11"
+                                   TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}"/>
+                            <Label x:Name="RenterAddressLabel" Text="-" FontSize="13" LineBreakMode="WordWrap"
+                                   TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}"/>
+                        </VerticalStackLayout>
                         <BoxView HeightRequest="1" BackgroundColor="{AppThemeBinding Light=#F3F4F6, Dark=#334155}"/>
                         <Grid ColumnDefinitions="*, *" ColumnSpacing="16">
                             <VerticalStackLayout Grid.Column="0" Spacing="2">
@@ -192,7 +224,7 @@
                                 Stroke="{AppThemeBinding Light=#D1D5DB, Dark=#334155}"
                                 BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}">
                             <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
-                            <Entry x:Name="LastNameEntry" Placeholder="Örn: Yılmaz"
+                            <Entry x:Name="LastNameEntry" Placeholder="Örn: Yılmaz" TextTransform="Uppercase"
                                    TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"
                                    PlaceholderColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}"/>
                         </Border>
@@ -217,7 +249,7 @@
                                 Stroke="{AppThemeBinding Light=#D1D5DB, Dark=#334155}"
                                 BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}">
                             <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
-                            <Entry x:Name="PhoneEntry" Placeholder="05XX XXX XX XX" Keyboard="Telephone"
+                            <Entry x:Name="PhoneEntry" Placeholder="05XX XXX XX XX" Keyboard="Telephone" MaxLength="11"
                                    TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"
                                    PlaceholderColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}"/>
                         </Border>
@@ -231,7 +263,7 @@
                                 Stroke="{AppThemeBinding Light=#D1D5DB, Dark=#334155}"
                                 BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}">
                             <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
-                            <Entry x:Name="LicenseNoEntry" Placeholder="Örn: A123456"
+                            <Entry x:Name="LicenseNoEntry" Placeholder="Örn: A123456" TextTransform="Uppercase" MaxLength="10"
                                    TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"
                                    PlaceholderColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}"/>
                         </Border>
@@ -283,7 +315,7 @@
                                 Stroke="{AppThemeBinding Light=#D1D5DB, Dark=#334155}"
                                 BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}">
                             <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
-                            <Entry x:Name="EmergencyPhoneEntry" Placeholder="Telefon" Keyboard="Telephone"
+                            <Entry x:Name="EmergencyPhoneEntry" Placeholder="Telefon" Keyboard="Telephone" MaxLength="11"
                                    TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"
                                    PlaceholderColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}"/>
                         </Border>
@@ -325,7 +357,7 @@
                                 BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}">
                             <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
                             <Entry x:Name="GunlukUcretEntry" Placeholder="0.00" Keyboard="Numeric"
-                                   TextChanged="OnRateChanged"
+                                   TextChanged="OnRateChanged" Unfocused="OnRateUnfocused"
                                    TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}"
                                    PlaceholderColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}"/>
                         </Border>
@@ -333,6 +365,8 @@
                             <Label x:Name="BazFiyatLabel" Text="Baz: 0 ₺" FontSize="10" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}"/>
                             <Label Text="|" FontSize="10" TextColor="{AppThemeBinding Light=#D1D5DB, Dark=#334155}"/>
                             <Label x:Name="TabanFiyatLabel" Text="Taban: 0 ₺" FontSize="10" TextColor="#EF4444"/>
+                            <Label Text="|" FontSize="10" TextColor="{AppThemeBinding Light=#D1D5DB, Dark=#334155}"/>
+                            <Label x:Name="MaxIndirimLabel" Text="Maks. İndirim: %5" FontSize="10" TextColor="#3B82F6"/>
                         </HorizontalStackLayout>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="1" Spacing="6">

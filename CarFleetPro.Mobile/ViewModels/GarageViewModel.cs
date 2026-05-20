@@ -48,10 +48,46 @@ namespace CarFleetPro.Mobile.ViewModels
                 if (apiVehicles == null || apiVehicles.Count == 0)
                     throw new Exception("API boş liste döndürdü.");
 
+                // Kiralama detaylarını çekelim
+                List<RentalInfo> rentals = new();
+                try
+                {
+                    rentals = await _apiService.GetRentalsAsync();
+                }
+                catch (Exception rx)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Kiralama listesi çekilemedi: {rx.Message}");
+                }
+
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     _tumAraclar.Clear();
-                    _tumAraclar.AddRange(apiVehicles);
+                    foreach (var v in apiVehicles)
+                    {
+                        if (v.StatusCode == 1) // Kirada/Dolu
+                        {
+                            var aktif = rentals.FirstOrDefault(r => 
+                                !string.IsNullOrEmpty(r.VehiclePlate) && 
+                                r.VehiclePlate.Trim().Equals(v.Plaka.Trim(), StringComparison.OrdinalIgnoreCase) && 
+                                !string.IsNullOrEmpty(r.Status) && 
+                                r.Status.Trim().Equals("Aktif", StringComparison.OrdinalIgnoreCase));
+                                
+                            if (aktif != null)
+                            {
+                                v.KiralayanKisi = aktif.CustomerName;
+                                v.KiralamaFiyati = aktif.TotalAmount;
+                                v.KiralamaTarihi = aktif.StartDate.ToString("dd.MM.yyyy");
+                                v.KiralamaSuresi = aktif.PlannedEndDate.ToString("dd.MM.yyyy");
+                                v.KiralayanTelefon = string.IsNullOrWhiteSpace(aktif.CustomerPhone) ? "-" : aktif.CustomerPhone;
+                                v.KiralayanTc = string.IsNullOrWhiteSpace(aktif.CustomerIdentityNumber) ? "-" : aktif.CustomerIdentityNumber;
+                                v.KiralayanEhliyetNo = string.IsNullOrWhiteSpace(aktif.CustomerDriverLicenseNumber) ? "-" : aktif.CustomerDriverLicenseNumber;
+                                v.KiralayanEhliyetGecerlilik = aktif.CustomerDriverLicenseExpiry == default ? "-" : aktif.CustomerDriverLicenseExpiry.ToString("dd.MM.yyyy");
+                                v.KiralayanAdres = string.IsNullOrWhiteSpace(aktif.CustomerAddress) ? "Belirtilmedi" : aktif.CustomerAddress;
+                                v.KiralayanNotlar = string.IsNullOrWhiteSpace(aktif.Notes) ? "Not yok" : aktif.Notes;
+                            }
+                        }
+                        _tumAraclar.Add(v);
+                    }
 
                     // Türleri (Segment) doldur
                     var mevcutSegmentler = SegmentFilters.Select(s => s.Name).ToHashSet();
@@ -175,6 +211,47 @@ namespace CarFleetPro.Mobile.ViewModels
 
                 AracListesi.Add(vehicle);
             }
+        }
+
+        public void UzatSozlesme(Vehicle vehicle, int gunSayisi)
+        {
+            if (vehicle == null) return;
+            if (gunSayisi > vehicle.MaksimumUzatilabilirGunSayisi)
+            {
+                return;
+            }
+
+            if (DateTime.TryParseExact(vehicle.KiralamaSuresi, "dd.MM.yyyy", null, System.Globalization.DateTimeStyles.None, out var mevcutBitis))
+            {
+                var yeniBitis = mevcutBitis.AddDays(gunSayisi);
+                vehicle.KiralamaSuresi = yeniBitis.ToString("dd.MM.yyyy");
+                vehicle.uzatilanGunSayisi += gunSayisi;
+                vehicle.TetikleBitisTarihiGuncellemesi();
+            }
+        }
+
+        public void EkleRezervasyon(Vehicle vehicle, string musteriAdi, string musteriTelefon, DateTime baslangicTarihi, int gunSuresi)
+        {
+            if (vehicle == null || string.IsNullOrWhiteSpace(musteriAdi)) return;
+
+            var bitisTarihi = baslangicTarihi.AddDays(gunSuresi);
+            var yeniRezervasyon = new RentalInfo
+            {
+                RentalId = new Random().Next(10000, 99999),
+                CustomerName = musteriAdi,
+                CustomerPhone = musteriTelefon,
+                VehiclePlate = vehicle.Plaka,
+                VehicleName = vehicle.DisplayName,
+                StartDate = baslangicTarihi,
+                PlannedEndDate = bitisTarihi,
+                DailyRate = vehicle.GunlukUcret,
+                TotalAmount = vehicle.GunlukUcret * gunSuresi,
+                Status = "Aktif",
+                Notes = "İleri tarihli randevulu kiralama sözleşmesi."
+            };
+
+            vehicle.Rezervasyonlar.Add(yeniRezervasyon);
+            vehicle.TetikleBitisTarihiGuncellemesi();
         }
     }
 }

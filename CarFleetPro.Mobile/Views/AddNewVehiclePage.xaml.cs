@@ -15,6 +15,7 @@ namespace CarFleetPro.Mobile.Views
     {
         private Vehicle? _duzenlenenArac;
         private readonly ApiService _apiService = new();
+        private readonly System.Collections.Generic.List<FileResult> _tempPhotos = new();
 
         public AddNewVehiclePage()
         {
@@ -79,7 +80,6 @@ namespace CarFleetPro.Mobile.Views
             {
                 PlakaEntry.Text = _duzenlenenArac.Plaka;
                 KmEntry.Text = _duzenlenenArac.Km.ToString();
-                HpEntry.Text = _duzenlenenArac.Hp.ToString();
                 YilEntry.Text = (DateTime.Now.Year - _duzenlenenArac.Yas).ToString();
                 BasePriceEntry.Text = _duzenlenenArac.BasePrice > 0 ? _duzenlenenArac.BasePrice.ToString() : "";
             }
@@ -87,13 +87,38 @@ namespace CarFleetPro.Mobile.Views
 
         public async void OnUploadImageTapped(object? sender, EventArgs e)
         {
-            // Yeni araç eklerken araç ID'si henüz yok — önce kaydet sonra fotoğraf ekle
+            // Yeni araç eklerken doğrudan resim seçebilme (kesin çoklu seçim ile)
             if (_duzenlenenArac == null)
             {
-                await DisplayAlertAsync(
-                    "Bilgi",
-                    "Fotoğraf eklemek için önce aracı kaydedin. Kayıt sonrası fotoğraf yükleme ekranına yönlendirileceksiniz.",
-                    "Anladım");
+                try
+                {
+                    var results = await FilePicker.Default.PickMultipleAsync(new PickOptions
+                    {
+                        PickerTitle = "Araç Fotoğraflarını Seçin",
+                        FileTypes = FilePickerFileType.Images
+                    });
+
+                    if (results != null)
+                    {
+                        var validPhotos = results.Where(r => r != null).Cast<FileResult>().ToList();
+                        if (validPhotos.Any())
+                        {
+                            _tempPhotos.Clear();
+                            _tempPhotos.AddRange(validPhotos);
+
+                            // İlk resmi önizleme olarak göster
+                            var firstPhoto = validPhotos.First();
+                            UploadedImagePreview.Source = ImageSource.FromFile(firstPhoto.FullPath);
+                            UploadedImagePreview.IsVisible = true;
+                            DefaultUploadLayout.IsVisible = false;
+                            UploadInstructionLabel.Text = $"{validPhotos.Count} Görsel Seçildi\n(Değiştirmek için tıklayın)";
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await DisplayAlertAsync("Hata", $"Fotoğraf seçilemedi: {ex.Message}", "Tamam");
+                }
                 return;
             }
 
@@ -148,7 +173,7 @@ namespace CarFleetPro.Mobile.Views
                 ModelId = selectedModel.Id,
                 Year = yil,
                 Mileage = int.TryParse(KmEntry.Text, out int km) ? km : 0,
-                HorsePower = int.TryParse(HpEntry.Text, out int hp) ? hp : 0,
+                HorsePower = 0,
                 ColorId = (RenkPicker.SelectedItem as LookupItem)?.Id,
                 Branch = "Merkez Şube",
                 Status = durumId,
@@ -182,24 +207,82 @@ namespace CarFleetPro.Mobile.Views
 
                 if (success)
                 {
-                    await ShowSuccessToast("Araç filoya başarıyla eklendi!");
                     WeakReferenceMessenger.Default.Send(new VehicleAddedMessage());
 
-                    // Araç eklendikten sonra fotoğraf eklemek ister misin?
-                    var addPhoto = await DisplayAlertAsync("Fotoğraf Ekle", "Araç başarıyla eklendi! Şimdi fotoğraf eklemek ister misiniz?", "Evet, Ekle", "Hayır");
+                    // Yeni eklenen aracın ID'sini al
+                    var vehicles = await _apiService.GetVehiclesAsync(forceRefresh: true);
+                    var newVehicle = vehicles.FirstOrDefault(v =>
+                        string.Equals(v.Plaka, request.PlateNumber, StringComparison.OrdinalIgnoreCase));
 
-                    if (addPhoto)
+                    if (newVehicle != null && _tempPhotos.Any())
                     {
-                        // Yeni eklenen aracın ID'sini al
-                        var vehicles = await _apiService.GetVehiclesAsync(forceRefresh: true);
-                        var newVehicle = vehicles.FirstOrDefault(v =>
-                            string.Equals(v.Plaka, request.PlateNumber, StringComparison.OrdinalIgnoreCase));
+                        int totalCount = _tempPhotos.Count;
+                        int uploadedCount = 0;
+                        int failedCount = 0;
 
-                        if (newVehicle != null)
+                        if (SubmitButton != null)
+                        {
+                            SubmitButton.IsEnabled = false;
+                            SubmitButton.Text = $"Görseller Yükleniyor (0/{totalCount})...";
+                        }
+
+                        foreach (var photo in _tempPhotos)
+                        {
+                            uploadedCount++;
+                            if (SubmitButton != null)
+                            {
+                                SubmitButton.Text = $"Görseller Yükleniyor ({uploadedCount}/{totalCount})...";
+                            }
+
+                            try
+                            {
+                                var (imgSuccess, _, _) = await _apiService.UploadVehicleImageAsync(
+                                    newVehicle.Id,
+                                    photo.FullPath,
+                                    photo.FileName,
+                                    photo.ContentType ?? "image/jpeg");
+
+                                if (!imgSuccess) failedCount++;
+                            }
+                            catch
+                            {
+                                failedCount++;
+                            }
+                        }
+
+                        if (SubmitButton != null)
+                        {
+                            SubmitButton.IsEnabled = true;
+                            SubmitButton.Text = "ARACI KAYDET";
+                        }
+
+                        if (failedCount > 0)
+                        {
+                            await DisplayAlertAsync("Yükleme Sonucu", $"{totalCount} görselden {totalCount - failedCount} tanesi yüklendi. {failedCount} tanesi yüklenemedi.", "Tamam");
+                        }
+                        else
+                        {
+                            await ShowSuccessToast("Araç ve görseller başarıyla eklendi!");
+                        }
+                    }
+                    else if (newVehicle != null)
+                    {
+                        // Resim önceden seçilmemişse, yine de fotoğraf eklemek ister mi diye soralım (eski davranış)
+                        var addPhoto = await DisplayAlertAsync("Fotoğraf Ekle", "Araç başarıyla eklendi! Şimdi fotoğraf eklemek ister misiniz?", "Evet, Ekle", "Hayır");
+
+                        if (addPhoto)
                         {
                             await Navigation.PushAsync(new VehiclePhotoGalleryPage(newVehicle, new System.Collections.Generic.List<VehicleImageInfo>(), true, _apiService));
                             return;
                         }
+                        else
+                        {
+                            await ShowSuccessToast("Araç başarıyla eklendi!");
+                        }
+                    }
+                    else
+                    {
+                        await ShowSuccessToast("Araç başarıyla eklendi!");
                     }
 
                     await Navigation.PopAsync();

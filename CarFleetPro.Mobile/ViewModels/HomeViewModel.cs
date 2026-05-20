@@ -44,6 +44,10 @@ namespace CarFleetPro.Mobile.ViewModels
         [ObservableProperty] public partial double BarGenisligi2 { get; set; } = 0;
         [ObservableProperty] public partial int KiralamaSayisi2 { get; set; }
 
+        // ── Microcharts Grafikleri ───────────────────────────────────────────
+        [ObservableProperty] public partial Microcharts.Chart? FiloDurumGrafigi { get; set; }
+        [ObservableProperty] public partial Microcharts.Chart? PopulerAracGrafigi { get; set; }
+
         // ── Yükleme durumu ───────────────────────────────────────────────────
         [ObservableProperty] public partial bool IsLoading { get; set; } = true;
 
@@ -99,7 +103,7 @@ namespace CarFleetPro.Mobile.ViewModels
                     new ColumnDefinition { Width = new GridLength(c3, GridUnitType.Star) }
                 };
 
-                // En çok talep gören modeller
+                // En çok talep gören modeller (Eski mantık)
                 const double MaxBarWidth = 180.0;
                 var topModels = stats.TopModels;
 
@@ -131,6 +135,45 @@ namespace CarFleetPro.Mobile.ViewModels
                     KiralamaSayisi2 = 0;
                     BarGenisligi2 = 0;
                 }
+
+                // Microcharts Grafik Oluşturma (Yeni)
+                var isDark = Application.Current?.RequestedTheme == AppTheme.Dark;
+                var textColor = isDark ? SkiaSharp.SKColor.Parse("#F1F5F9") : SkiaSharp.SKColor.Parse("#1F2937");
+                
+                var bakimdakiAracSayisi = stats.TotalVehicles - stats.RentedVehicles - stats.AvailableVehicles;
+
+                FiloDurumGrafigi = new Microcharts.DonutChart
+                {
+                    Entries = new[]
+                    {
+                        new Microcharts.ChartEntry(stats.RentedVehicles) { Label = "Kirada", ValueLabel = stats.RentedVehicles.ToString(), Color = SkiaSharp.SKColor.Parse("#3B82F6"), ValueLabelColor = textColor },
+                        new Microcharts.ChartEntry(stats.AvailableVehicles) { Label = "Müsait", ValueLabel = stats.AvailableVehicles.ToString(), Color = SkiaSharp.SKColor.Parse("#10B981"), ValueLabelColor = textColor },
+                        new Microcharts.ChartEntry(bakimdakiAracSayisi) { Label = "Bakımda", ValueLabel = bakimdakiAracSayisi.ToString(), Color = SkiaSharp.SKColor.Parse("#F59E0B"), ValueLabelColor = textColor }
+                    },
+                    BackgroundColor = SkiaSharp.SKColors.Transparent,
+                    LabelTextSize = 30,
+                    LabelColor = textColor,
+                    HoleRadius = 0.6f
+                };
+
+                var barEntries = topModels.Select(m => new Microcharts.ChartEntry(m.RentCount)
+                {
+                    Label = m.ModelName,
+                    ValueLabel = m.RentCount.ToString(),
+                    Color = SkiaSharp.SKColor.Parse("#3B82F6"),
+                    ValueLabelColor = textColor
+                }).ToArray();
+
+                PopulerAracGrafigi = new Microcharts.BarChart
+                {
+                    Entries = barEntries,
+                    BackgroundColor = SkiaSharp.SKColors.Transparent,
+                    LabelTextSize = 30,
+                    LabelColor = textColor,
+                    Margin = 20,
+                    ValueLabelOrientation = Microcharts.Orientation.Horizontal,
+                    LabelOrientation = Microcharts.Orientation.Horizontal
+                };
             }
             catch (Exception ex)
             {

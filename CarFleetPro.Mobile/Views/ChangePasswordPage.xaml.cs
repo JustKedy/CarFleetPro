@@ -50,4 +50,22 @@ public partial class ChangePasswordPage : ContentPage
         if (success && Navigation != null)
             await Navigation.PopAsync();
     }
+
+    private void OnToggleOldPasswordTapped(object? sender, EventArgs e)
+    {
+        OldPasswordEntry.IsPassword = !OldPasswordEntry.IsPassword;
+        ToggleOldPasswordLabel.Text = OldPasswordEntry.IsPassword ? "👁️" : "🙈";
+    }
+
+    private void OnToggleNewPasswordTapped(object? sender, EventArgs e)
+    {
+        NewPasswordEntry.IsPassword = !NewPasswordEntry.IsPassword;
+        ToggleNewPasswordLabel.Text = NewPasswordEntry.IsPassword ? "👁️" : "🙈";
+    }
+
+    private void OnToggleConfirmPasswordTapped(object? sender, EventArgs e)
+    {
+        ConfirmPasswordEntry.IsPassword = !ConfirmPasswordEntry.IsPassword;
+        ToggleConfirmPasswordLabel.Text = ConfirmPasswordEntry.IsPassword ? "👁️" : "🙈";
+    }
 }

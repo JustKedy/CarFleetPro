@@ -22,9 +22,6 @@ namespace CarFleetPro.Mobile.Views
             _vehicle = vehicle;
             BindingContext = _vehicle;
 
-            if (!string.IsNullOrEmpty(vehicle.ResimUrl))
-                ImagesCarousel.ItemsSource = new List<string> { vehicle.ResimUrl };
-
             // Fiyatlar OnAppearing içinde yüklenecek
             StartDatePicker.DateSelected += (s, e) => HesaplaToplamTutar();
             EndDatePicker.DateSelected += (s, e) => HesaplaToplamTutar();
@@ -41,6 +38,7 @@ namespace CarFleetPro.Mobile.Views
             base.OnAppearing();
             this.Opacity = 0;
             await this.FadeToAsync(1, 400, Easing.CubicOut);
+            await LoadVehicleImages();
             await BelirleAracDurumu();
             await ApplyPricing();
         }
@@ -87,11 +85,20 @@ namespace CarFleetPro.Mobile.Views
                 }
             }
 
-            // Hiç politika yoksa aracın kendi günlük ücretini kullan
-            if (baz <= 0) baz = _vehicle.GunlukUcret;
-            if (maxIndirim <= 0) maxIndirim = 20; // Varsayılan %20
+            // Hiç politika yoksa aracın kendi günlük ücretini veya araçta tanımlı baz fiyatı kullan
+            if (baz <= 0)
+            {
+                baz = _vehicle.BasePrice > 0 ? _vehicle.BasePrice : _vehicle.GunlukUcret;
+            }
+            
+            // Politikalardan veya araçtan gelen bir indirim oranı yoksa varsayılan olarak %5 kullan
+            if (maxIndirim <= 0)
+            {
+                maxIndirim = _vehicle.MaxDiscountPercentage > 0 ? _vehicle.MaxDiscountPercentage : 5;
+            }
 
-            var taban = baz * (decimal)(1 - (maxIndirim / 100.0));
+            // Taban fiyat, baz fiyattan maksimum indirim oranı düşülerek dinamik olarak hesaplanır.
+            var taban = baz - (baz * (decimal)(maxIndirim / 100.0));
 
             _bazFiyat = baz;
             _tabanFiyat = taban;
@@ -99,6 +106,7 @@ namespace CarFleetPro.Mobile.Views
             GunlukUcretEntry.Text = baz.ToString("0.##", CultureInfo.InvariantCulture);
             BazFiyatLabel.Text = $"Baz: {baz:N0} ₺";
             TabanFiyatLabel.Text = $"Taban: {taban:N0} ₺";
+            MaxIndirimLabel.Text = $"Maks. İndirim: %{maxIndirim:0.##}";
             
             HesaplaToplamTutar();
         }
@@ -150,11 +158,59 @@ namespace CarFleetPro.Mobile.Views
                 if (aktif != null)
                 {
                     RenterNameLabel.Text  = aktif.CustomerName;
+                    
+                    // Kiralama tarih ve fiyat bilgilerini doldur
                     RentStartLabel.Text   = aktif.StartDate.ToString("dd.MM.yyyy");
                     RentEndLabel.Text     = aktif.PlannedEndDate.ToString("dd.MM.yyyy");
                     DailyRateLabel.Text   = $"{aktif.DailyRate:N0} ₺/gün";
                     TotalAmountLabel.Text = $"{aktif.TotalAmount:N0} ₺";
                     RentNotesLabel.Text   = string.IsNullOrWhiteSpace(aktif.Notes) ? "Not yok" : aktif.Notes;
+
+                    // Müşteri bilgileri (kiralama nesnesinden gelenler)
+                    string tc = string.IsNullOrWhiteSpace(aktif.CustomerIdentityNumber) ? "-" : aktif.CustomerIdentityNumber;
+                    string phone = string.IsNullOrWhiteSpace(aktif.CustomerPhone) ? "-" : aktif.CustomerPhone;
+                    string license = string.IsNullOrWhiteSpace(aktif.CustomerDriverLicenseNumber) ? "-" : aktif.CustomerDriverLicenseNumber;
+                    string licenseExpiry = aktif.CustomerDriverLicenseExpiry == default ? "-" : aktif.CustomerDriverLicenseExpiry.ToString("dd.MM.yyyy");
+                    string address = string.IsNullOrWhiteSpace(aktif.CustomerAddress) ? "Belirtilmedi" : aktif.CustomerAddress;
+
+                    // Canlıda yayındaki API'nin güncellenmemiş sürüm olması durumuna karşı
+                    // Eğer bilgiler boş ise müşteriyi ismiyle arayıp detayını çekiyoruz.
+                    if (tc == "-" || phone == "-" || license == "-" || address == "Belirtilmedi")
+                    {
+                        try
+                        {
+                            var searchResults = await _apiService.SearchCustomersAsync(aktif.CustomerName);
+                            if (searchResults != null && searchResults.Count > 0)
+                            {
+                                // İsmi tam eşleşen müşteriyi bulalım
+                                var matched = searchResults.Find(c => 
+                                    c.FullName.Trim().Equals(aktif.CustomerName.Trim(), StringComparison.OrdinalIgnoreCase));
+                                
+                                int targetCustId = matched != null ? matched.CustomerId : searchResults[0].CustomerId;
+
+                                var detail = await _apiService.GetCustomerDetailAsync(targetCustId);
+                                if (detail != null)
+                                {
+                                    tc = string.IsNullOrWhiteSpace(detail.IdentityNumber) ? "-" : detail.IdentityNumber;
+                                    phone = string.IsNullOrWhiteSpace(detail.PhoneNumber) ? "-" : detail.PhoneNumber;
+                                    license = string.IsNullOrWhiteSpace(detail.DriverLicenseNumber) ? "-" : detail.DriverLicenseNumber;
+                                    licenseExpiry = detail.DriverLicenseExpiry == default ? "-" : detail.DriverLicenseExpiry.ToString("dd.MM.yyyy");
+                                    address = string.IsNullOrWhiteSpace(detail.Address) ? "Belirtilmedi" : detail.Address;
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"[RentalFormPage] Müşteri detay tamamlama hatası: {ex.Message}");
+                        }
+                    }
+
+                    // Alanları ekrana bas
+                    RenterTcLabel.Text    = tc;
+                    RenterPhoneLabel.Text = phone;
+                    RenterLicenseLabel.Text = license;
+                    RenterLicenseExpiryLabel.Text = licenseExpiry;
+                    RenterAddressLabel.Text = address;
                 }
             }
             catch (Exception ex)
@@ -168,6 +224,27 @@ namespace CarFleetPro.Mobile.Views
         // ─────────────────────────────────────────
         private void OnRateChanged(object? sender, TextChangedEventArgs e)
         {
+            if (decimal.TryParse(GunlukUcretEntry.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal girilenFiyat))
+            {
+                if (_bazFiyat > 0 && girilenFiyat > _bazFiyat)
+                {
+                    // Baz fiyattan yüksek girilmesini anında engelle
+                    GunlukUcretEntry.Text = _bazFiyat.ToString("0.##", CultureInfo.InvariantCulture);
+                }
+            }
+            HesaplaToplamTutar();
+        }
+
+        private void OnRateUnfocused(object? sender, FocusEventArgs e)
+        {
+            if (decimal.TryParse(GunlukUcretEntry.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal girilenFiyat))
+            {
+                if (_tabanFiyat > 0 && girilenFiyat < _tabanFiyat)
+                {
+                    // Taban fiyattan düşük girilmesini odaktan çıkınca engelle
+                    GunlukUcretEntry.Text = _tabanFiyat.ToString("0.##", CultureInfo.InvariantCulture);
+                }
+            }
             HesaplaToplamTutar();
         }
 
@@ -229,10 +306,18 @@ namespace CarFleetPro.Mobile.Views
             { await DisplayAlertAsync("Uyarı", "Geçerli bir günlük ücret giriniz.", "Tamam"); return; }
 
             if (_bazFiyat > 0 && girilenFiyat > _bazFiyat)
-            { await DisplayAlertAsync("Uyarı", $"Günlük ücret baz fiyattan ({_bazFiyat:N2} ₺) yüksek olamaz.", "Tamam"); return; }
+            { 
+                GunlukUcretEntry.Text = _bazFiyat.ToString("0.##", CultureInfo.InvariantCulture);
+                await DisplayAlertAsync("Uyarı", $"Günlük ücret baz fiyattan ({_bazFiyat:N0} ₺) yüksek olamaz. Fiyat otomatik olarak limit değerine çekildi.", "Tamam"); 
+                return; 
+            }
 
             if (_tabanFiyat > 0 && girilenFiyat < _tabanFiyat)
-            { await DisplayAlertAsync("Uyarı", $"Günlük ücret taban fiyattan ({_tabanFiyat:N2} ₺) düşük olamaz.", "Tamam"); return; }
+            { 
+                GunlukUcretEntry.Text = _tabanFiyat.ToString("0.##", CultureInfo.InvariantCulture);
+                await DisplayAlertAsync("Uyarı", $"Günlük ücret taban fiyattan ({_tabanFiyat:N0} ₺) düşük olamaz. Fiyat otomatik olarak limit değerine çekildi.", "Tamam"); 
+                return; 
+            }
 
             var startDate = StartDatePicker.Date.GetValueOrDefault(DateTime.Today);
             var endDate   = EndDatePicker.Date.GetValueOrDefault(DateTime.Today.AddDays(1));
@@ -284,21 +369,57 @@ namespace CarFleetPro.Mobile.Views
             await Navigation.PopAsync();
         }
 
-        private void OnPrevImageClicked(object? sender, EventArgs e)
+        private async Task LoadVehicleImages()
         {
-            if (ImagesCarousel.ItemsSource is IList<string> items && items.Count > 0)
+            if (_vehicle == null) return;
+            try
             {
-                int i = ImagesCarousel.Position;
-                ImagesCarousel.Position = i > 0 ? i - 1 : items.Count - 1;
+                var images = await _apiService.GetVehicleImagesAsync(_vehicle.Id);
+                var imageUrls = new List<string>();
+
+                if (images != null && images.Count > 0)
+                {
+                    var sortedImages = images.OrderByDescending(img => img.IsPrimary)
+                                             .ThenBy(img => img.DisplayOrder)
+                                             .Select(img => img.ImageUrl)
+                                             .ToList();
+                    imageUrls.AddRange(sortedImages);
+                }
+
+                if (imageUrls.Count == 0 && !string.IsNullOrEmpty(_vehicle.ResimUrl))
+                {
+                    imageUrls.Add(_vehicle.ResimUrl);
+                }
+
+                if (imageUrls.Count == 0)
+                {
+                    imageUrls.Add("car.svg");
+                }
+
+                ImagesCarousel.ItemsSource = imageUrls;
+                UpdateImageCounter(0, imageUrls.Count);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[RentalFormPage] Fotoğraflar yüklenirken hata: {ex.Message}");
             }
         }
 
-        private void OnNextImageClicked(object? sender, EventArgs e)
+        private void UpdateImageCounter(int position, int total)
         {
-            if (ImagesCarousel.ItemsSource is IList<string> items && items.Count > 0)
+            if (total <= 0)
             {
-                int i = ImagesCarousel.Position;
-                ImagesCarousel.Position = i < items.Count - 1 ? i + 1 : 0;
+                ImageCounterLabel.Text = "0 / 0";
+                return;
+            }
+            ImageCounterLabel.Text = $"{position + 1} / {total}";
+        }
+
+        private void OnCarouselPositionChanged(object? sender, PositionChangedEventArgs e)
+        {
+            if (ImagesCarousel.ItemsSource is System.Collections.ICollection collection)
+            {
+                UpdateImageCounter(e.CurrentPosition, collection.Count);
             }
         }
     }

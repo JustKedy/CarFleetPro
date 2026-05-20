@@ -117,6 +117,11 @@ namespace CarFleetPro.Mobile.Models
         public decimal DailyRate { get; set; }
         public decimal TotalAmount { get; set; }
         public decimal DepositAmount { get; set; }
+        public string CustomerPhone { get; set; } = string.Empty;
+        public string CustomerIdentityNumber { get; set; } = string.Empty;
+        public string CustomerDriverLicenseNumber { get; set; } = string.Empty;
+        public DateTime CustomerDriverLicenseExpiry { get; set; }
+        public string CustomerAddress { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
         public string Notes { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }

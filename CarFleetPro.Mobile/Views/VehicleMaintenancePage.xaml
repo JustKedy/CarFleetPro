@@ -24,7 +24,7 @@
                     <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="3">
                         <HorizontalStackLayout HorizontalOptions="Center" Spacing="0">
                             <Label Text="CARFLEET" FontSize="13" TextColor="White" FontAttributes="Bold"/>
-                            <Label Text="PRO"      FontSize="13" TextColor="#F59E0B" FontAttributes="Bold"/>
+                            <Label Text="PRO"      FontSize="13" TextColor="#3B82F6" FontAttributes="Bold"/>
                         </HorizontalStackLayout>
                         <Label Text="BAKIM VE SERVİS" FontSize="20" TextColor="White" HorizontalOptions="Center"/>
                     </VerticalStackLayout>

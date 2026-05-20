@@ -323,47 +323,302 @@
                                 </Grid>
 
                                 
-                                <Border Padding="15" Stroke="{AppThemeBinding Light=#D1D5DB, Dark=#334155}" StrokeThickness="1"
-                                        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}"
+                                <Border Padding="20,18" Stroke="{AppThemeBinding Light=#E2E8F0, Dark=#334155}" StrokeThickness="1"
+                                        BackgroundColor="{AppThemeBinding Light=#F8FAFC, Dark=#0F172A}"
                                         IsVisible="{Binding IsExpanded}">
-                                    <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
-                                    <VerticalStackLayout Spacing="15">
-                                        <Grid ColumnDefinitions="*,*" RowSpacing="5">
-                                            <VerticalStackLayout Grid.Column="0" Spacing="5">
-                                                <Label Text="{Binding Durum}"  FontSize="12" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}"/>
-                                                 <Label Text="{Binding Marka, StringFormat='{0} '}" FontSize="12" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}"/>
-                                                 <Label Text="{Binding Model}" FontSize="12" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}"/>
-                                                <Label Text="{Binding KiralayanKisi,   StringFormat='Kiralayan: {0}',        TargetNullValue='Kiralayan: Yok'}" FontSize="12" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}"/>
-                                                <Label Text="{Binding KiralamaFiyati,  StringFormat='Kiralama Fiyatı: {0}TL', TargetNullValue='Kiralama Fiyatı: -'}" FontSize="12" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}"/>
-                                            </VerticalStackLayout>
-                                            <VerticalStackLayout Grid.Column="1" Spacing="5">
-                                                <Label Text="{Binding KiralamaSuresi,  StringFormat='Kiralama Süresi: {0}',  TargetNullValue='Kiralama Süresi: -'}" FontSize="12" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}" HorizontalOptions="End"/>
-                                                <Label Text="{Binding KiralamaTarihi,  StringFormat='Kiralama Tarihi: {0}',  TargetNullValue='Kiralama Tarihi: -'}"  FontSize="12" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}" HorizontalOptions="End"/>
-                                                <Label Text="{Binding Plaka, StringFormat='Araç Plakası: {0}'}"  FontSize="12" TextColor="#3B82F6" FontAttributes="Bold" HorizontalOptions="End"/>
-                                                <Label Text="{Binding Marka, StringFormat='Araç Marka: {0}'}"     FontSize="12" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}" HorizontalOptions="End"/>
-                                                <Label Text="{Binding Model, StringFormat='Araç Model: {0}'}"   FontSize="12" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}" HorizontalOptions="End"/>
-                                                <Label Text="{Binding Hp,    StringFormat='Araç Hp: {0}'}"     FontSize="12" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}" HorizontalOptions="End"/>
-                                            </VerticalStackLayout>
+                                    <Border.StrokeShape><RoundRectangle CornerRadius="16"/></Border.StrokeShape>
+                                    <Border.Shadow>
+                                        <Shadow Brush="Black" Offset="0,4" Radius="8" Opacity="0.12"/>
+                                    </Border.Shadow>
+                                    <VerticalStackLayout Spacing="16">
+                                        
+                                        <!-- YENİ DURUM BANNER'I (STATUS BANNER) -->
+                                        <Border StrokeThickness="0" Padding="14,10" HorizontalOptions="Fill">
+                                            <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding Durum}" Value="MÜSAİT">
+                                                    <Setter Property="BackgroundColor" Value="#E6F4EA"/>
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Border" Binding="{Binding Durum}" Value="Müsait">
+                                                    <Setter Property="BackgroundColor" Value="#E6F4EA"/>
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Border" Binding="{Binding Durum}" Value="müsait">
+                                                    <Setter Property="BackgroundColor" Value="#E6F4EA"/>
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Border" Binding="{Binding Durum}" Value="DOLU">
+                                                    <Setter Property="BackgroundColor" Value="#FCE8E6"/>
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Border" Binding="{Binding Durum}" Value="Dolu">
+                                                    <Setter Property="BackgroundColor" Value="#FCE8E6"/>
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Border" Binding="{Binding Durum}" Value="BAKIMDA">
+                                                    <Setter Property="BackgroundColor" Value="#FEF3D6"/>
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Border" Binding="{Binding Durum}" Value="Bakımda">
+                                                    <Setter Property="BackgroundColor" Value="#FEF3D6"/>
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                            <Grid ColumnDefinitions="Auto, *">
+                                                <Ellipse Grid.Column="0" WidthRequest="10" HeightRequest="10" VerticalOptions="Center" Margin="0,0,8,0">
+                                                    <Ellipse.Triggers>
+                                                        <DataTrigger TargetType="Ellipse" Binding="{Binding Durum}" Value="MÜSAİT">
+                                                            <Setter Property="Fill" Value="#137333"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Ellipse" Binding="{Binding Durum}" Value="Müsait">
+                                                            <Setter Property="Fill" Value="#137333"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Ellipse" Binding="{Binding Durum}" Value="müsait">
+                                                            <Setter Property="Fill" Value="#137333"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Ellipse" Binding="{Binding Durum}" Value="DOLU">
+                                                            <Setter Property="Fill" Value="#C5221F"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Ellipse" Binding="{Binding Durum}" Value="Dolu">
+                                                            <Setter Property="Fill" Value="#C5221F"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Ellipse" Binding="{Binding Durum}" Value="BAKIMDA">
+                                                            <Setter Property="Fill" Value="#B06000"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Ellipse" Binding="{Binding Durum}" Value="Bakımda">
+                                                            <Setter Property="Fill" Value="#B06000"/>
+                                                        </DataTrigger>
+                                                    </Ellipse.Triggers>
+                                                </Ellipse>
+                                                <Label Grid.Column="1" Text="{Binding Durum}" FontSize="12" FontAttributes="Bold" CharacterSpacing="0.8" VerticalOptions="Center">
+                                                    <Label.Triggers>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding Durum}" Value="MÜSAİT">
+                                                            <Setter Property="TextColor" Value="#137333"/>
+                                                            <Setter Property="Text" Value="ARAÇ MÜSAİT"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding Durum}" Value="Müsait">
+                                                            <Setter Property="TextColor" Value="#137333"/>
+                                                            <Setter Property="Text" Value="ARAÇ MÜSAİT"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding Durum}" Value="müsait">
+                                                            <Setter Property="TextColor" Value="#137333"/>
+                                                            <Setter Property="Text" Value="ARAÇ MÜSAİT"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding Durum}" Value="DOLU">
+                                                            <Setter Property="TextColor" Value="#C5221F"/>
+                                                            <Setter Property="Text" Value="ARAÇ KİRALANMIŞ (DOLU)"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding Durum}" Value="Dolu">
+                                                            <Setter Property="TextColor" Value="#C5221F"/>
+                                                            <Setter Property="Text" Value="ARAÇ KİRALANMIŞ (DOLU)"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding Durum}" Value="BAKIMDA">
+                                                            <Setter Property="TextColor" Value="#B06000"/>
+                                                            <Setter Property="Text" Value="ARAÇ BAKIM SÜRECİNDE"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding Durum}" Value="Bakımda">
+                                                            <Setter Property="TextColor" Value="#B06000"/>
+                                                            <Setter Property="Text" Value="ARAÇ BAKIM SÜRECİNDE"/>
+                                                        </DataTrigger>
+                                                    </Label.Triggers>
+                                                </Label>
+                                            </Grid>
+                                        </Border>
+
+                                        <!-- TEKNİK ÖZELLİK ROZETLERİ (CHIPS) -->
+                                        <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                                            <!-- Gerçek Plaka Tasarımı -->
+                                            <Border Grid.Column="0" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Stroke="#3B82F6" StrokeThickness="1" Padding="0" HeightRequest="32" VerticalOptions="Center">
+                                                <Border.StrokeShape><RoundRectangle CornerRadius="6"/></Border.StrokeShape>
+                                                <Grid ColumnDefinitions="20, *">
+                                                    <!-- Sol Mavi TR Şeridi -->
+                                                    <Border Grid.Column="0" BackgroundColor="#1E40AF" StrokeThickness="0">
+                                                        <Border.StrokeShape><RoundRectangle CornerRadius="4"/></Border.StrokeShape>
+                                                        <Label Text="TR" TextColor="White" FontSize="9" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                                    </Border>
+                                                    <!-- Plaka Numarası -->
+                                                    <Label Grid.Column="1" Text="{Binding Plaka}" TextColor="{AppThemeBinding Light=#1E2937, Dark=#F8FAFC}" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" CharacterSpacing="0.5"/>
+                                                </Grid>
+                                            </Border>
+
+                                            <!-- Baz Fiyat Rozeti -->
+                                            <Border Grid.Column="1" BackgroundColor="{AppThemeBinding Light=#F1F5F9, Dark=#1E293B}" Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#334155}" StrokeThickness="1" Padding="10,0" HeightRequest="32" VerticalOptions="Center">
+                                                <Border.StrokeShape><RoundRectangle CornerRadius="6"/></Border.StrokeShape>
+                                                <HorizontalStackLayout Spacing="6" HorizontalOptions="Center" VerticalOptions="Center">
+                                                    <Label Text="🏷️" FontSize="11" VerticalOptions="Center"/>
+                                                    <Label Text="{Binding BasePrice, StringFormat='{0:N0} ₺/Gün'}" TextColor="{AppThemeBinding Light=#475569, Dark=#94A3B8}" FontSize="12" FontAttributes="Bold" VerticalOptions="Center"/>
+                                                </HorizontalStackLayout>
+                                            </Border>
                                         </Grid>
 
-                                        <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
-                                            <Button Text="KİRALA" 
+                                        <BoxView HeightRequest="1" Color="{AppThemeBinding Light=#E2E8F0, Dark=#1E293B}" Margin="0,4"/>
+
+                                        <!-- KİRALAMA BİLGİLERİ GRUBU (DİJİTAL SÖZLEŞME ÖZETİ) -->
+                                        <VerticalStackLayout Spacing="10">
+                                            <VerticalStackLayout.Triggers>
+                                                <DataTrigger TargetType="VerticalStackLayout" Binding="{Binding KiralayanKisi}" Value="{x:Null}">
+                                                    <Setter Property="IsVisible" Value="False"/>
+                                                </DataTrigger>
+                                            </VerticalStackLayout.Triggers>
+
+                                            <Label Text="AKTİF SÖZLEŞME ÖZETİ" FontSize="11" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" CharacterSpacing="1"/>
+
+                                            <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Stroke="{AppThemeBinding Light=#E2E8F0, Dark=#334155}" StrokeThickness="1" Padding="14,12">
+                                                <Border.GestureRecognizers>
+                                                    <TapGestureRecognizer Tapped="OnKiralaClicked"/>
+                                                </Border.GestureRecognizers>
+                                                <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                                                <Border.Shadow>
+                                                    <Shadow Brush="Black" Offset="0,2" Radius="4" Opacity="0.05"/>
+                                                </Border.Shadow>
+                                                <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto" RowSpacing="6" VerticalOptions="Center">
+                                                    <!-- Kiralayan Müşteri (Satır 0, Sütun 0) -->
+                                                    <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="2">
+                                                        <Label Text="MÜŞTERİ" FontSize="9" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#94A3B8, Dark=#64748B}" CharacterSpacing="0.5"/>
+                                                        <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                                                            <Label Text="👤" FontSize="12" VerticalOptions="Center"/>
+                                                            <Label Text="{Binding KiralayanKisi}" FontSize="12" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#0F172A, Dark=#F8FAFC}" LineBreakMode="TailTruncation" VerticalOptions="Center"/>
+                                                        </HorizontalStackLayout>
+                                                    </VerticalStackLayout>
+
+                                                    <!-- Kiralama Süresi Özeti (Satır 1, Sütun 0) -->
+                                                    <VerticalStackLayout Grid.Row="1" Grid.Column="0" Spacing="2">
+                                                        <Label Text="KİRALAMA DÖNEMİ" FontSize="9" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#94A3B8, Dark=#64748B}" CharacterSpacing="0.5"/>
+                                                        <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                                                            <Label Text="📅" FontSize="12" VerticalOptions="Center"/>
+                                                            <Label Text="{Binding KiralamaOzetiMetni}" FontSize="11" TextColor="{AppThemeBinding Light=#475569, Dark=#94A3B8}" VerticalOptions="Center"/>
+                                                        </HorizontalStackLayout>
+                                                    </VerticalStackLayout>
+
+                                                    <!-- Fiyat / Tutar (Satır 0-1, Sütun 1) -->
+                                                    <VerticalStackLayout Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" VerticalOptions="Center" HorizontalOptions="End" Spacing="2">
+                                                        <Label Text="TOPLAM TUTAR" FontSize="9" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#94A3B8, Dark=#64748B}" CharacterSpacing="0.5" HorizontalOptions="End"/>
+                                                        <Label Text="{Binding KiralamaFiyati, StringFormat='{0:N0} ₺'}" FontSize="14" FontAttributes="Bold" TextColor="#10B981" HorizontalOptions="End"/>
+                                                    </VerticalStackLayout>
+                                                </Grid>
+                                            </Border>
+                                        </VerticalStackLayout>
+
+                                        <!-- BOŞ ARAÇ BİLGİ ŞERİDİ -->
+                                        <Border StrokeThickness="0" BackgroundColor="{AppThemeBinding Light=#EFF6FF, Dark=#172554}" Padding="14,12" HorizontalOptions="Fill" IsVisible="False">
+                                            <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding KiralayanKisi}" Value="{x:Null}">
+                                                    <Setter Property="IsVisible" Value="True"/>
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                            <HorizontalStackLayout Spacing="8" HorizontalOptions="Center">
+                                                <Label Text="✨" FontSize="14" VerticalOptions="Center"/>
+                                                <Label Text="Bu araç kiralama veya bakım işlemlerine hazırdır." FontSize="12" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#1D4ED8, Dark=#60A5FA}" VerticalOptions="Center"/>
+                                            </HorizontalStackLayout>
+                                        </Border>
+
+                                        <!-- MODERN BUTON GRUBU -->
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="0,4,0,0">
+                                            <!-- Kirala Butonu -->
+                                            <Button Grid.Column="0" Text="🔑 KİRALA" 
                                                     Clicked="OnKiralaClicked"
-                                                    BackgroundColor="#3B82F6"
+                                                    BackgroundColor="#2563EB"
                                                     TextColor="White"
+                                                    FontSize="13"
                                                     FontAttributes="Bold"
-                                                    CornerRadius="8"
-                                                    HeightRequest="40"
-                                                    Padding="15,0"/>
-                                            <Button Text="BAKIM" 
+                                                    CornerRadius="12"
+                                                    HeightRequest="45"
+                                                    CharacterSpacing="0.5">
+                                                <Button.Triggers>
+                                                    <DataTrigger TargetType="Button" Binding="{Binding Durum}" Value="DOLU">
+                                                        <Setter Property="Text" Value="📄 SÖZLEŞME DETAYI"/>
+                                                        <Setter Property="BackgroundColor" Value="#1E3A8A"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Button" Binding="{Binding Durum}" Value="Dolu">
+                                                        <Setter Property="Text" Value="📄 SÖZLEŞME DETAYI"/>
+                                                        <Setter Property="BackgroundColor" Value="#1E3A8A"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Button" Binding="{Binding Durum}" Value="BAKIMDA">
+                                                        <Setter Property="Text" Value="🔧 BAKIM DETAYI"/>
+                                                        <Setter Property="BackgroundColor" Value="#4B5563"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Button" Binding="{Binding Durum}" Value="Bakımda">
+                                                        <Setter Property="Text" Value="🔧 BAKIM DETAYI"/>
+                                                        <Setter Property="BackgroundColor" Value="#4B5563"/>
+                                                    </DataTrigger>
+                                                </Button.Triggers>
+                                            </Button>
+
+                                            <!-- Bakım Butonu -->
+                                            <Button Grid.Column="1" Text="🛠️ BAKIM" 
                                                     Clicked="OnBakimClicked"
-                                                    BackgroundColor="#F59E0B"
+                                                    BackgroundColor="#D97706"
                                                     TextColor="White"
+                                                    FontSize="13"
                                                     FontAttributes="Bold"
-                                                    CornerRadius="8"
-                                                    HeightRequest="40"
-                                                    Padding="15,0"/>
-                                        </HorizontalStackLayout>
+                                                    CornerRadius="12"
+                                                    HeightRequest="45"
+                                                    CharacterSpacing="0.5"/>
+                                        </Grid>
+                                        
+                                        <!-- SÖZLEŞME VE REZERVASYON YÖNETİMİ PANELİ (Sadece Kirada İse Görünür) -->
+                                        <VerticalStackLayout Spacing="12" Margin="0,12,0,0" IsVisible="True">
+                                            <VerticalStackLayout.Triggers>
+                                                <DataTrigger TargetType="VerticalStackLayout" Binding="{Binding KiralayanKisi}" Value="{x:Null}">
+                                                    <Setter Property="IsVisible" Value="False"/>
+                                                </DataTrigger>
+                                            </VerticalStackLayout.Triggers>
+                                            
+                                            <BoxView HeightRequest="1" Color="{AppThemeBinding Light=#E2E8F0, Dark=#334155}" Margin="0,4"/>
+                                            
+                                            <Label Text="🛡️ SÖZLEŞME VE RANDEVU YÖNETİMİ" FontSize="11" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#475569, Dark=#94A3B8}" CharacterSpacing="0.5" Margin="0,2"/>
+                                            
+                                            <!-- Panel Butonları -->
+                                            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                                                <!-- Sözleşmeyi Uzat -->
+                                                <Button Grid.Column="0" Text="🕒 SÖZLEŞMEYİ UZAT" 
+                                                        Clicked="OnUzatSozlesmePanelClicked"
+                                                        BackgroundColor="#10B981"
+                                                        TextColor="White"
+                                                        FontSize="11"
+                                                        FontAttributes="Bold"
+                                                        CornerRadius="10"
+                                                        HeightRequest="40"/>
+                                                
+                                                <!-- İleri Tarihli Rezervasyon -->
+                                                <Button Grid.Column="1" Text="📅 RANDEVU OLUŞTUR" 
+                                                        Clicked="OnRezervasyonPanelClicked"
+                                                        BackgroundColor="#6366F1"
+                                                        TextColor="White"
+                                                        FontSize="11"
+                                                        FontAttributes="Bold"
+                                                        CornerRadius="10"
+                                                        HeightRequest="40"/>
+                                            </Grid>
+                                            
+                                            <!-- 3. RANDEVULAR / REZERVASYONLAR ZAMAN TÜNELİ -->
+                                            <VerticalStackLayout Spacing="6" Margin="0,4">
+                                                <Label Text="🗓️ İLERİ TARİHLİ RANDEVU VE REZERVASYONLAR" FontSize="10" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}"/>
+                                                
+                                                <!-- Rezervasyon Listesi -->
+                                                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Rezervasyonlar}">
+                                                    <BindableLayout.ItemTemplate>
+                                                        <DataTemplate x:DataType="models:RentalInfo">
+                                                            <Border StrokeThickness="0" BackgroundColor="{AppThemeBinding Light=#EEF2FF, Dark=#1E1B4B}" Padding="10" Margin="0,2">
+                                                                <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
+                                                                <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10">
+                                                                    <Label Grid.Column="0" Text="📅" FontSize="14" VerticalOptions="Center"/>
+                                                                    <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                                                        <Label Text="{Binding CustomerName}" FontSize="11" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#312E81, Dark=#E0E7FF}"/>
+                                                                        <HorizontalStackLayout Spacing="6">
+                                                                            <Label Text="{Binding StartDate, StringFormat='{0:dd.MM.yyyy}'}" FontSize="10" TextColor="{AppThemeBinding Light=#4338CA, Dark=#A5B4FC}"/>
+                                                                            <Label Text="-" FontSize="10" TextColor="{AppThemeBinding Light=#4338CA, Dark=#A5B4FC}"/>
+                                                                            <Label Text="{Binding PlannedEndDate, StringFormat='{0:dd.MM.yyyy}'}" FontSize="10" TextColor="{AppThemeBinding Light=#4338CA, Dark=#A5B4FC}"/>
+                                                                        </HorizontalStackLayout>
+                                                                    </VerticalStackLayout>
+                                                                    <Border Grid.Column="2" BackgroundColor="#6366F1" Padding="6,3" VerticalOptions="Center">
+                                                                        <Border.StrokeShape><RoundRectangle CornerRadius="4"/></Border.StrokeShape>
+                                                                        <Label Text="ONAYLANDI" FontSize="9" FontAttributes="Bold" TextColor="White"/>
+                                                                    </Border>
+                                                                </Grid>
+                                                            </Border>
+                                                        </DataTemplate>
+                                                    </BindableLayout.ItemTemplate>
+                                                </VerticalStackLayout>
+                                            </VerticalStackLayout>
+                                            
+                                        </VerticalStackLayout>
+                                        
                                     </VerticalStackLayout>
                                 </Border>
 

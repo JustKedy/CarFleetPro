@@ -159,7 +159,48 @@ namespace CarFleetPro.API.Controllers
                 .FirstOrDefaultAsync(c => c.PhoneNumber == dto.PhoneNumber);
 
             if (existing != null)
+            {
+                _context.Attach(existing);
+
+                // Gelen yeni, geçerli bilgileri mevcut müşteriye aktararak güncelle
+                if (!string.IsNullOrWhiteSpace(dto.FirstName)) existing.FirstName = dto.FirstName;
+                if (!string.IsNullOrWhiteSpace(dto.LastName)) existing.LastName = dto.LastName;
+                
+                if (!string.IsNullOrWhiteSpace(dto.IdentityNumber) && 
+                    (string.IsNullOrWhiteSpace(existing.IdentityNumber) || existing.IdentityNumber.StartsWith("MISAFIR") || existing.IdentityNumber == "-"))
+                {
+                    existing.IdentityNumber = dto.IdentityNumber;
+                }
+                
+                if (!string.IsNullOrWhiteSpace(dto.Email) && 
+                    (string.IsNullOrWhiteSpace(existing.Email) || existing.Email.StartsWith("misafir_")))
+                {
+                    existing.Email = dto.Email;
+                }
+
+                if (!string.IsNullOrWhiteSpace(dto.DriverLicenseNumber) && 
+                    (string.IsNullOrWhiteSpace(existing.DriverLicenseNumber) || existing.DriverLicenseNumber.StartsWith("GS") || existing.DriverLicenseNumber == "-"))
+                {
+                    existing.DriverLicenseNumber = dto.DriverLicenseNumber;
+                }
+                
+                if (dto.DriverLicenseExpiry != default && 
+                    (existing.DriverLicenseExpiry == default || existing.DriverLicenseExpiry < DateTime.UtcNow))
+                {
+                    existing.DriverLicenseExpiry = dto.DriverLicenseExpiry.ToUniversalTime();
+                }
+                
+                if (!string.IsNullOrWhiteSpace(dto.Address) && dto.Address != "Belirtilmedi" && 
+                    (string.IsNullOrWhiteSpace(existing.Address) || existing.Address == "Belirtilmedi" || existing.Address == "-"))
+                {
+                    existing.Address = dto.Address;
+                }
+
+                _context.Entry(existing).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
                 return Ok(new { customerId = existing.CustomerId });
+            }
 
             var customer = new Customer
             {

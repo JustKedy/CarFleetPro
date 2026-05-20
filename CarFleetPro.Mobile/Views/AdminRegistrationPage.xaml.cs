@@ -58,4 +58,10 @@ public partial class AdminRegistrationPage : ContentPage
         if (success && Navigation != null)
             await Navigation.PopAsync();
     }
+
+    private void OnToggleAdminPasswordTapped(object? sender, EventArgs e)
+    {
+        AdminPasswordEntry.IsPassword = !AdminPasswordEntry.IsPassword;
+        ToggleAdminPasswordLabel.Text = AdminPasswordEntry.IsPassword ? "👁️" : "🙈";
+    }
 }

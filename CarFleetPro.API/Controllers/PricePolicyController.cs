@@ -56,6 +56,29 @@ namespace CarFleetPro.API.Controllers
                 _context.PricePolicies.Add(request);
             }
 
+            // Araçların fiyatlarını da güncel politikaya göre senkronize et
+            IQueryable<Vehicle> vehiclesQuery = _context.Vehicles;
+
+            if (request.TargetType == "Segment")
+            {
+                vehiclesQuery = vehiclesQuery.Include(v => v.Type)
+                                             .Where(v => v.Type.Name == request.TargetValue);
+            }
+            else if (request.TargetType == "Brand")
+            {
+                vehiclesQuery = vehiclesQuery.Include(v => v.Brand)
+                                             .Where(v => v.Brand.Name == request.TargetValue);
+            }
+
+            var vehiclesToUpdate = await vehiclesQuery.ToListAsync();
+
+            foreach (var vehicle in vehiclesToUpdate)
+            {
+                vehicle.BasePrice = request.BasePrice;
+                vehicle.MaxDiscountPercentage = request.MaxDiscountPercentage;
+                _context.Vehicles.Update(vehicle);
+            }
+
             await _context.SaveChangesAsync();
             
             // Invalidate vehicle caches so pricing updates reflect immediately

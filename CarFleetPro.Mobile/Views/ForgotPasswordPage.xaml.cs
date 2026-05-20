@@ -160,4 +160,16 @@ public partial class ForgotPasswordPage : ContentPage
         if (Navigation is not null)
             await Navigation.PopAsync();
     }
+
+    private void OnToggleNewPasswordTapped(object? sender, EventArgs e)
+    {
+        NewPasswordEntry.IsPassword = !NewPasswordEntry.IsPassword;
+        ToggleNewPasswordLabel.Text = NewPasswordEntry.IsPassword ? "👁️" : "🙈";
+    }
+
+    private void OnToggleConfirmPasswordTapped(object? sender, EventArgs e)
+    {
+        ConfirmPasswordEntry.IsPassword = !ConfirmPasswordEntry.IsPassword;
+        ToggleConfirmPasswordLabel.Text = ConfirmPasswordEntry.IsPassword ? "👁️" : "🙈";
+    }
 }

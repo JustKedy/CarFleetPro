@@ -93,7 +93,7 @@ namespace CarFleetPro.Mobile.Views
             }
         }
 
-        private void OnSegmentCheckedChanged(object sender, CheckedChangedEventArgs e)
+        private void OnSegmentCheckedChanged(object? sender, CheckedChangedEventArgs e)
         {
             if (BindingContext is GarageViewModel vm)
             {
@@ -101,5 +101,26 @@ namespace CarFleetPro.Mobile.Views
             }
         }
 
+        private async void OnUzatSozlesmePanelClicked(object? sender, EventArgs e)
+        {
+            if (sender is Button btn && btn.BindingContext is Vehicle vehicle)
+            {
+                if (Navigation != null)
+                {
+                    await Navigation.PushAsync(new ContractExtensionPage(vehicle));
+                }
+            }
+        }
+
+        private async void OnRezervasyonPanelClicked(object? sender, EventArgs e)
+        {
+            if (sender is Button btn && btn.BindingContext is Vehicle vehicle)
+            {
+                if (Navigation != null)
+                {
+                    await Navigation.PushAsync(new AddReservationPage(vehicle));
+                }
+            }
+        }
     }
 }

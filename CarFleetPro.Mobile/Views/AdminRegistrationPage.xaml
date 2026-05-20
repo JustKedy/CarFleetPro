@@ -71,7 +71,14 @@
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="8" />
                             </Border.StrokeShape>
-                            <Entry x:Name="AdminPasswordEntry" Placeholder="Geçici Sistem Şifresi" IsPassword="True" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" PlaceholderColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}" BackgroundColor="Transparent"/>
+                            <Grid ColumnDefinitions="*, Auto" VerticalOptions="Fill">
+                                <Entry Grid.Column="0" x:Name="AdminPasswordEntry" Placeholder="Geçici Sistem Şifresi" IsPassword="True" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" PlaceholderColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}" BackgroundColor="Transparent" VerticalOptions="Center"/>
+                                <Label Grid.Column="1" x:Name="ToggleAdminPasswordLabel" Text="👁️" FontSize="18" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}" VerticalOptions="Center" HorizontalOptions="Center" Padding="10, 0, 5, 0">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnToggleAdminPasswordTapped" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+                            </Grid>
                         </Border>
                     </VerticalStackLayout>
                 </Border>

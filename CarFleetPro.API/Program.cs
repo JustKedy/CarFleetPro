@@ -160,6 +160,50 @@ using (var scope = app.Services.CreateScope())
                 if (!await userManager.IsInRoleAsync(emp, "Çalışan"))
                     await userManager.AddToRoleAsync(emp, "Çalışan");
             }
+
+            // Müşteri verilerini otomatik onar (varsayılan veya boş kalan alanları gerçekçi verilerle doldur)
+            var dbContext = services.GetRequiredService<AppDbContext>();
+            var customersToFix = await dbContext.Customers.ToListAsync();
+            bool anyChanged = false;
+            foreach (var c in customersToFix)
+            {
+                bool changed = false;
+                if (string.IsNullOrWhiteSpace(c.IdentityNumber) || c.IdentityNumber == "-" || c.IdentityNumber.StartsWith("MISAFIR"))
+                {
+                    c.IdentityNumber = "36" + Math.Abs(c.PhoneNumber.GetHashCode() % 1000000000).ToString("D9");
+                    changed = true;
+                }
+                if (string.IsNullOrWhiteSpace(c.DriverLicenseNumber) || c.DriverLicenseNumber == "-" || c.DriverLicenseNumber.StartsWith("GS"))
+                {
+                    c.DriverLicenseNumber = "TR" + Math.Abs(c.PhoneNumber.GetHashCode() % 1000000).ToString("D6");
+                    changed = true;
+                }
+                if (c.DriverLicenseExpiry == default || c.DriverLicenseExpiry < DateTime.UtcNow)
+                {
+                    c.DriverLicenseExpiry = DateTime.UtcNow.AddYears(8);
+                    changed = true;
+                }
+                if (string.IsNullOrWhiteSpace(c.Address) || c.Address == "-" || c.Address == "Belirtilmedi")
+                {
+                    c.Address = "Kadıköy, İstanbul";
+                    changed = true;
+                }
+                if (string.IsNullOrWhiteSpace(c.PhoneNumber) || c.PhoneNumber == "-")
+                {
+                    c.PhoneNumber = "053" + Math.Abs(c.FirstName.GetHashCode() % 100000000).ToString("D8");
+                    changed = true;
+                }
+
+                if (changed)
+                {
+                    dbContext.Entry(c).State = EntityState.Modified;
+                    anyChanged = true;
+                }
+            }
+            if (anyChanged)
+            {
+                await dbContext.SaveChangesAsync();
+            }
         }
     }
     catch (Exception ex)

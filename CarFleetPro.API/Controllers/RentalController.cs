@@ -62,6 +62,11 @@ namespace CarFleetPro.API.Controllers
                     // Çalışan toplam tutarı görebilir ama bu veri dashboard'da gizlenir
                     TotalAmount = x.Rental.TotalAmount,
                     DepositAmount = x.Rental.DepositAmount,
+                    CustomerPhone = x.Customer.PhoneNumber,
+                    CustomerIdentityNumber = x.Customer.IdentityNumber,
+                    CustomerDriverLicenseNumber = x.Customer.DriverLicenseNumber,
+                    CustomerDriverLicenseExpiry = x.Customer.DriverLicenseExpiry,
+                    CustomerAddress = x.Customer.Address,
                     Status = x.Rental.Status == RentalStatus.Active ? "Aktif" :
                              x.Rental.Status == RentalStatus.Completed ? "Tamamlandı" : "İptal",
                     Notes = x.Rental.Notes,
@@ -97,6 +102,11 @@ namespace CarFleetPro.API.Controllers
                 DailyRate = item.Rental.DailyRate,
                 TotalAmount = item.Rental.TotalAmount,
                 DepositAmount = item.Rental.DepositAmount,
+                CustomerPhone = item.Customer.PhoneNumber,
+                CustomerIdentityNumber = item.Customer.IdentityNumber,
+                CustomerDriverLicenseNumber = item.Customer.DriverLicenseNumber,
+                CustomerDriverLicenseExpiry = item.Customer.DriverLicenseExpiry,
+                CustomerAddress = item.Customer.Address,
                 Status = item.Rental.Status == RentalStatus.Active ? "Aktif" :
                          item.Rental.Status == RentalStatus.Completed ? "Tamamlandı" : "İptal",
                 Notes = item.Rental.Notes,

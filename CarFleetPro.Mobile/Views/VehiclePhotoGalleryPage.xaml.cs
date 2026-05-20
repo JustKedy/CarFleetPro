@@ -40,9 +40,9 @@ public partial class VehiclePhotoGalleryPage : ContentPage
     {
         CountLabel.Text = $"{_images.Count} fotoğraf";
         EmptyState.IsVisible = _images.Count == 0;
-        PhotoGrid.IsVisible = _images.Count > 0;
-        PhotoGrid.ItemsSource = null;
-        PhotoGrid.ItemsSource = _images;
+        PhotoCarousel.IsVisible = _images.Count > 0;
+        PhotoCarousel.ItemsSource = null;
+        PhotoCarousel.ItemsSource = _images;
 
         // Seçim sıfırla
         _selectedImage = null;
@@ -50,10 +50,10 @@ public partial class VehiclePhotoGalleryPage : ContentPage
         AddPhotoBtn.IsVisible = _isAdmin && _images.Count < 10;
     }
 
-    // ─── Fotoğraf Seçildi ─────────────────────────────────────────────────
-    private void OnPhotoSelected(object? sender, SelectionChangedEventArgs e)
+    // ─── Fotoğraf Seçildi (Carousel) ──────────────────────────────────────
+    private void OnPhotoSelected(object? sender, CurrentItemChangedEventArgs e)
     {
-        _selectedImage = e.CurrentSelection.FirstOrDefault() as VehicleImageInfo;
+        _selectedImage = e.CurrentItem as VehicleImageInfo;
 
         if (_selectedImage == null || !_isAdmin)
         {
@@ -119,8 +119,6 @@ public partial class VehiclePhotoGalleryPage : ContentPage
     // ─── Seçimi İptal Et ──────────────────────────────────────────────────
     private void OnCancelSelectionClicked(object? sender, EventArgs e)
     {
-        PhotoGrid.SelectedItem = null;
-        _selectedImage = null;
         ActionBar.IsVisible = false;
     }
 
@@ -136,17 +134,42 @@ public partial class VehiclePhotoGalleryPage : ContentPage
             "Galeriden Seç",
             "Kamerayı Aç");
 
-        FileResult? photo = null;
+        List<FileResult> photosToUpload = new();
 
         try
         {
             if (action == "Galeriden Seç")
             {
-                var results = await MediaPicker.Default.PickPhotosAsync();
-                photo = results?.FirstOrDefault();
+                var results = await FilePicker.Default.PickMultipleAsync(new PickOptions
+                {
+                    PickerTitle = "Fotoğrafları Seçin (Maksimum 10)",
+                    FileTypes = FilePickerFileType.Images
+                });
+                
+                if (results != null && results.Any())
+                {
+                    int eklenebilecek = Math.Max(0, 10 - _images.Count);
+                    var secilenler = results.Where(r => r != null).ToList();
+                    
+                    if (secilenler.Count > eklenebilecek)
+                    {
+                        await DisplayAlertAsync("Limit Aşıldı", $"En fazla 10 fotoğraf eklenebilir. Sadece seçtiğiniz ilk {eklenebilecek} fotoğraf yüklenecek.", "Tamam");
+                        photosToUpload.AddRange(secilenler.Take(eklenebilecek).Cast<FileResult>());
+                    }
+                    else
+                    {
+                        photosToUpload.AddRange(secilenler.Cast<FileResult>());
+                    }
+                }
             }
             else if (action == "Kamerayı Aç" && MediaPicker.Default.IsCaptureSupported)
-                photo = await MediaPicker.Default.CapturePhotoAsync();
+            {
+                var photo = await MediaPicker.Default.CapturePhotoAsync();
+                if (photo != null)
+                {
+                    photosToUpload.Add(photo);
+                }
+            }
         }
         catch (Exception ex)
         {
@@ -154,28 +177,55 @@ public partial class VehiclePhotoGalleryPage : ContentPage
             return;
         }
 
-        if (photo == null) return;
+        if (photosToUpload.Count == 0) return;
 
         AddPhotoBtn.IsEnabled = false;
-        AddPhotoBtn.Text = "⬆️ Yükleniyor...";
 
-        var (success, message, newImage) = await _apiService.UploadVehicleImageAsync(
-            _vehicle.Id,
-            photo.FullPath,
-            photo.FileName,
-            photo.ContentType ?? "image/jpeg");
+        int totalCount = photosToUpload.Count;
+        int uploadedCount = 0;
+        int failedCount = 0;
+
+        foreach (var photo in photosToUpload)
+        {
+            uploadedCount++;
+            AddPhotoBtn.Text = $"Yükleniyor ({uploadedCount}/{totalCount})...";
+
+            try
+            {
+                var (success, message, newImage) = await _apiService.UploadVehicleImageAsync(
+                    _vehicle.Id,
+                    photo.FullPath,
+                    photo.FileName,
+                    photo.ContentType ?? "image/jpeg");
+
+                if (success && newImage != null)
+                {
+                    _images.Add(newImage);
+                }
+                else
+                {
+                    failedCount++;
+                }
+            }
+            catch (Exception ex)
+            {
+                failedCount++;
+                System.Diagnostics.Debug.WriteLine($"[Gallery] Resim yükleme hatası: {ex.Message}");
+            }
+        }
 
         AddPhotoBtn.IsEnabled = true;
         AddPhotoBtn.Text = "+ Ekle";
 
-        if (success && newImage != null)
+        RefreshGrid();
+
+        if (failedCount > 0)
         {
-            _images.Add(newImage);
-            RefreshGrid();
+            await DisplayAlertAsync("Yükleme Tamamlandı", $"{totalCount} resimden {totalCount - failedCount} tanesi başarıyla yüklendi, {failedCount} tanesi başarısız oldu.", "Tamam");
         }
         else
         {
-            await DisplayAlertAsync("Hata ❌", message, "Tamam");
+            await DisplayAlertAsync("Başarılı ✅", $"{totalCount} resim başarıyla yüklendi.", "Tamam");
         }
     }
 
