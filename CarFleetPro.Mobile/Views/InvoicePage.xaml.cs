@@ -6,6 +6,8 @@ namespace CarFleetPro.Mobile.Views
     public partial class InvoicePage : ContentPage
     {
         private readonly Services.ApiService _apiService;
+        private List<Models.InvoiceInfo> _allInvoices = new();
+        private bool _isFiltered = false;
 
         public InvoicePage()
         {
@@ -21,8 +23,45 @@ namespace CarFleetPro.Mobile.Views
 
         private async System.Threading.Tasks.Task LoadInvoices()
         {
-            var invoices = await _apiService.GetInvoicesAsync();
-            InvoiceList.ItemsSource = invoices;
+            _allInvoices = await _apiService.GetInvoicesAsync();
+            ApplyFilter();
+        }
+
+        private void ApplyFilter()
+        {
+            var query = SearchEntry.Text?.Trim().ToLower() ?? string.Empty;
+            var filtered = _allInvoices.AsEnumerable();
+
+            if (!string.IsNullOrEmpty(query))
+            {
+                filtered = filtered.Where(i => 
+                    i.CustomerName.ToLower().Contains(query) || 
+                    $"INV-{i.InvoiceId}".ToLower().Contains(query));
+            }
+
+            if (_isFiltered)
+            {
+                // Ödenmemiş/Bekleyen faturaları filtrele
+                filtered = filtered.Where(i => i.Status != "ÖDENDİ");
+            }
+
+            InvoiceList.ItemsSource = filtered.ToList();
+        }
+
+        private void OnSearchTextChanged(object? sender, TextChangedEventArgs e)
+        {
+            ApplyFilter();
+        }
+
+        private void OnFilterClicked(object? sender, EventArgs e)
+        {
+            _isFiltered = !_isFiltered;
+            FilterButton.Text = _isFiltered ? "BEKLEYEN" : "TÜMÜ";
+            bool isDark = Application.Current?.UserAppTheme == AppTheme.Dark;
+            FilterButton.TextColor = _isFiltered ? Colors.White : (isDark ? Color.FromArgb("#F1F5F9") : Color.FromArgb("#1F2937"));
+            FilterButton.BackgroundColor = _isFiltered ? Color.FromArgb("#3B82F6") : (isDark ? Color.FromArgb("#334155") : Color.FromArgb("#E5E7EB"));
+            
+            ApplyFilter();
         }
 
         private async void OnBackClicked(object? sender, EventArgs e)

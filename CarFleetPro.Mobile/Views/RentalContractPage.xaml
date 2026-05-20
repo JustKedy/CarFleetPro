@@ -29,9 +29,9 @@
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="12" />
                 </Border.StrokeShape>
-                <Entry Placeholder="Plaka veya Müşteri Ara..." TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" PlaceholderColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}" Margin="15,0" VerticalOptions="Center" />
+                <Entry x:Name="SearchEntry" TextChanged="OnSearchTextChanged" Placeholder="Plaka veya Müşteri Ara..." TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" PlaceholderColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}" Margin="15,0" VerticalOptions="Center" />
             </Border>
-            <Button Grid.Column="1" Text="FİLTRELE" BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#334155}" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" FontAttributes="Bold" CornerRadius="12" HeightRequest="50" Padding="15,0"/>
+            <Button x:Name="FilterButton" Clicked="OnFilterClicked" Grid.Column="1" Text="TÜMÜ" BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#334155}" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" FontAttributes="Bold" CornerRadius="12" HeightRequest="50" Padding="15,0"/>
         </Grid>
 
         <CollectionView x:Name="ContractsList" Grid.Row="2" Margin="20,0" VerticalScrollBarVisibility="Never" SelectionMode="Single">
@@ -48,22 +48,39 @@
                             <!-- Başlık Satırı -->
                             <Grid Grid.Row="0" ColumnDefinitions="*, Auto">
                                 <VerticalStackLayout Grid.Column="0">
-                                    <Label Text="34 ABC 123 - NISSAN QASHQAI" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" FontSize="14" />
-                                    <Label Text="Müşteri: Abdulkadir Toksöz" FontSize="12" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}" />
+                                    <Label FontAttributes="Bold" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" FontSize="14">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="{Binding VehiclePlate}" />
+                                                <Span Text=" - " />
+                                                <Span Text="{Binding VehicleName}" />
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                    <Label Text="{Binding CustomerName, StringFormat='Müşteri: {0}'}" FontSize="12" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}" />
                                 </VerticalStackLayout>
                                 <Border Grid.Column="1" BackgroundColor="#DBEAFE" Padding="10,5" StrokeThickness="0" VerticalOptions="Start">
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="8" />
                                     </Border.StrokeShape>
-                                    <Label Text="Aktif Sözleşme" TextColor="#1E40AF" FontSize="10" FontAttributes="Bold"/>
+                                    <Label Text="{Binding Status}" TextColor="#1E40AF" FontSize="10" FontAttributes="Bold"/>
                                 </Border>
                             </Grid>
                             
                             <!-- Detay Satırı -->
                             <Grid Grid.Row="1" ColumnDefinitions="*, Auto" VerticalOptions="End">
                                 <VerticalStackLayout Grid.Column="0">
-                                    <Label Text="Tarih: 01.05.2026 - 15.05.2026" FontSize="11" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}" />
-                                    <Label Text="Tutar: 15.000 TL" FontSize="11" TextColor="#10B981" FontAttributes="Bold" />
+                                    <Label FontSize="11" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="Tarih: " />
+                                                <Span Text="{Binding StartDate, StringFormat='{0:dd.MM.yyyy}'}" />
+                                                <Span Text=" - " />
+                                                <Span Text="{Binding PlannedEndDate, StringFormat='{0:dd.MM.yyyy}'}" />
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                    <Label Text="{Binding TotalAmount, StringFormat='Tutar: {0:N2} TL'}" FontSize="11" TextColor="#10B981" FontAttributes="Bold" />
                                 </VerticalStackLayout>
                                 <Button Grid.Column="1" Text="PDF İNDİR" BackgroundColor="{AppThemeBinding Light=#F3F4F6, Dark=#0F172A}" TextColor="#3B82F6" FontSize="10" FontAttributes="Bold" HeightRequest="30" Padding="10,0" CornerRadius="6" VerticalOptions="End"/>
                             </Grid>

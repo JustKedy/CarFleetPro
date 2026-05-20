@@ -29,9 +29,9 @@
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="12" />
                 </Border.StrokeShape>
-                <Entry Placeholder="Sözleşme No veya İsim Ara..." TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" PlaceholderColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}" Margin="15,0" VerticalOptions="Center" />
+                <Entry x:Name="SearchEntry" TextChanged="OnSearchTextChanged" Placeholder="Sözleşme No veya İsim Ara..." TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" PlaceholderColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}" Margin="15,0" VerticalOptions="Center" />
             </Border>
-            <Button Grid.Column="1" Text="TÜMÜ" BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#334155}" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" FontAttributes="Bold" CornerRadius="12" HeightRequest="50" Padding="15,0"/>
+            <Button x:Name="FilterButton" Clicked="OnFilterClicked" Grid.Column="1" Text="TÜMÜ" BackgroundColor="{AppThemeBinding Light=#E5E7EB, Dark=#334155}" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" FontAttributes="Bold" CornerRadius="12" HeightRequest="50" Padding="15,0"/>
         </Grid>
 
         <CollectionView x:Name="InvoiceList" Grid.Row="2" Margin="20,0" VerticalScrollBarVisibility="Never" SelectionMode="Single">

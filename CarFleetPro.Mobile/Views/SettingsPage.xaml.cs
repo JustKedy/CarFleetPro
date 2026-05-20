@@ -7,15 +7,28 @@ public partial class SettingsPage : ContentPage
 {
     private readonly ApiService _apiService;
 
-    private bool _maintenanceNotificationsEnabled = true;
-    private bool _rentalNotificationsEnabled = true;
+    private bool _maintenanceNotificationsEnabled;
+    private bool _rentalNotificationsEnabled;
     private bool _availabilityNotificationsEnabled;
 
     public SettingsPage()
     {
         InitializeComponent();
         _apiService = new ApiService();
+        LoadNotificationPreferences();
         UpdateThemeUi();
+    }
+
+    private void LoadNotificationPreferences()
+    {
+        _maintenanceNotificationsEnabled = Preferences.Default.Get("Notif_Maintenance", true);
+        _rentalNotificationsEnabled = Preferences.Default.Get("Notif_Rental", true);
+        _availabilityNotificationsEnabled = Preferences.Default.Get("Notif_Availability", false);
+    }
+
+    private void SaveNotificationPreference(string key, bool value)
+    {
+        Preferences.Default.Set(key, value);
     }
 
     protected override async void OnAppearing()
@@ -133,15 +146,18 @@ public partial class SettingsPage : ContentPage
     private void OnMaintenanceNotifTapped(object? sender, EventArgs e)
     {
         ToggleNotificationIcon(MaintenanceNotifIcon, ref _maintenanceNotificationsEnabled);
+        SaveNotificationPreference("Notif_Maintenance", _maintenanceNotificationsEnabled);
     }
 
     private void OnRentalNotifTapped(object? sender, EventArgs e)
     {
         ToggleNotificationIcon(RentalNotifIcon, ref _rentalNotificationsEnabled);
+        SaveNotificationPreference("Notif_Rental", _rentalNotificationsEnabled);
     }
 
     private void OnAvailableNotifTapped(object? sender, EventArgs e)
     {
         ToggleNotificationIcon(AvailableNotifIcon, ref _availabilityNotificationsEnabled);
+        SaveNotificationPreference("Notif_Availability", _availabilityNotificationsEnabled);
     }
 }
