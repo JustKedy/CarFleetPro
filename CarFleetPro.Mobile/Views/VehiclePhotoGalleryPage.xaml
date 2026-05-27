@@ -32,7 +32,6 @@
                            HorizontalOptions="Center"
                            TextColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}"/>
                 </VerticalStackLayout>
-                <!-- Admin için fotoğraf ekle -->
                 <Button x:Name="AddPhotoBtn"
                         Grid.Column="2"
                         Text="+ Ekle"

@@ -4,7 +4,6 @@ namespace CarFleetPro.API.Models
     {
         public int NotificationId { get; set; }
 
-        // Gönderilen kullanıcı (null = tüm kullanıcılar)
         public string? TargetUserId { get; set; }
         public AppUser? TargetUser { get; set; }
 
@@ -14,7 +13,6 @@ namespace CarFleetPro.API.Models
         public bool IsRead { get; set; } = false;
         public DateTime SentAt { get; set; } = DateTime.UtcNow;
 
-        // İlgili araç/kiralama (opsiyonel)
         public int? RelatedVehicleId { get; set; }
         public int? RelatedRentalId { get; set; }
     }

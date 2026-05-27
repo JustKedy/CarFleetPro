@@ -25,7 +25,6 @@ public partial class SettingsPage : ContentPage
         await LoadProfileCard();
     }
 
-    // ── Profil kartını API'den doldur ────────────────────────────────────────
     private async Task LoadProfileCard()
     {
         try
@@ -50,7 +49,6 @@ public partial class SettingsPage : ContentPage
         }
     }
 
-    // ── Tema ─────────────────────────────────────────────────────────────────
     private void UpdateThemeUi()
     {
         var isDark = ThemeService.IsDark;
@@ -82,7 +80,6 @@ public partial class SettingsPage : ContentPage
         UpdateThemeUi();
     }
 
-    // ── Navigasyon ───────────────────────────────────────────────────────────
     private async void OnAdminMenuTapped(object? sender, EventArgs e)
     {
         await Navigation.PushAsync(new AdminMenuPage());
@@ -100,7 +97,6 @@ public partial class SettingsPage : ContentPage
             await Navigation.PushAsync(new ChangePasswordPage());
     }
 
-    // ── Çıkış Yap ────────────────────────────────────────────────────────────
     private async void OnLogoutTapped(object? sender, EventArgs e)
     {
         bool confirm = await DisplayAlertAsync(
@@ -111,10 +107,8 @@ public partial class SettingsPage : ContentPage
 
         if (!confirm) return;
 
-        // JWT token'ı temizle
         SecureStorage.Default.Remove("jwt_token");
 
-        // LoginPage'e root olarak geç (geri dönüş olmasın)
         if (Application.Current?.Windows.Count > 0)
         {
             var window = Application.Current.Windows[0];
@@ -123,7 +117,6 @@ public partial class SettingsPage : ContentPage
         }
     }
 
-    // ── Bildirim toggleları ──────────────────────────────────────────────────
     private void ToggleNotificationIcon(Image icon, ref bool enabled)
     {
         enabled = !enabled;

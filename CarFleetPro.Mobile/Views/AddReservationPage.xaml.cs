@@ -22,7 +22,6 @@ namespace CarFleetPro.Mobile.Views
 
         private void SetupTarihKisitlari()
         {
-            // Dinamik minimum başlangıç tarihi kısıtı ayarlama
             if (DateTime.TryParseExact(_vehicle.RezervasyonBaslangicMinTarihi, "yyyy-MM-dd", null, DateTimeStyles.None, out var minDate))
             {
                 RezBaslangicDatePicker.MinimumDate = minDate;
@@ -67,7 +66,6 @@ namespace CarFleetPro.Mobile.Views
                 return;
             }
 
-            // Minimum tarih kontrolü
             if (DateTime.TryParseExact(_vehicle.RezervasyonBaslangicMinTarihi, "yyyy-MM-dd", null, DateTimeStyles.None, out var minDate))
             {
                 if (baslangicTarihi.Date < minDate.Date)
@@ -77,19 +75,16 @@ namespace CarFleetPro.Mobile.Views
                 }
             }
 
-            // Bir önceki sayfadaki ViewModel'i bulup rezervasyon ekleme işlemini çağıralım
             var navigationStack = Navigation.NavigationStack;
             if (navigationStack.Count >= 2)
             {
                 var prevPage = navigationStack[navigationStack.Count - 2];
                 if (prevPage.BindingContext is GarageViewModel vm)
                 {
-                    // Butonları devre dışı bırakıp bekleme durumu gösterebiliriz veya doğrudan çağırabiliriz
                     var (success, message) = await vm.EkleRezervasyon(_vehicle, musteriAdi, musteriTelefon, baslangicTarihi, gunSuresi);
                     
                     if (success)
                     {
-                        // Formu temizle
                         _vehicle.RezMusteriAdi = string.Empty;
                         _vehicle.RezMusteriTelefon = string.Empty;
                         _vehicle.RezGunSuresi = "1";

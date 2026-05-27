@@ -5,7 +5,6 @@ namespace CarFleetPro.API.DTOs
         public string FullName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
-        // Role artık burada yok — herkese açık kayıt sadece "Çalışan" rolü alır
     }
 
     public class LoginDto
@@ -33,7 +32,6 @@ namespace CarFleetPro.API.DTOs
         public string NewPassword { get; set; } = string.Empty;
     }
 
-    // Admin tarafından yeni çalışan/yönetici oluşturma
     public class CreateStaffDto
     {
         public string FullName { get; set; } = string.Empty;
@@ -47,7 +45,6 @@ namespace CarFleetPro.API.DTOs
         public string? PhoneNumber { get; set; }
     }
 
-    // Çalışan güncelleme (Admin)
     public class UpdateStaffDto
     {
         public string FullName { get; set; } = string.Empty;
@@ -57,7 +54,6 @@ namespace CarFleetPro.API.DTOs
         public bool IsActive { get; set; } = true;
     }
 
-    // Çalışan liste DTO
     public class StaffListDto
     {
         public string Id { get; set; } = string.Empty;

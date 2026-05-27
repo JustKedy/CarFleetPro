@@ -146,7 +146,6 @@ namespace CarFleetPro.Mobile.ViewModels
 
                 if (basarili)
                 {
-                    // Listedeki aracın durumunu anında güncelle (yeniden yüklemeye gerek kalmadan)
                     var arac = _tumAraclar.FirstOrDefault(a => a.Id == vehicleId);
                     if (arac != null)
                     {

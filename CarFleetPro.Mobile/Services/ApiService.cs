@@ -62,8 +62,6 @@ namespace CarFleetPro.Mobile.Services
 
         public async Task<List<LookupItem>> GetCarTypesAsync()
         {
-            // API'deki CarTypes alias'ını güncelleyip obje dönmesini sağlamak veya LookupController'a yeni endpoint eklemek gerekiyor. 
-            // Şimdilik API'deki alias'ı kullanacağız ama API'yi güncelleyeceğiz.
             try { return await _httpClient.GetFromJsonAsync<List<LookupItem>>("CarTypes") ?? new(); }
             catch { return new(); }
         }
@@ -247,7 +245,7 @@ namespace CarFleetPro.Mobile.Services
             catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
         }
 
-        /// <summary>PATCH /api/Vehicle/{id}/status — MÜSAİT | DOLU | BAKIMDA</summary>
+        /// <summary>PATCH /api/Vehicle/{id}/status</summary>
         public async Task<(bool Success, string Message)> UpdateVehicleStatusAsync(int id, string status)
         {
             try
@@ -267,9 +265,6 @@ namespace CarFleetPro.Mobile.Services
         }
 
 
-        // ==========================================
-        //  GİRİŞ / KAYIT / OTURUM
-        // ==========================================
 
         public async Task<(bool Success, string Message)> LoginAsync(string email, string password)
         {
@@ -320,9 +315,7 @@ namespace CarFleetPro.Mobile.Services
             catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
         }
 
-        /// <summary>
-        /// GET /api/Auth/me — Profil bilgilerini çek
-        /// </summary>
+        /// <summary>GET /api/Auth/me</summary>
         public async Task<UserProfile?> GetProfileAsync()
         {
             try
@@ -344,9 +337,7 @@ namespace CarFleetPro.Mobile.Services
         }
 
 
-        /// <summary>
-        /// PUT /api/Auth/profile — Profil güncelle
-        /// </summary>
+        /// <summary>PUT /api/Auth/profile</summary>
         public async Task<(bool Success, string Message)> UpdateProfileAsync(string fullName, string email, string? phone)
         {
             try
@@ -380,9 +371,7 @@ namespace CarFleetPro.Mobile.Services
             catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
         }
 
-        /// <summary>
-        /// POST /api/Auth/forgot-password — 6 haneli OTP e-postayla gönderilir
-        /// </summary>
+        /// <summary>POST /api/Auth/forgot-password</summary>
         public async Task<(bool Success, string Message)> ForgotPasswordAsync(string email)
         {
             try
@@ -415,13 +404,8 @@ namespace CarFleetPro.Mobile.Services
             catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
         }
 
-        // ==========================================
-        //  MÜŞTERİLER
-        // ==========================================
 
-        /// <summary>
-        /// GET /api/Customer — Tüm müşterileri listele
-        /// </summary>
+        /// <summary>GET /api/Customer</summary>
         public async Task<List<CustomerInfo>> GetCustomersAsync()
         {
             try
@@ -436,9 +420,7 @@ namespace CarFleetPro.Mobile.Services
             }
         }
 
-        /// <summary>
-        /// GET /api/Customer/search?q= — Müşteri ara
-        /// </summary>
+        /// <summary>GET /api/Customer/search?q=</summary>
         public async Task<List<CustomerInfo>> SearchCustomersAsync(string query)
         {
             try
@@ -449,9 +431,7 @@ namespace CarFleetPro.Mobile.Services
             catch { return new List<CustomerInfo>(); }
         }
 
-        /// <summary>
-        /// GET /api/Customer/names — Kiralama formu için müşteri listesi
-        /// </summary>
+        /// <summary>GET /api/Customer/names</summary>
         public async Task<List<CustomerName>> GetCustomerNamesAsync()
         {
             try
@@ -462,13 +442,8 @@ namespace CarFleetPro.Mobile.Services
             catch { return new List<CustomerName>(); }
         }
 
-        // ==========================================
-        //  KİRALAMA
-        // ==========================================
 
-        /// <summary>
-        /// POST /api/Rental — Yeni kiralama oluştur
-        /// </summary>
+        /// <summary>POST /api/Rental</summary>
         public async Task<(bool Success, string Message)> CreateRentalAsync(int customerId, int vehicleId, DateTime startDate, DateTime endDate, decimal depositAmount, string notes)
         {
             try
@@ -492,10 +467,7 @@ namespace CarFleetPro.Mobile.Services
             catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
         }
 
-        /// <summary>
-        /// Anlık kiralama: Müşteri kaydı gerektirmez.
-        /// Ad-soyad ve telefon ile önce müşteriyi bulur veya oluşturur, sonra kiralar.
-        /// </summary>
+        /// <summary>Misafir müşteri ile kiralama oluşturur.</summary>
         public async Task<(bool Success, string Message)> CreateRentalWithGuestAsync(
             string firstName, string lastName, string phone,
             int vehicleId, DateTime startDate, DateTime endDate,
@@ -507,7 +479,6 @@ namespace CarFleetPro.Mobile.Services
             {
                 await SetAuthorizationHeader();
 
-                // 1. Telefon ile müşteriyi bul veya anlık oluştur
                 var guestData = new
                 {
                     FirstName           = firstName.Trim(),
@@ -538,7 +509,6 @@ namespace CarFleetPro.Mobile.Services
                 }
                 else if ((int)guestResponse.StatusCode == 409)
                 {
-                    // Zaten kayıtlı → mevcut ID'yi döndürür
                     var existing = System.Text.Json.JsonSerializer.Deserialize<CustomerIdResult>(
                         guestContent,
                         new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
@@ -551,7 +521,6 @@ namespace CarFleetPro.Mobile.Services
 
                 if (customerId == 0) return (false, "Müşteri ID alınamadı.");
 
-                // 2. Kirala
                 return await CreateRentalAsync(customerId, vehicleId, startDate, endDate, depositAmount, notes);
             }
             catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
@@ -566,9 +535,6 @@ namespace CarFleetPro.Mobile.Services
         
         
         
-        // ==========================================
-        //  DASHBOARD
-        // ==========================================
 
         public async Task<DashboardStats?> GetDashboardStatsAsync(string? branch = null)
         {
@@ -603,13 +569,8 @@ namespace CarFleetPro.Mobile.Services
             }
         }
 
-        // ==========================================
-        //  ARAÇ FOTOĞRAFLARI
-        // ==========================================
 
-        /// <summary>
-        /// GET /api/vehicleimage/{vehicleId} — Araçtaki tüm fotoğrafları getir
-        /// </summary>
+        /// <summary>GET /api/vehicleimage/{vehicleId}</summary>
         public async Task<List<VehicleImageInfo>> GetVehicleImagesAsync(int vehicleId)
         {
             try
@@ -627,9 +588,7 @@ namespace CarFleetPro.Mobile.Services
             }
         }
 
-        /// <summary>
-        /// POST /api/vehicleimage/upload/{vehicleId} — Tekil fotoğraf yükle
-        /// </summary>
+        /// <summary>POST /api/vehicleimage/upload/{vehicleId}</summary>
         public async Task<(bool Success, string Message, VehicleImageInfo? Image)> UploadVehicleImageAsync(int vehicleId, string filePath, string fileName, string contentType = "image/jpeg")
         {
             try
@@ -668,9 +627,7 @@ namespace CarFleetPro.Mobile.Services
             }
         }
 
-        /// <summary>
-        /// DELETE /api/vehicleimage/{imageId} — Fotoğrafı sil
-        /// </summary>
+        /// <summary>DELETE /api/vehicleimage/{imageId}</summary>
         public async Task<(bool Success, string Message)> DeleteVehicleImageAsync(int imageId)
         {
             try
@@ -688,9 +645,7 @@ namespace CarFleetPro.Mobile.Services
             }
         }
 
-        /// <summary>
-        /// PUT /api/vehicleimage/{imageId}/set-primary — Birincil fotoğrafı değiştir
-        /// </summary>
+        /// <summary>PUT /api/vehicleimage/{imageId}/set-primary</summary>
         public async Task<(bool Success, string Message)> SetPrimaryImageAsync(int imageId)
         {
             try
@@ -708,9 +663,6 @@ namespace CarFleetPro.Mobile.Services
             }
         }
 
-        // ==========================================
-        //  KİRALAMA (RENTAL) EK METODLAR
-        // ==========================================
 
         public async Task<List<RentalInfo>> GetRentalsAsync()
         {
@@ -770,14 +722,8 @@ namespace CarFleetPro.Mobile.Services
             catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
         }
 
-        // ==========================================
-        //  KİRALAMA — YENİ: UZATMA + DOLU TARİHLER
-        // ==========================================
 
-        /// <summary>
-        /// PUT /api/rental/{id}/extend — Aktif sözleşmeyi 'days' gün uzatır.
-        /// Returns (true, "Sözleşme X gün uzatıldı.") on success.
-        /// </summary>
+        /// <summary>PUT /api/rental/{id}/extend</summary>
         public async Task<(bool Success, string Message, string? NewEndDate)> ExtendRentalAsync(int rentalId, int days)
         {
             try
@@ -791,7 +737,6 @@ namespace CarFleetPro.Mobile.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    // API { message, newEndDate, newTotalAmount } döner
                     using var doc = System.Text.Json.JsonDocument.Parse(content);
                     var msg     = doc.RootElement.GetProperty("message").GetString() ?? "Sözleşme uzatıldı.";
                     var newEnd  = doc.RootElement.TryGetProperty("newEndDate", out var ep) ? ep.GetString() : null;
@@ -808,10 +753,7 @@ namespace CarFleetPro.Mobile.Services
             }
         }
 
-        /// <summary>
-        /// GET /api/rental/vehicle/{vehicleId}/occupied-dates
-        /// Kiralama formu takviminde kırmızı gösterilecek dolu tarih aralıklarını getirir.
-        /// </summary>
+        /// <summary>GET /api/rental/vehicle/{vehicleId}/occupied-dates</summary>
         public async Task<List<OccupiedDateRange>> GetOccupiedDatesAsync(int vehicleId)
         {
             try
@@ -827,9 +769,6 @@ namespace CarFleetPro.Mobile.Services
             }
         }
 
-        // ==========================================
-        //  BAKIM (MAINTENANCE)
-        // ==========================================
 
         public async Task<List<MaintenanceInfo>> GetMaintenancesAsync()
         {
@@ -884,9 +823,6 @@ namespace CarFleetPro.Mobile.Services
             catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
         }
 
-        // ==========================================
-        //  HASAR KAYDI (DAMAGE RECORD)
-        // ==========================================
 
         public async Task<List<DamageInfo>> GetDamageRecordsAsync()
         {
@@ -926,9 +862,6 @@ namespace CarFleetPro.Mobile.Services
             catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
         }
 
-        // ==========================================
-        //  FATURA (INVOICE)
-        // ==========================================
 
         public async Task<List<InvoiceInfo>> GetInvoicesAsync()
         {
@@ -978,9 +911,6 @@ namespace CarFleetPro.Mobile.Services
             catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
         }
 
-        // ==========================================
-        //  BİLDİRİM (NOTIFICATION)
-        // ==========================================
 
         public async Task<List<NotificationInfo>> GetNotificationsAsync()
         {
@@ -1020,9 +950,6 @@ namespace CarFleetPro.Mobile.Services
             catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
         }
 
-        // ==========================================
-        //  PERSONEL (STAFF)
-        // ==========================================
 
         public async Task<List<StaffInfo>> GetStaffAsync()
         {
@@ -1111,9 +1038,6 @@ namespace CarFleetPro.Mobile.Services
             catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
         }
 
-        // ==========================================
-        //  BİLDİRİM AYARLARI
-        // ==========================================
 
         public async Task<(bool Success, string Message)> UpdateNotificationSettingsAsync(bool maintenance, bool rental, bool availability)
         {
@@ -1130,9 +1054,6 @@ namespace CarFleetPro.Mobile.Services
             catch (Exception ex) { return (false, $"Bağlantı hatası: {ex.Message}"); }
         }
 
-        // ==========================================
-        //  MÜŞTERİ (CUSTOMER) EK METODLAR
-        // ==========================================
 
         public async Task<(bool Success, string Message)> AddCustomerAsync(CreateCustomerRequest request)
         {
@@ -1162,9 +1083,6 @@ namespace CarFleetPro.Mobile.Services
             }
         }
 
-        // ==========================================
-        //  FİYAT POLİTİKASI (PRICE POLICY)
-        // ==========================================
 
         public async Task<List<PricePolicy>> GetPricePoliciesAsync()
         {
@@ -1202,7 +1120,6 @@ namespace CarFleetPro.Mobile.Services
                 });
                 if (response.IsSuccessStatusCode)
                 {
-                    // Mobil önbelleği temizle ki bir sonraki veri çekiminde taze gelsin
                     _cachedVehicles = null;
                     _cachedETag = null;
                     return (true, "Fiyatlandırma güncellendi.");

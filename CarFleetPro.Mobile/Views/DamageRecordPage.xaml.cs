@@ -12,7 +12,6 @@ namespace CarFleetPro.Mobile.Views
         private readonly Vehicle? _vehicle;
         private readonly ApiService _apiService;
 
-        // Araç parametresiyle açılış
         public DamageRecordPage(Vehicle vehicle)
         {
             InitializeComponent();
@@ -21,16 +20,12 @@ namespace CarFleetPro.Mobile.Views
             DoldurAracBilgileri(vehicle);
         }
 
-        // Parametresiz açılış
         public DamageRecordPage()
         {
             InitializeComponent();
             _apiService = new ApiService();
         }
 
-        // ─────────────────────────────────────────
-        //  SAYFA AÇILDIĞINDA: kayıtları yükle
-        // ─────────────────────────────────────────
         protected override async void OnAppearing()
         {
             base.OnAppearing();
@@ -40,9 +35,6 @@ namespace CarFleetPro.Mobile.Views
             await YukleHasarKayitlari();
         }
 
-        // ─────────────────────────────────────────
-        //  ARAÇ BİLGİLERİNİ HEADER'A DOLDUR
-        // ─────────────────────────────────────────
         private void DoldurAracBilgileri(Vehicle v)
         {
             AracAdLabel.Text     = $"{v.Marka} {v.Model}";
@@ -57,9 +49,6 @@ namespace CarFleetPro.Mobile.Views
                 AracResimMini.Source = v.ResimUrl;
         }
 
-        // ─────────────────────────────────────────
-        //  API'DEN HASAR KAYITLARINI YÜKLE + FİLTRELE
-        // ─────────────────────────────────────────
         private async Task YukleHasarKayitlari()
         {
             YukleniyorGostergesi.IsRunning = true;
@@ -70,7 +59,6 @@ namespace CarFleetPro.Mobile.Views
             {
                 var tumKayitlar = await _apiService.GetDamageRecordsAsync();
 
-                // Eğer belirli bir araç için açıldıysa sadece onun kayıtlarını göster
                 var kayitlar = (_vehicle != null)
                     ? tumKayitlar.Where(d => d.VehicleId == _vehicle.Id)
                                  .OrderByDescending(d => d.DamageDate)
@@ -99,27 +87,19 @@ namespace CarFleetPro.Mobile.Views
             }
         }
 
-        // ─────────────────────────────────────────
-        //  BUTON: Yeni Kayıt Ekle → FORMU AÇ
-        // ─────────────────────────────────────────
         private async void OnYeniKayitClicked(object? sender, EventArgs e)
         {
-            // Formu temizle
             HasarTuruEntry.Text     = string.Empty;
             MaliyetEntry.Text       = string.Empty;
             AciklamaEditor.Text     = string.Empty;
             HasarTarihiPicker.Date  = DateTime.Today;
 
-            // Animate geçiş
             ListGrid.IsVisible       = false;
             FormScrollView.IsVisible = true;
             FormScrollView.Opacity   = 0;
             await FormScrollView.FadeToAsync(1, 250, Easing.CubicOut);
         }
 
-        // ─────────────────────────────────────────
-        //  BUTON: Formdan geri → LİSTEYE DÖN
-        // ─────────────────────────────────────────
         private async void OnFormGeriClicked(object? sender, EventArgs e)
         {
             await FormScrollView.FadeToAsync(0, 200, Easing.CubicIn);
@@ -127,17 +107,11 @@ namespace CarFleetPro.Mobile.Views
             ListGrid.IsVisible       = true;
         }
 
-        // ─────────────────────────────────────────
-        //  BUTON: Geri (header)
-        // ─────────────────────────────────────────
         private async void OnBackClicked(object? sender, EventArgs e)
         {
             await Navigation.PopAsync();
         }
 
-        // ─────────────────────────────────────────
-        //  FORM: HASAR KAYDET
-        // ─────────────────────────────────────────
         private async void OnHasarKaydetClicked(object? sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(HasarTuruEntry.Text))
@@ -183,7 +157,6 @@ namespace CarFleetPro.Mobile.Views
             {
                 await DisplayAlertAsync("Başarılı", $"{_vehicle.Plaka} plakalı araç için hasar kaydı eklendi.", "Tamam");
 
-                // Formu kapat, listeyi yenile
                 FormScrollView.IsVisible = false;
                 ListGrid.IsVisible       = true;
                 await YukleHasarKayitlari();

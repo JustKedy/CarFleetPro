@@ -4,7 +4,6 @@ namespace CarFleetPro.API.Models
     {
         public int InvoiceId { get; set; }
 
-        // İlgili kiralama
         public int RentalId { get; set; }
         public Rental? Rental { get; set; }
 
@@ -13,7 +12,6 @@ namespace CarFleetPro.API.Models
         public DateTime? PaidAt { get; set; }
         public InvoiceStatus Status { get; set; } = InvoiceStatus.Pending;
 
-        // Fatura açıklaması
         public string? Notes { get; set; }
     }
 }

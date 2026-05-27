@@ -63,7 +63,6 @@ namespace CarFleetPro.API.Controllers
                 .Take(2)
                 .ToListAsync();
 
-            // ─── Sadece Yönetici gelir/para bilgilerini görebilir ──────────
             decimal? monthlyRevenue = null;
             if (isAdmin)
             {
@@ -76,7 +75,6 @@ namespace CarFleetPro.API.Controllers
                                 r.StartDate.Year == currentYear)
                     .SumAsync(r => r.TotalAmount);
             }
-            // ─────────────────────────────────────────────────────────────────
 
             var stats = new
             {
@@ -88,7 +86,6 @@ namespace CarFleetPro.API.Controllers
                 AvailablePercentage = availablePct,
                 MaintenancePercentage = maintenancePct,
                 TopModels = topModels,
-                // Sadece Yöneticide dolu gelir, Çalışan'da null
                 MonthlyRevenue = monthlyRevenue
             };
 

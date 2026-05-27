@@ -22,12 +22,10 @@ namespace CarFleetPro.API.Services
             if (file == null || file.Length == 0)
                 throw new ArgumentException("Geçersiz dosya.");
 
-            // Sadece resim dosyalarına izin ver
             var allowedTypes = new[] { "image/jpeg", "image/jpg", "image/png", "image/webp" };
             if (!allowedTypes.Contains(file.ContentType.ToLower()))
                 throw new ArgumentException("Sadece JPEG, PNG ve WebP formatları kabul edilmektedir.");
 
-            // Maksimum 10 MB
             if (file.Length > 10 * 1024 * 1024)
                 throw new ArgumentException("Dosya boyutu 10 MB'ı geçemez.");
 
@@ -37,11 +35,9 @@ namespace CarFleetPro.API.Services
             {
                 File = new FileDescription(file.FileName, stream),
                 Folder = $"carfleetpro/{folder}",
-                // Otomatik kalite optimizasyonu ve WebP dönüşümü
                 Transformation = new Transformation()
                     .Quality("auto")
                     .FetchFormat("auto"),
-                // Benzersiz PublicId
                 PublicId = $"{folder}/{Guid.NewGuid():N}"
             };
 

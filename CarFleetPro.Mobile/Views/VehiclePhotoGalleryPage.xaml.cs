@@ -44,13 +44,11 @@ public partial class VehiclePhotoGalleryPage : ContentPage
         PhotoCarousel.ItemsSource = null;
         PhotoCarousel.ItemsSource = _images;
 
-        // Seçim sıfırla
         _selectedImage = null;
         ActionBar.IsVisible = false;
         AddPhotoBtn.IsVisible = _isAdmin && _images.Count < 10;
     }
 
-    // ─── Fotoğraf Seçildi (Carousel) ──────────────────────────────────────
     private void OnPhotoSelected(object? sender, CurrentItemChangedEventArgs e)
     {
         _selectedImage = e.CurrentItem as VehicleImageInfo;
@@ -61,11 +59,9 @@ public partial class VehiclePhotoGalleryPage : ContentPage
             return;
         }
 
-        // Admin ise aksiyon barını göster
         ActionBar.IsVisible = true;
     }
 
-    // ─── Kapak Yap ────────────────────────────────────────────────────────
     private async void OnSetPrimaryClicked(object? sender, EventArgs e)
     {
         if (_selectedImage == null) return;
@@ -79,7 +75,6 @@ public partial class VehiclePhotoGalleryPage : ContentPage
 
         if (success)
         {
-            // Tüm fotoğrafların IsPrimary'sini güncelle
             foreach (var img in _images) img.IsPrimary = false;
             _selectedImage.IsPrimary = true;
             RefreshGrid();
@@ -91,7 +86,6 @@ public partial class VehiclePhotoGalleryPage : ContentPage
         }
     }
 
-    // ─── Sil ──────────────────────────────────────────────────────────────
     private async void OnDeletePhotoClicked(object? sender, EventArgs e)
     {
         if (_selectedImage == null) return;
@@ -116,13 +110,11 @@ public partial class VehiclePhotoGalleryPage : ContentPage
         }
     }
 
-    // ─── Seçimi İptal Et ──────────────────────────────────────────────────
     private void OnCancelSelectionClicked(object? sender, EventArgs e)
     {
         ActionBar.IsVisible = false;
     }
 
-    // ─── Fotoğraf Ekle ────────────────────────────────────────────────────
     private async void OnAddPhotoClicked(object? sender, EventArgs e)
     {
         if (!_isAdmin || _images.Count >= 10) return;

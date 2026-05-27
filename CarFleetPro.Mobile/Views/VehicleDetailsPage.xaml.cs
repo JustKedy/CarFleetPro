@@ -13,7 +13,6 @@ public partial class VehicleDetailsPage : ContentPage
     private readonly ApiService _apiService;
     private readonly Vehicle _selectedVehicle;
 
-    // Fotoğraf listesi ve index
     private List<VehicleImageInfo> _vehicleImages = new();
     private int _currentImageIndex = 0;
     private bool _isAdmin = false;
@@ -30,11 +29,9 @@ public partial class VehicleDetailsPage : ContentPage
     {
         base.OnAppearing();
 
-        // Kullanıcı rolünü kontrol et
         var profile = await _apiService.GetProfileAsync();
         _isAdmin = profile?.Role == "Yönetici";
 
-        // Admin ise fotoğraf yükleme butonunu göster
         UploadButton.IsVisible = _isAdmin;
 
         await Task.WhenAll(
@@ -71,7 +68,6 @@ public partial class VehicleDetailsPage : ContentPage
 
         if (_vehicleImages.Count == 0)
         {
-            // Fotoğraf yoksa placeholder göster
             PlaceholderImage.IsVisible = true;
             PrimaryImage.IsVisible = false;
             PhotoCountBadge.IsVisible = false;
@@ -80,26 +76,21 @@ public partial class VehicleDetailsPage : ContentPage
             return;
         }
 
-        // Birincil fotoğrafı bul ve göster
         var primaryImage = _vehicleImages.FirstOrDefault(i => i.IsPrimary) ?? _vehicleImages[0];
         _currentImageIndex = _vehicleImages.IndexOf(primaryImage);
         ShowImageAtIndex(_currentImageIndex);
 
-        // Fotoğraf sayacını güncelle
         PhotoCountBadge.IsVisible = _vehicleImages.Count > 1;
         PhotoCountLabel.Text = $"{_currentImageIndex + 1}/{_vehicleImages.Count}";
 
-        // Birden fazla fotoğraf varsa "Tüm Fotoğraflar" butonunu göster
         ViewAllButton.IsVisible = _vehicleImages.Count > 1;
 
-        // Küçük önizleme şeridini doldur
         if (_vehicleImages.Count > 1)
         {
             PhotoStrip.ItemsSource = _vehicleImages;
             PhotoStripBorder.IsVisible = true;
         }
 
-        // Kapak fotoğrafı geçişi için swipe gesture ekle
         SetupPhotoSwipe();
     }
 
@@ -118,7 +109,6 @@ public partial class VehicleDetailsPage : ContentPage
 
     private void SetupPhotoSwipe()
     {
-        // Sol → sağ (önceki)
         var swipeLeft = new SwipeGestureRecognizer { Direction = SwipeDirection.Left };
         swipeLeft.Swiped += (s, e) =>
         {
@@ -126,7 +116,6 @@ public partial class VehicleDetailsPage : ContentPage
             ShowImageAtIndex(next);
         };
 
-        // Sağ → sol (sonraki)
         var swipeRight = new SwipeGestureRecognizer { Direction = SwipeDirection.Right };
         swipeRight.Swiped += (s, e) =>
         {
@@ -139,12 +128,10 @@ public partial class VehicleDetailsPage : ContentPage
         PrimaryImage.GestureRecognizers.Add(swipeRight);
     }
 
-    // ─── Fotoğraf Yükleme (Admin) ───────────────────────────────────────────
     private async void OnUploadPhotoTapped(object? sender, EventArgs e)
     {
         if (!_isAdmin) return;
 
-        // Mevcut fotoğraf sayısı kontrolü
         if (_vehicleImages.Count >= 10)
         {
             await DisplayAlertAsync("Limit", "Bu araç için maksimum 10 fotoğraf yüklenebilir.", "Tamam");
@@ -178,7 +165,6 @@ public partial class VehicleDetailsPage : ContentPage
 
         if (photo == null) return;
 
-        // Yükleme göstergesi
         UploadButton.IsVisible = false;
         var loadingLabel = new Label
         {
@@ -190,7 +176,6 @@ public partial class VehicleDetailsPage : ContentPage
             Margin = new Thickness(0, 0, 15, 15)
         };
 
-        // ContentType belirle
         var contentType = photo.ContentType ?? "image/jpeg";
 
         var (success, message, newImage) = await _apiService.UploadVehicleImageAsync(
@@ -203,12 +188,10 @@ public partial class VehicleDetailsPage : ContentPage
 
         if (success)
         {
-            // Yeni fotoğrafı listeye ekle ve göster
             if (newImage != null)
             {
                 _vehicleImages.Add(newImage);
 
-                // Yeni yüklenen fotoğrafa git
                 ShowImageAtIndex(_vehicleImages.Count - 1);
 
                 PhotoCountBadge.IsVisible = _vehicleImages.Count > 1;
@@ -230,14 +213,12 @@ public partial class VehicleDetailsPage : ContentPage
         }
     }
 
-    // ─── Tüm Fotoğrafları Gör ─────────────────────────────────────────────
     private async void OnViewAllPhotosTapped(object? sender, EventArgs e)
     {
         if (_vehicleImages.Count == 0) return;
         await Navigation.PushAsync(new VehiclePhotoGalleryPage(_selectedVehicle, _vehicleImages, _isAdmin, _apiService));
     }
 
-    // ─── Standart aksiyonlar ───────────────────────────────────────────────
     private async void OnBackClicked(object? sender, EventArgs e)
     {
         if (Navigation is not null) await Navigation.PopAsync();

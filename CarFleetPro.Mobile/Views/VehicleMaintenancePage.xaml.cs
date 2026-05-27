@@ -12,7 +12,6 @@ namespace CarFleetPro.Mobile.Views
         private readonly Vehicle? _vehicle;
         private readonly ApiService _apiService;
 
-        // Araç parametresiyle açılış (FleetManagement'dan)
         public VehicleMaintenancePage(Vehicle vehicle)
         {
             InitializeComponent();
@@ -21,16 +20,12 @@ namespace CarFleetPro.Mobile.Views
             DoldurAracBilgileri(vehicle);
         }
 
-        // Parametresiz açılış (GaragePage vb.)
         public VehicleMaintenancePage()
         {
             InitializeComponent();
             _apiService = new ApiService();
         }
 
-        // ─────────────────────────────────────────
-        //  SAYFA AÇILDIĞINDA: kayıtları yükle
-        // ─────────────────────────────────────────
         protected override async void OnAppearing()
         {
             base.OnAppearing();
@@ -40,9 +35,6 @@ namespace CarFleetPro.Mobile.Views
             await YukleBakimKayitlari();
         }
 
-        // ─────────────────────────────────────────
-        //  ARAÇ BİLGİLERİNİ HEADER'A DOLDUR
-        // ─────────────────────────────────────────
         private void DoldurAracBilgileri(Vehicle v)
         {
             AracAdLabel.Text     = $"{v.Marka} {v.Model}";
@@ -57,9 +49,6 @@ namespace CarFleetPro.Mobile.Views
                 AracResimMini.Source = v.ResimUrl;
         }
 
-        // ─────────────────────────────────────────
-        //  API'DEN BAKIM KAYITLARINI YÜKle + FİLTRELE
-        // ─────────────────────────────────────────
         private async Task YukleBakimKayitlari()
         {
             YukleniyorGostergesi.IsRunning = true;
@@ -70,7 +59,6 @@ namespace CarFleetPro.Mobile.Views
             {
                 var tumKayitlar = await _apiService.GetMaintenancesAsync();
 
-                // Eğer belirli bir araç için açıldıysa sadece onun kayıtlarını göster
                 var kayitlar = (_vehicle != null)
                     ? tumKayitlar.Where(m => m.VehicleId == _vehicle.Id)
                                  .OrderByDescending(m => m.StartDate)
@@ -99,28 +87,20 @@ namespace CarFleetPro.Mobile.Views
             }
         }
 
-        // ─────────────────────────────────────────
-        //  BUTON: Yeni Kayıt Ekle → FORMU AÇ
-        // ─────────────────────────────────────────
         private async void OnYeniKayitClicked(object? sender, EventArgs e)
         {
-            // Formu temizle
             BakimTuruEntry.Text      = string.Empty;
             MaliyetEntry.Text        = string.Empty;
             SonrakiBakimKmEntry.Text = string.Empty;
             AciklamaEditor.Text      = string.Empty;
             BakimTarihiPicker.Date   = DateTime.Today;
 
-            // Animate geçiş
             ListGrid.IsVisible       = false;
             FormScrollView.IsVisible = true;
             FormScrollView.Opacity   = 0;
             await FormScrollView.FadeToAsync(1, 250, Easing.CubicOut);
         }
 
-        // ─────────────────────────────────────────
-        //  BUTON: Formdan geri → LİSTEYE DÖN
-        // ─────────────────────────────────────────
         private async void OnFormGeriClicked(object? sender, EventArgs e)
         {
             await FormScrollView.FadeToAsync(0, 200, Easing.CubicIn);
@@ -128,17 +108,11 @@ namespace CarFleetPro.Mobile.Views
             ListGrid.IsVisible       = true;
         }
 
-        // ─────────────────────────────────────────
-        //  BUTON: Geri (header)
-        // ─────────────────────────────────────────
         private async void OnBackClicked(object? sender, EventArgs e)
         {
             await Navigation.PopAsync();
         }
 
-        // ─────────────────────────────────────────
-        //  FORM: BAKIM KAYDET
-        // ─────────────────────────────────────────
         private async void OnBakimKaydetClicked(object? sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(BakimTuruEntry.Text))
@@ -188,7 +162,6 @@ namespace CarFleetPro.Mobile.Views
             {
                 await DisplayAlertAsync("Başarılı", $"{_vehicle.Plaka} plakalı araç için bakım kaydı eklendi.", "Tamam");
 
-                // Formu kapat, listeyi yenile
                 FormScrollView.IsVisible = false;
                 ListGrid.IsVisible       = true;
                 await YukleBakimKayitlari();

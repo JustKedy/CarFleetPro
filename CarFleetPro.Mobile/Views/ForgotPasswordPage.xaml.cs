@@ -16,7 +16,6 @@ public partial class ForgotPasswordPage : ContentPage
         _apiService = new ApiService();
     }
 
-    // ── Adım geçişleri ───────────────────────────────────────────────────────
     private void GoToStep(int step)
     {
         _currentStep = step;
@@ -41,7 +40,6 @@ public partial class ForgotPasswordPage : ContentPage
             _ => ""
         };
 
-        // Adım indikatör renklerini güncelle
         UpdateStepIndicators(step);
     }
 
@@ -52,7 +50,6 @@ public partial class ForgotPasswordPage : ContentPage
         StepIndicator3.TextColor = activeStep >= 3 ? Colors.White : Color.FromArgb("#9CA3AF");
     }
 
-    // ── ADIM 1: Kod gönder ───────────────────────────────────────────────────
     private async void OnSendCodeClicked(object? sender, EventArgs e)
     {
         var email = EmailEntry.Text?.Trim();
@@ -81,7 +78,6 @@ public partial class ForgotPasswordPage : ContentPage
         }
     }
 
-    // ── ADIM 2: Kodu doğrula ─────────────────────────────────────────────────
     private void OnVerifyCodeClicked(object? sender, EventArgs e)
     {
         var code = OtpEntry.Text?.Trim();
@@ -90,11 +86,9 @@ public partial class ForgotPasswordPage : ContentPage
             _ = DisplayAlertAsync("Uyarı", "Lütfen 6 haneli kodu eksiksiz girin.", "Tamam");
             return;
         }
-        // Kodu saklıyoruz, Adım 3'te kullanılacak
         GoToStep(3);
     }
 
-    // ── Yeniden kod gönder ───────────────────────────────────────────────────
     private async void OnResendCodeTapped(object? sender, EventArgs e)
     {
         if (string.IsNullOrEmpty(_userEmail)) return;
@@ -106,7 +100,6 @@ public partial class ForgotPasswordPage : ContentPage
             await DisplayAlertAsync("Hata", "Kod gönderilemedi. Lütfen tekrar deneyin.", "Tamam");
     }
 
-    // ── ADIM 3: Şifreyi sıfırla ──────────────────────────────────────────────
     private async void OnResetPasswordClicked(object? sender, EventArgs e)
     {
         var otp      = OtpEntry.Text?.Trim();
@@ -131,7 +124,6 @@ public partial class ForgotPasswordPage : ContentPage
             return;
         }
 
-        // OTP'yi Token alanı olarak API'ye gönder (API cache'deki ile karşılaştırıyor)
         var (success, message) = await _apiService.ResetPasswordAsync(_userEmail!, otp!, newPwd);
 
         if (success)
@@ -143,12 +135,10 @@ public partial class ForgotPasswordPage : ContentPage
         else
         {
             await DisplayAlertAsync("Hata ❌", message, "Tamam");
-            // Hatalı kodsa adım 2'ye geri dön
             GoToStep(2);
         }
     }
 
-    // ── Geri ─────────────────────────────────────────────────────────────────
     private async void OnBackToLoginTapped(object? sender, EventArgs e)
     {
         if (_currentStep > 1)

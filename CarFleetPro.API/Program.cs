@@ -23,7 +23,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 {
-    // Şifre politikası
     options.Password.RequireDigit = true;
     options.Password.RequiredLength = 6;
     options.Password.RequireNonAlphanumeric = false;
@@ -104,7 +103,6 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// ─── Startup: Rol seed + İlk admin kullanıcı ───────────────────────────────
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -113,7 +111,6 @@ using (var scope = app.Services.CreateScope())
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
         var userManager = services.GetRequiredService<UserManager<AppUser>>();
 
-        // Rolleri oluştur
         string[] roles = { "Yönetici", "Çalışan" };
         foreach (var role in roles)
         {
@@ -121,7 +118,6 @@ using (var scope = app.Services.CreateScope())
                 await roleManager.CreateAsync(new IdentityRole(role));
         }
 
-        // İlk admin kullanıcıyı oluştur (yoksa)
         var adminEmail = app.Configuration["AdminSeed:Email"] ?? "Alper@carfleet.com";
         var adminPassword = app.Configuration["AdminSeed:Password"] ?? "Admin123!";
 
@@ -146,7 +142,6 @@ using (var scope = app.Services.CreateScope())
         }
         else
         {
-            // Mevcut adminlerin Identity rollerini senkronize et
             var admins = userManager.Users.Where(u => u.Role == "Yönetici").ToList();
             foreach (var admin in admins)
             {
@@ -161,7 +156,6 @@ using (var scope = app.Services.CreateScope())
                     await userManager.AddToRoleAsync(emp, "Çalışan");
             }
 
-            // Müşteri verilerini otomatik onar (varsayılan veya boş kalan alanları gerçekçi verilerle doldur)
             var dbContext = services.GetRequiredService<AppDbContext>();
             var customersToFix = await dbContext.Customers.ToListAsync();
             bool anyChanged = false;
@@ -212,7 +206,6 @@ using (var scope = app.Services.CreateScope())
         logger.LogError(ex, "Rol seed işlemi sırasında hata oluştu.");
     }
 }
-// ────────────────────────────────────────────────────────────────────────────
 
 if (app.Environment.IsDevelopment())
 {

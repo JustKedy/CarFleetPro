@@ -62,7 +62,7 @@ namespace CarFleetPro.API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Yönetici")]  // Sadece yönetici araç ekleyebilir
+        [Authorize(Roles = "Yönetici")]
         public async Task<IActionResult> AddVehicle([FromBody] CreateVehicleDto dto)
         {
             if (await _context.Vehicles.AnyAsync(v => v.PlateNumber == dto.PlateNumber))
@@ -98,7 +98,7 @@ namespace CarFleetPro.API.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "Yönetici")]  // Sadece yönetici araç güncelleyebilir
+        [Authorize(Roles = "Yönetici")]
         public async Task<IActionResult> UpdateVehicle(int id, [FromBody] CreateVehicleDto dto)
         {
             var vehicle = await _context.Vehicles.FindAsync(id);
@@ -152,13 +152,12 @@ namespace CarFleetPro.API.Controllers
 
         [HttpDelete("{id}")]
 
-        [Authorize(Roles = "Yönetici")]  // Sadece yönetici araç silebilir
+        [Authorize(Roles = "Yönetici")]
         public async Task<IActionResult> DeleteVehicle(int id)
         {
             var vehicle = await _context.Vehicles.AsTracking().FirstOrDefaultAsync(v => v.VehicleId == id);
             if (vehicle == null) return NotFound("Silinecek araç bulunamadı.");
 
-            // Kiralanmış araç silinemez
             if (vehicle.Status == VehicleStatus.Rented)
                 return BadRequest("Bu araç şu anda kirada olduğu için sistemden silinemez!");
 
@@ -176,10 +175,7 @@ namespace CarFleetPro.API.Controllers
             }
         }
 
-        /// <summary>
-        /// Araç fotoğrafı yükleme artık /api/vehicleimage/upload/{vehicleId} endpoint'inden yapılmaktadır.
-        /// Bu endpoint geriye dönük uyumluluk için bırakılmıştır.
-        /// </summary>
+        /// <summary>POST /api/vehicle/upload-image — Kullanımdan kalkmış endpoint</summary>
         [HttpPost("upload-image")]
         [Authorize(Roles = "Yönetici")]
         public IActionResult UploadVehicleImage()
@@ -227,7 +223,7 @@ namespace CarFleetPro.API.Controllers
             var currentYear = DateTime.UtcNow.Year;
             var today       = DateTime.UtcNow.Date;
 
-            // Araç kartlarını getir
+
             var cardList = await _context.Vehicles
                 .Select(v => new VehicleCardDto
                 {
@@ -249,7 +245,7 @@ namespace CarFleetPro.API.Controllers
                 })
                 .ToListAsync();
 
-            // Tüm aktif (ve ileri tarihli) kiralamaları tek sorguda çek
+
             var activeRentals = await _context.Rentals
                 .Where(r => r.Status == RentalStatus.Active && r.PlannedEndDate >= today)
                 .Join(_context.Customers,
@@ -267,7 +263,7 @@ namespace CarFleetPro.API.Controllers
                     })
                 .ToListAsync();
 
-            // Araç başına dolu tarih listesi
+
             var occupiedByVehicle = activeRentals
                 .GroupBy(r => r.VehicleId)
                 .ToDictionary(g => g.Key, g => g.ToList());
@@ -276,7 +272,7 @@ namespace CarFleetPro.API.Controllers
             {
                 if (!occupiedByVehicle.TryGetValue(card.Id, out var rentals)) continue;
 
-                // Aktif (anlık) kiralama bilgileri
+
                 var active = rentals.FirstOrDefault(r => !r.IsFuture);
                 if (active != null)
                 {
@@ -287,10 +283,10 @@ namespace CarFleetPro.API.Controllers
                     card.ActiveRentalId  = active.RentalId;
                 }
 
-                // İleri tarihli rezervasyon var mı?
+
                 card.HasFutureReservation = rentals.Any(r => r.IsFuture);
 
-                // Tüm dolu tarih aralıkları (takvim için)
+
                 card.OccupiedDates = rentals.Select(r => new OccupiedDateRangeDto
                 {
                     RentalId     = r.RentalId,
@@ -353,9 +349,7 @@ namespace CarFleetPro.API.Controllers
             return Ok(new { message = $"{vehicle.PlateNumber} plakalı aracın bakımı bitti, tekrar müsait." });
         }
 
-        
-        
-        
+
         [HttpGet("{id}/details")]
         [AllowAnonymous]
         public async Task<IActionResult> GetVehicleDetails(int id)
@@ -363,7 +357,6 @@ namespace CarFleetPro.API.Controllers
             var vehicle = await _context.Vehicles.FirstOrDefaultAsync(v => v.VehicleId == id);
             if (vehicle == null) return NotFound("Araç bulunamadı.");
 
-            
             var rentals = await _context.Rentals
                 .Where(r => r.VehicleId == id)
                 .Join(_context.Customers, r => r.CustomerId, c => c.CustomerId,
@@ -379,7 +372,6 @@ namespace CarFleetPro.API.Controllers
                     })
                 .ToListAsync();
 
-            
             var maintenances = await _context.Maintenances
                 .Where(m => m.VehicleId == id)
                 .Select(m => new VehicleHistoryItemDto
@@ -394,10 +386,9 @@ namespace CarFleetPro.API.Controllers
                 })
                 .ToListAsync();
 
-            
             var history = rentals.Concat(maintenances)
                 .OrderByDescending(h => h.DateRange)
-                .Take(10) 
+                .Take(10)
                 .ToList();
 
             var detail = new VehicleDetailDto

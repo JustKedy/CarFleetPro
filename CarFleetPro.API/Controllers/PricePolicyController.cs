@@ -56,7 +56,6 @@ namespace CarFleetPro.API.Controllers
                 _context.PricePolicies.Add(request);
             }
 
-            // Araçların fiyatlarını da güncel politikaya göre senkronize et
             IQueryable<Vehicle> vehiclesQuery = _context.Vehicles;
 
             if (request.TargetType == "Segment")
@@ -81,7 +80,6 @@ namespace CarFleetPro.API.Controllers
 
             await _context.SaveChangesAsync();
             
-            // Invalidate vehicle caches so pricing updates reflect immediately
             _cache.Remove("vehicleList");
             _cache.Remove("vehicleCards");
             _cache.Remove("vehicleCardsETag");

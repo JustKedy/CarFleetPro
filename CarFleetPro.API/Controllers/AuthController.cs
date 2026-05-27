@@ -39,10 +39,7 @@ namespace CarFleetPro.API.Controllers
             _logger        = logger;
         }
 
-        /// <summary>
-        /// Herkese açık kayıt — sadece "Çalışan" rolüyle hesap oluşturur.
-        /// Yönetici hesabı için /admin/create-staff kullanın.
-        /// </summary>
+        /// <summary>POST /api/auth/register — Yeni çalışan hesabı oluştur</summary>
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto model)
         {
@@ -63,20 +60,16 @@ namespace CarFleetPro.API.Controllers
             if (!result.Succeeded)
                 return BadRequest(result.Errors.Select(e => e.Description));
 
-            // Identity role sistemine de ekle
             await _userManager.AddToRoleAsync(user, "Çalışan");
 
             return Ok(new { message = "Hesap başarıyla oluşturuldu." });
         }
 
-        /// <summary>
-        /// Sadece Yönetici tarafından çağrılabilir. Yeni çalışan veya yönetici hesabı oluşturur.
-        /// </summary>
+        /// <summary>POST /api/auth/admin/create-staff — Personel hesabı oluştur (Sadece Yönetici)</summary>
         [HttpPost("admin/create-staff")]
         [Authorize(Roles = "Yönetici")]
         public async Task<IActionResult> CreateStaff([FromBody] CreateStaffDto dto)
         {
-            // Rol kontrolü
             var allowedRoles = new[] { "Yönetici", "Çalışan" };
             if (!allowedRoles.Contains(dto.Role))
                 return BadRequest("Geçersiz rol. 'Yönetici' veya 'Çalışan' olmalı.");
@@ -117,7 +110,6 @@ namespace CarFleetPro.API.Controllers
             if (!user.IsActive)
                 return Unauthorized("Hesabınız devre dışı bırakılmıştır. Yöneticinizle iletişime geçin.");
 
-            // Identity'den gerçek rolleri al
             var roles = await _userManager.GetRolesAsync(user);
             var primaryRole = roles.FirstOrDefault() ?? user.Role;
 
@@ -252,17 +244,13 @@ namespace CarFleetPro.API.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
         {
-            // Kullanıcı yoksa bile aynı mesajı dön (enum güvenliği)
             var user = await _userManager.FindByEmailAsync(dto.Email);
             if (user == null)
                 return Ok(new { message = "Eğer bu e-posta kayıtlıysa, doğrulama kodu gönderildi." });
 
-            // 6 haneli OTP
             var otp   = new Random().Next(100000, 999999).ToString();
-            // Identity password-reset token (reset-password adımında kullanılacak)
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-            // OTP ve token'ı 15 dakika cache'e al
             var cacheKey = $"otp:{dto.Email.ToLowerInvariant()}";
             _cache.Set(cacheKey, (Otp: otp, Token: token),
                 new MemoryCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(15) });
@@ -324,7 +312,6 @@ namespace CarFleetPro.API.Controllers
                 return BadRequest(errors);
             }
 
-            // Kullanılan OTP'yi temizle
             _cache.Remove(cacheKey);
 
             return Ok(new { message = "Şifreniz başarıyla sıfırlandı! Yeni şifrenizle giriş yapabilirsiniz." });

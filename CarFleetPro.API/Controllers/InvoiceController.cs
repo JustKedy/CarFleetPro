@@ -140,9 +140,7 @@ namespace CarFleetPro.API.Controllers
             return Ok(new { message = "Fatura güncellendi." });
         }
 
-        // ═══════════════════════════════════════════════════════════════════
         // GET /api/invoice/{id}/pdf  — İndirilebilir PDF fatura
-        // ═══════════════════════════════════════════════════════════════════
         [HttpGet("{id}/pdf")]
         [AllowAnonymous]
         public async Task<IActionResult> GetPdf(int id)
@@ -181,7 +179,6 @@ namespace CarFleetPro.API.Controllers
             return File(pdfBytes, "application/pdf", $"Fatura_INV-{id:D5}.pdf");
         }
 
-        // ── Yardımcı: strongly-typed data transfer record ────────────────────
         private sealed record InvoicePdfData
         {
             public int           InvoiceId       { get; init; }
@@ -216,7 +213,6 @@ namespace CarFleetPro.API.Controllers
                     page.PageColor(Colors.White);
                     page.DefaultTextStyle(x => x.FontSize(11));
 
-                    // ── HEADER ──────────────────────────────────────────────────
                     page.Header().Row(row =>
                     {
                         row.RelativeItem().Column(col =>
@@ -242,12 +238,10 @@ namespace CarFleetPro.API.Controllers
                         });
                     });
 
-                    // ── CONTENT ─────────────────────────────────────────────────
                     page.Content().PaddingVertical(20).Column(col =>
                     {
                         col.Spacing(16);
 
-                        // Firma & Müşteri
                         col.Item().Row(row =>
                         {
                             row.RelativeItem().Column(fc =>
@@ -273,7 +267,6 @@ namespace CarFleetPro.API.Controllers
 
                         col.Item().LineHorizontal(1).LineColor(Colors.Grey.Lighten2);
 
-                        // Hizmet tablosu
                         col.Item().Table(table =>
                         {
                             table.ColumnsDefinition(cols =>
@@ -285,7 +278,6 @@ namespace CarFleetPro.API.Controllers
                                 cols.RelativeColumn(1);   // Toplam
                             });
 
-                            // Başlık
                             static IContainer TH(IContainer c) =>
                                 c.Background("#1D4ED8").Padding(7);
 
@@ -298,7 +290,6 @@ namespace CarFleetPro.API.Controllers
                                 h.Cell().Element(TH).AlignRight().Text("Tutar").FontColor(Colors.White).Bold();
                             });
 
-                            // Veri satırı
                             static IContainer TD(IContainer c) =>
                                 c.BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(7);
 
@@ -311,7 +302,6 @@ namespace CarFleetPro.API.Controllers
                             table.Cell().Element(TD).AlignRight().Text($"{d.Amount:N2} TL");
                         });
 
-                        // Özet
                         col.Item().AlignRight().Column(sc =>
                         {
                             sc.Spacing(5);
@@ -322,7 +312,6 @@ namespace CarFleetPro.API.Controllers
                               .FontSize(14).Bold();
                         });
 
-                        // Notlar
                         if (!string.IsNullOrWhiteSpace(d.Notes))
                         {
                             col.Item().Background(Colors.Grey.Lighten4).Padding(10).Column(nc =>
@@ -332,7 +321,6 @@ namespace CarFleetPro.API.Controllers
                             });
                         }
 
-                        // İmza alanı
                         col.Item().PaddingTop(30).Row(row =>
                         {
                             row.RelativeItem().Column(sc =>
@@ -351,7 +339,6 @@ namespace CarFleetPro.API.Controllers
                         });
                     });
 
-                    // ── FOOTER ──────────────────────────────────────────────────
                     page.Footer().Row(row =>
                     {
                         row.RelativeItem()

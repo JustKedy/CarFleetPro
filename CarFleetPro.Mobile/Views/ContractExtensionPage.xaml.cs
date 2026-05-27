@@ -18,10 +18,8 @@ namespace CarFleetPro.Mobile.Views
             _vehicle = vehicle;
             BindingContext = _vehicle;
 
-            // PropertyChanged olayını dinleyerek girilen gün sayısı değiştikçe yeni bitiş tarihini hesapla
             _vehicle.PropertyChanged += OnVehiclePropertyChanged;
             
-            // İlk açılışta tarihi hesapla
             HesaplaYeniBitisTarihi();
         }
 
@@ -87,7 +85,6 @@ namespace CarFleetPro.Mobile.Views
                 return;
             }
 
-            // Bir önceki sayfadaki ViewModel'i bulup uzatma işlemini çağıralım
             var navigationStack = Navigation.NavigationStack;
             if (navigationStack.Count >= 2)
             {

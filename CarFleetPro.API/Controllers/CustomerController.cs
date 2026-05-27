@@ -19,9 +19,7 @@ namespace CarFleetPro.API.Controllers
             _context = context;
         }
 
-        
-        
-        
+
         [HttpGet]
         public async Task<IActionResult> GetAllCustomers()
         {
@@ -137,9 +135,7 @@ namespace CarFleetPro.API.Controllers
             return Ok(detail);
         }
 
-        
-        
-        
+
         [HttpGet("names")]
         public async Task<IActionResult> GetCustomerNames()
         {
@@ -154,7 +150,6 @@ namespace CarFleetPro.API.Controllers
         [HttpPost("guest")]
         public async Task<IActionResult> AddGuestCustomer([FromBody] CreateCustomerDto dto)
         {
-            // Aynı telefon numarasıyla kayıt varsa mevcut ID'yi döndür
             var existing = await _context.Customers
                 .FirstOrDefaultAsync(c => c.PhoneNumber == dto.PhoneNumber);
 
@@ -162,7 +157,6 @@ namespace CarFleetPro.API.Controllers
             {
                 _context.Attach(existing);
 
-                // Gelen yeni, geçerli bilgileri mevcut müşteriye aktararak güncelle
                 if (!string.IsNullOrWhiteSpace(dto.FirstName)) existing.FirstName = dto.FirstName;
                 if (!string.IsNullOrWhiteSpace(dto.LastName)) existing.LastName = dto.LastName;
                 

@@ -24,7 +24,6 @@ namespace CarFleetPro.API.DTOs
         public string Status { get; set; } = string.Empty;
         public string? Notes { get; set; }
 
-        // Kiralama özet bilgisi
         public string? CustomerName { get; set; }
         public string? VehiclePlate { get; set; }
     }

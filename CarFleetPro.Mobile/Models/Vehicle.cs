@@ -25,17 +25,16 @@ namespace CarFleetPro.Mobile.Models
         public decimal BasePrice { get; set; }
         public double MaxDiscountPercentage { get; set; }
 
-        // Rezervasyon desteği
-        /// <summary>İleri tarihli rezervasyon var mı? Garaj kartında "Rezervasyonlu" badge göstermek için.</summary>
+        /// <summary>İleri tarihli rezervasyon var mı?</summary>
         public bool HasFutureReservation { get; set; }
-        /// <summary>Aktif kiralamanın ID'si — sözleşme uzatma API çağrısı için gerekli.</summary>
+        /// <summary>Aktif kiralamanın ID'si.</summary>
         public int? ActiveRentalId { get; set; }
-        /// <summary>Bu araç için dolu tarih aralıkları (kiralama takvimi kırmızı tarihleri).</summary>
+        /// <summary>Bu araç için dolu tarih aralıkları.</summary>
         public List<OccupiedDateRange> OccupiedDates { get; set; } = new();
 
         public string DisplayName => $"{Marka} {Model} ({Plaka})";
 
-        /// <summary>0=Müsait, 1=Kirada(Dolu), 2=Bakımda</summary>
+        /// <summary>0=Müsait, 1=Kirada, 2=Bakımda</summary>
 
         public int StatusCode
         {
@@ -126,7 +125,7 @@ namespace CarFleetPro.Mobile.Models
         {
             get
             {
-                int kalanLimit = 30 - uzatilanGunSayisi; // Sektörel olarak toplamda en fazla 30 gün uzatılabilir.
+                int kalanLimit = 30 - uzatilanGunSayisi;
                 if (kalanLimit < 0) kalanLimit = 0;
 
                 if (Rezervasyonlar == null || Rezervasyonlar.Count == 0)
@@ -139,7 +138,6 @@ namespace CarFleetPro.Mobile.Models
                     return kalanLimit;
                 }
 
-                // Aktif ve en yakın rezervasyonu bulalım
                 var enYakinRez = Rezervasyonlar
                     .Where(r => r.Status != null && r.Status.Equals("Aktif", StringComparison.OrdinalIgnoreCase))
                     .OrderBy(r => r.StartDate)
@@ -150,7 +148,7 @@ namespace CarFleetPro.Mobile.Models
                     int gunFarki = (enYakinRez.StartDate.Date - bitisDate.Date).Days;
                     int limitByRez = gunFarki - 1;
                     if (limitByRez < 0) limitByRez = 0;
-                    return Math.Min(kalanLimit, limitByRez); // En yakın rezervasyon başlangıç tarihinin 1 gün öncesine kadar kısıtlanmıştır
+                    return Math.Min(kalanLimit, limitByRez);
                 }
 
                 return kalanLimit;
@@ -163,7 +161,6 @@ namespace CarFleetPro.Mobile.Models
             {
                 if (!string.IsNullOrEmpty(KiralamaSuresi) && DateTime.TryParseExact(KiralamaSuresi, "dd.MM.yyyy", null, System.Globalization.DateTimeStyles.None, out var bitisDate))
                 {
-                    // 5 günlük koruma/opsiyon süresi + 1 gün = en erken 6 gün sonra yeni rezervasyon başlayabilir
                     return bitisDate.AddDays(6).ToString("yyyy-MM-dd");
                 }
                 return DateTime.Today.AddDays(6).ToString("yyyy-MM-dd");
@@ -199,7 +196,6 @@ namespace CarFleetPro.Mobile.Models
             OnPropertyChanged(nameof(RezervasyonBaslangicMinTarihi));
             OnPropertyChanged(nameof(MaksimumUzatilabilirGunSayisi));
             
-            // Rezervasyon başlangıç tarihini de minimum tarihe göre güncelle
             if (DateTime.TryParseExact(RezervasyonBaslangicMinTarihi, "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out var minDate))
             {
                 if (RezBaslangicTarihi < minDate)

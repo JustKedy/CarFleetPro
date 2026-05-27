@@ -21,7 +21,6 @@ namespace CarFleetPro.API.DTOs
         public decimal BasePrice { get; set; }
         public double MaxDiscountPercentage { get; set; }
 
-        // Rezervasyon desteği
         /// <summary>Aracın aktif kiralama ID'si (sözleşme uzatmak için gerekli)</summary>
         public int? ActiveRentalId { get; set; }
         /// <summary>İleri tarihli onaylı rezervasyonu var mı? (Garaj'da "Rezervasyonlu" badge için)</summary>
@@ -98,4 +97,4 @@ namespace CarFleetPro.API.DTOs
     {
         public string Status { get; set; } = string.Empty;
     }
-}
+}

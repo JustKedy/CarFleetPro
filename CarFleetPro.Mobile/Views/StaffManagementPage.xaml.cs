@@ -37,7 +37,6 @@ namespace CarFleetPro.Mobile.Views
         private async System.Threading.Tasks.Task LoadStaff()
         {
             var staff = await _apiService.GetStaffAsync();
-            // Ana yöneticiyi (Alper) listeden gizle
             StaffList.ItemsSource = staff?.Where(s => s.Email.ToLower() != "alper@carfleet.com").ToList();
         }
 

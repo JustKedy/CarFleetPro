@@ -10,7 +10,6 @@ public partial class App : Application
     public App()
     {
         InitializeComponent();
-        // Kaydedilmiş temayı başlangıçta uygula
         ThemeService.LoadSavedTheme();
     }
 

@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -11,7 +11,6 @@ namespace CarFleetPro.API.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            // Veri bütünlüğü için test verilerini (araçları) ve bağlı oldukları kayıtları uçuruyoruz
             migrationBuilder.Sql("DELETE FROM \"VehicleImages\";");
             migrationBuilder.Sql("DELETE FROM \"Rentals\";");
             migrationBuilder.Sql("DELETE FROM \"DamageRecords\";");

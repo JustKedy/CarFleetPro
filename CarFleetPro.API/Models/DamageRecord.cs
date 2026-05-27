@@ -7,7 +7,6 @@ namespace CarFleetPro.API.Models
         public int VehicleId { get; set; }
         public Vehicle? Vehicle { get; set; }
 
-        // Hangi çalışan kaydetti
         public string? ReportedByUserId { get; set; }
         public AppUser? ReportedByUser { get; set; }
 
@@ -17,7 +16,6 @@ namespace CarFleetPro.API.Models
         public decimal? EstimatedCost { get; set; }
         public DamageRecordStatus Status { get; set; } = DamageRecordStatus.Pending;
 
-        // Gelecekte fotoğraf URL'leri için
         public string? PhotoUrl { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

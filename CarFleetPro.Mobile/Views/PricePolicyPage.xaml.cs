@@ -33,7 +33,6 @@ namespace CarFleetPro.Mobile.Views
             _allVehicles = await _apiService.GetVehiclesAsync();
             VehiclePicker.ItemsSource = _allVehicles;
             
-            // Başlangıçta Global politikayı yükle
             UpdateFields("Global", "All");
         }
 
@@ -73,7 +72,6 @@ namespace CarFleetPro.Mobile.Views
         private void OnVehicleSelectionChanged(object? sender, EventArgs e)
         {
             if (VehiclePicker.SelectedItem is not Vehicle selectedVehicle) return;
-            // Plaka bazlı mevcut politikayı yükle
             UpdateFields("Vehicle", selectedVehicle.Plaka);
         }
 
@@ -102,7 +100,6 @@ namespace CarFleetPro.Mobile.Views
                     return;
                 }
 
-                // Araç özel politikayı PricePolicies tablosuna kaydet (plaka ile)
                 var policy = new PricePolicy
                 {
                     TargetType = "Vehicle",
@@ -121,7 +118,6 @@ namespace CarFleetPro.Mobile.Views
             }
             else
             {
-                // Global veya Segment bazlı güncelleme
                 var policy = new PricePolicy
                 {
                     TargetType = selectedGroup == "Tüm Araçlar" ? "Global" : "Segment",

@@ -68,8 +68,6 @@ namespace CarFleetPro.Mobile.Views
 
             if (_duzenlenenArac != null)
             {
-                // Düzenleme sırasında, eğer API string döndüyse markayı bulmamız lazım. Ancak _duzenlenenArac string değerlere sahip, bu biraz kompleks.
-                // Şimdilik null bırakacağız veya ileride refactor edilebilir. (Kullanıcı sıfırdan oluşturacak)
             }
         }
 
@@ -87,7 +85,6 @@ namespace CarFleetPro.Mobile.Views
 
         public async void OnUploadImageTapped(object? sender, EventArgs e)
         {
-            // Yeni araç eklerken doğrudan resim seçebilme (kesin çoklu seçim ile)
             if (_duzenlenenArac == null)
             {
                 try
@@ -106,7 +103,6 @@ namespace CarFleetPro.Mobile.Views
                             _tempPhotos.Clear();
                             _tempPhotos.AddRange(validPhotos);
 
-                            // İlk resmi önizleme olarak göster
                             var firstPhoto = validPhotos.First();
                             UploadedImagePreview.Source = ImageSource.FromFile(firstPhoto.FullPath);
                             UploadedImagePreview.IsVisible = true;
@@ -122,7 +118,6 @@ namespace CarFleetPro.Mobile.Views
                 return;
             }
 
-            // Düzenleme modunda: doğrudan galeri sayfasına git
             var images = await _apiService.GetVehicleImagesAsync(_duzenlenenArac.Id);
             await Navigation.PushAsync(new VehiclePhotoGalleryPage(_duzenlenenArac, images, true, _apiService));
         }
@@ -209,7 +204,6 @@ namespace CarFleetPro.Mobile.Views
                 {
                     WeakReferenceMessenger.Default.Send(new VehicleAddedMessage());
 
-                    // Yeni eklenen aracın ID'sini al
                     var vehicles = await _apiService.GetVehiclesAsync(forceRefresh: true);
                     var newVehicle = vehicles.FirstOrDefault(v =>
                         string.Equals(v.Plaka, request.PlateNumber, StringComparison.OrdinalIgnoreCase));
@@ -267,7 +261,6 @@ namespace CarFleetPro.Mobile.Views
                     }
                     else if (newVehicle != null)
                     {
-                        // Resim önceden seçilmemişse, yine de fotoğraf eklemek ister mi diye soralım (eski davranış)
                         var addPhoto = await DisplayAlertAsync("Fotoğraf Ekle", "Araç başarıyla eklendi! Şimdi fotoğraf eklemek ister misiniz?", "Evet, Ekle", "Hayır");
 
                         if (addPhoto)

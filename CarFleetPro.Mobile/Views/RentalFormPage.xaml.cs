@@ -23,7 +23,6 @@ namespace CarFleetPro.Mobile.Views
             _vehicle = vehicle;
             BindingContext = _vehicle;
 
-            // Fiyatlar OnAppearing içinde yüklenecek
             StartDatePicker.DateSelected += (s, e) => { HesaplaToplamTutar(); RenderCalendar(); };
             EndDatePicker.DateSelected += (s, e) => { HesaplaToplamTutar(); RenderCalendar(); };
         }
@@ -43,7 +42,6 @@ namespace CarFleetPro.Mobile.Views
             await BelirleAracDurumu();
             await ApplyPricing();
 
-            // Dolu tarihleri API'den taze çekelim ve takvimi çizelim
             if (_vehicle != null)
             {
                 try
@@ -71,10 +69,8 @@ namespace CarFleetPro.Mobile.Views
             decimal baz = 0;
             double maxIndirim = 0;
 
-            // Tüm politikaları tek seferde çek
             var policies = await _apiService.GetPricePoliciesAsync();
 
-            // 1. ADIM: ARACA ÖZEL — PricePolicies tablosunda plakaya göre ara
             var vehiclePolicy = policies.FirstOrDefault(p =>
                 p.TargetType == "Vehicle" && p.TargetValue == _vehicle.Plaka);
 
@@ -85,7 +81,6 @@ namespace CarFleetPro.Mobile.Views
             }
             else
             {
-                // 2. ADIM: SEGMENT BAZLI
                 var segmentPolicy = policies.FirstOrDefault(p =>
                     p.TargetType == "Segment" && p.TargetValue == _vehicle.Segment);
 
@@ -96,7 +91,6 @@ namespace CarFleetPro.Mobile.Views
                 }
                 else
                 {
-                    // 3. ADIM: GLOBAL
                     var globalPolicy = policies.FirstOrDefault(p => p.TargetType == "Global");
                     if (globalPolicy != null)
                     {
@@ -106,19 +100,16 @@ namespace CarFleetPro.Mobile.Views
                 }
             }
 
-            // Hiç politika yoksa aracın kendi günlük ücretini veya araçta tanımlı baz fiyatı kullan
             if (baz <= 0)
             {
                 baz = _vehicle.BasePrice > 0 ? _vehicle.BasePrice : _vehicle.GunlukUcret;
             }
             
-            // Politikalardan veya araçtan gelen bir indirim oranı yoksa varsayılan olarak %5 kullan
             if (maxIndirim <= 0)
             {
                 maxIndirim = _vehicle.MaxDiscountPercentage > 0 ? _vehicle.MaxDiscountPercentage : 5;
             }
 
-            // Taban fiyat, baz fiyattan maksimum indirim oranı düşülerek dinamik olarak hesaplanır.
             var taban = baz - (baz * (decimal)(maxIndirim / 100.0));
 
             _bazFiyat = baz;
@@ -132,14 +123,10 @@ namespace CarFleetPro.Mobile.Views
             HesaplaToplamTutar();
         }
 
-        // ─────────────────────────────────────────
-        //  ARAÇ DURUMUNA GÖRE PANEL GÖSTERİMİ
-        // ─────────────────────────────────────────
         private async Task BelirleAracDurumu()
         {
             if (_vehicle == null) return;
 
-            // Durum: 0=Müsait, 1=Kirada, 2=Bakımda
             int durum = _vehicle.StatusCode; // int değeri
 
             if (durum == 2) // Bakımda
@@ -163,9 +150,6 @@ namespace CarFleetPro.Mobile.Views
             }
         }
 
-        // ─────────────────────────────────────────
-        //  AKTİF KİRALAMAYI YÜKLE
-        // ─────────────────────────────────────────
         private async Task YukleKiraciData()
         {
             if (_vehicle == null) return;
@@ -180,22 +164,18 @@ namespace CarFleetPro.Mobile.Views
                 {
                     RenterNameLabel.Text  = aktif.CustomerName;
                     
-                    // Kiralama tarih ve fiyat bilgilerini doldur
                     RentStartLabel.Text   = aktif.StartDate.ToString("dd.MM.yyyy");
                     RentEndLabel.Text     = aktif.PlannedEndDate.ToString("dd.MM.yyyy");
                     DailyRateLabel.Text   = $"{aktif.DailyRate:N0} ₺/gün";
                     TotalAmountLabel.Text = $"{aktif.TotalAmount:N0} ₺";
                     RentNotesLabel.Text   = string.IsNullOrWhiteSpace(aktif.Notes) ? "Not yok" : aktif.Notes;
 
-                    // Müşteri bilgileri (kiralama nesnesinden gelenler)
                     string tc = string.IsNullOrWhiteSpace(aktif.CustomerIdentityNumber) ? "-" : aktif.CustomerIdentityNumber;
                     string phone = string.IsNullOrWhiteSpace(aktif.CustomerPhone) ? "-" : aktif.CustomerPhone;
                     string license = string.IsNullOrWhiteSpace(aktif.CustomerDriverLicenseNumber) ? "-" : aktif.CustomerDriverLicenseNumber;
                     string licenseExpiry = aktif.CustomerDriverLicenseExpiry == default ? "-" : aktif.CustomerDriverLicenseExpiry.ToString("dd.MM.yyyy");
                     string address = string.IsNullOrWhiteSpace(aktif.CustomerAddress) ? "Belirtilmedi" : aktif.CustomerAddress;
 
-                    // Canlıda yayındaki API'nin güncellenmemiş sürüm olması durumuna karşı
-                    // Eğer bilgiler boş ise müşteriyi ismiyle arayıp detayını çekiyoruz.
                     if (tc == "-" || phone == "-" || license == "-" || address == "Belirtilmedi")
                     {
                         try
@@ -203,7 +183,6 @@ namespace CarFleetPro.Mobile.Views
                             var searchResults = await _apiService.SearchCustomersAsync(aktif.CustomerName);
                             if (searchResults != null && searchResults.Count > 0)
                             {
-                                // İsmi tam eşleşen müşteriyi bulalım
                                 var matched = searchResults.Find(c => 
                                     c.FullName.Trim().Equals(aktif.CustomerName.Trim(), StringComparison.OrdinalIgnoreCase));
                                 
@@ -226,7 +205,6 @@ namespace CarFleetPro.Mobile.Views
                         }
                     }
 
-                    // Alanları ekrana bas
                     RenterTcLabel.Text    = tc;
                     RenterPhoneLabel.Text = phone;
                     RenterLicenseLabel.Text = license;
@@ -240,16 +218,12 @@ namespace CarFleetPro.Mobile.Views
             }
         }
 
-        // ─────────────────────────────────────────
-        //  TUTAR HESAPLAMA
-        // ─────────────────────────────────────────
         private void OnRateChanged(object? sender, TextChangedEventArgs e)
         {
             if (decimal.TryParse(GunlukUcretEntry.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal girilenFiyat))
             {
                 if (_bazFiyat > 0 && girilenFiyat > _bazFiyat)
                 {
-                    // Baz fiyattan yüksek girilmesini anında engelle
                     GunlukUcretEntry.Text = _bazFiyat.ToString("0.##", CultureInfo.InvariantCulture);
                 }
             }
@@ -262,7 +236,6 @@ namespace CarFleetPro.Mobile.Views
             {
                 if (_tabanFiyat > 0 && girilenFiyat < _tabanFiyat)
                 {
-                    // Taban fiyattan düşük girilmesini odaktan çıkınca engelle
                     GunlukUcretEntry.Text = _tabanFiyat.ToString("0.##", CultureInfo.InvariantCulture);
                 }
             }
@@ -298,12 +271,8 @@ namespace CarFleetPro.Mobile.Views
             catch { ToplamTutarLabel.Text = "0.00 ₺"; }
         }
 
-        // ─────────────────────────────────────────
-        //  FORMU KAYDET
-        // ─────────────────────────────────────────
         private async void OnCompleteRentalClicked(object? sender, EventArgs e)
         {
-            // Zorunlu alan kontrolleri
             if (string.IsNullOrWhiteSpace(FirstNameEntry.Text))
             { await DisplayAlertAsync("Uyarı", "Kiracının adını giriniz.", "Tamam"); return; }
 
@@ -322,7 +291,6 @@ namespace CarFleetPro.Mobile.Views
             if (_vehicle == null)
             { await DisplayAlertAsync("Hata", "Araç bilgisi bulunamadı.", "Tamam"); return; }
 
-            // Fiyat validasyonu
             if (!decimal.TryParse(GunlukUcretEntry.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal girilenFiyat))
             { await DisplayAlertAsync("Uyarı", "Geçerli bir günlük ücret giriniz.", "Tamam"); return; }
 
@@ -346,7 +314,6 @@ namespace CarFleetPro.Mobile.Views
             if (endDate <= startDate)
             { await DisplayAlertAsync("Uyarı", "Dönüş tarihi teslim tarihinden sonra olmalıdır.", "Tamam"); return; }
 
-            // Çakışma kontrolü
             if (_vehicle?.OccupiedDates != null)
             {
                 bool overlap = _vehicle.OccupiedDates.Any(o =>
@@ -457,24 +424,18 @@ namespace CarFleetPro.Mobile.Views
             }
         }
 
-        // ─────────────────────────────────────────
-        //  GÖRSEL TAKVİM (CALENDAR) LOGİC
-        // ─────────────────────────────────────────
         private void RenderCalendar()
         {
             if (_vehicle == null) return;
 
-            // Ay ve yıl başlığını Türkçe formatta güncelle
             MonthYearLabel.Text = _currentCalendarMonth.ToString("MMMM yyyy", new CultureInfo("tr-TR"));
 
-            // Ayın ilk gününün haftanın hangi günü olduğunu bulalım (Pazartesi=0, Salı=1...)
             var firstDayOfMonth = new DateTime(_currentCalendarMonth.Year, _currentCalendarMonth.Month, 1);
             int offset = ((int)firstDayOfMonth.DayOfWeek + 6) % 7; // Pzt=0 yapıyoruz.
 
             var daysInMonth = DateTime.DaysInMonth(_currentCalendarMonth.Year, _currentCalendarMonth.Month);
             var items = new List<CalendarDayItem>();
 
-            // Boş günler ekle (offset kadar)
             for (int i = 0; i < offset; i++)
             {
                 items.Add(new CalendarDayItem { Date = null });
@@ -483,19 +444,16 @@ namespace CarFleetPro.Mobile.Views
             var startSelection = StartDatePicker.Date;
             var endSelection = EndDatePicker.Date;
 
-            // Günleri ekle
             for (int day = 1; day <= daysInMonth; day++)
             {
                 var currentDate = new DateTime(_currentCalendarMonth.Year, _currentCalendarMonth.Month, day);
                 
-                // Doluluk kontrolü
                 bool isOccupied = false;
                 if (_vehicle.OccupiedDates != null)
                 {
                     isOccupied = _vehicle.OccupiedDates.Any(o => currentDate.Date >= o.StartDate.Date && currentDate.Date <= o.EndDate.Date);
                 }
 
-                // Seçim aralığı kontrolü
                 bool isSelected = false;
                 if (startSelection.HasValue && endSelection.HasValue)
                 {
@@ -531,7 +489,6 @@ namespace CarFleetPro.Mobile.Views
             {
                 var date = tappedDay.Date.Value;
 
-                // Dolu bir güne tıklanıp tıklanmadığını kontrol edelim
                 if (tappedDay.IsOccupied)
                 {
                     await DisplayAlertAsync("Uyarı", "Seçtiğiniz tarih başka bir kiralama ile çakışmaktadır. Lütfen boş günleri seçiniz.", "Tamam");
@@ -548,8 +505,6 @@ namespace CarFleetPro.Mobile.Views
                 }
                 else if (date > start.Value)
                 {
-                    // Tıklanan tarih başlangıç tarihinden büyükse, bitiş tarihi yapalım.
-                    // Ancak bu aralıkta herhangi bir dolu gün var mı kontrol etmeliyiz!
                     bool hasOccupiedBetween = false;
                     if (_vehicle?.OccupiedDates != null)
                     {

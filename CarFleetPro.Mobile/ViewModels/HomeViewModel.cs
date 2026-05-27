@@ -13,12 +13,10 @@ namespace CarFleetPro.Mobile.ViewModels
     {
         private readonly ApiService _apiService;
 
-        // ── Kart istatistikleri ──────────────────────────────────────────────
         [ObservableProperty] public partial int ToplamAracSayisi { get; set; }
         [ObservableProperty] public partial int KiradakiAracSayisi { get; set; }
         [ObservableProperty] public partial int MusaitAracSayisi { get; set; }
 
-        // ── Filo durum yüzdeleri ─────────────────────────────────────────────
         [ObservableProperty] public partial string KiraYuzdesi { get; set; } = "0";
         [ObservableProperty] public partial string MusaitYuzdesi { get; set; } = "0";
         [ObservableProperty] public partial string BakimYuzdesi { get; set; } = "0";
@@ -31,11 +29,9 @@ namespace CarFleetPro.Mobile.ViewModels
             new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }
         };
 
-        // ── Aylık ciro (sadece Admin görür) ─────────────────────────────────
         [ObservableProperty] public partial decimal AylikCiro { get; set; }
         [ObservableProperty] public partial bool IsAdmin { get; set; } = false;
 
-        // ── En çok talep gören modeller ──────────────────────────────────────
         [ObservableProperty] public partial string AracModelAdi { get; set; } = "-";
         [ObservableProperty] public partial double BarGenisligi { get; set; } = 0;
         [ObservableProperty] public partial int KiralamaSayisi { get; set; }
@@ -44,11 +40,9 @@ namespace CarFleetPro.Mobile.ViewModels
         [ObservableProperty] public partial double BarGenisligi2 { get; set; } = 0;
         [ObservableProperty] public partial int KiralamaSayisi2 { get; set; }
 
-        // ── Microcharts Grafikleri ───────────────────────────────────────────
         [ObservableProperty] public partial Microcharts.Chart? FiloDurumGrafigi { get; set; }
         [ObservableProperty] public partial Microcharts.Chart? PopulerAracGrafigi { get; set; }
 
-        // ── Yükleme durumu ───────────────────────────────────────────────────
         [ObservableProperty] public partial bool IsLoading { get; set; } = true;
 
         public HomeViewModel(ApiService apiService)
@@ -59,7 +53,6 @@ namespace CarFleetPro.Mobile.ViewModels
 
         private async Task InitAsync()
         {
-            // Rol kontrolü
             var profile = await _apiService.GetProfileAsync();
             System.Diagnostics.Debug.WriteLine($"[HOME VM] Profil: {profile?.FullName}, Rol: '{profile?.Role}'");
 
@@ -103,7 +96,6 @@ namespace CarFleetPro.Mobile.ViewModels
                     new ColumnDefinition { Width = new GridLength(c3, GridUnitType.Star) }
                 };
 
-                // En çok talep gören modeller (Eski mantık)
                 const double MaxBarWidth = 180.0;
                 var topModels = stats.TopModels;
 
@@ -136,7 +128,6 @@ namespace CarFleetPro.Mobile.ViewModels
                     BarGenisligi2 = 0;
                 }
 
-                // Microcharts Grafik Oluşturma (Yeni)
                 var isDark = Application.Current?.RequestedTheme == AppTheme.Dark;
                 var textColor = isDark ? SkiaSharp.SKColor.Parse("#F1F5F9") : SkiaSharp.SKColor.Parse("#1F2937");
                 

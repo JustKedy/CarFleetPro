@@ -22,26 +22,21 @@ namespace CarFleetPro.Mobile.Views
         {
             base.OnAppearing();
 
-            // SAYFA AÇILIŞ ANİMASYONU
             this.Opacity = 0;
             await this.FadeToAsync(1, 300, Microsoft.Maui.Easing.CubicOut);
 
-            // Verileri yenileme komutu
             if (_viewModel.VerileriYenileCommand.CanExecute(null))
             {
                 await _viewModel.VerileriYenileCommand.ExecuteAsync(null);
             }
         }
 
-        // --- KAYDIRMA (SLIDING) ANİMASYONU ---
         private async void OnAracTapped(object? sender, TappedEventArgs e)
         {
             if (sender is not Grid grid) return;
 
-            // Tıklanan grid'in bağlı olduğu araç bilgisini al
             if (grid.BindingContext is not Vehicle secilenArac) return;
 
-            // XAML'daki detay panelini (Border) bul (VerticalStackLayout'un 3. elemanı)
             if (grid.Parent is VerticalStackLayout parentLayout && parentLayout.Children.Count >= 3)
             {
                 if (parentLayout.Children[2] is Border detayPaneli)

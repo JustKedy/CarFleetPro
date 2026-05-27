@@ -9,7 +9,6 @@ public partial class BottomNavBar : ContentView
 {
     private bool _isFirstLoad = true;
 
-    // Global deÄŸiÅŸken sayesinde sayfalar arasÄ± geÃ§iÅŸlerde son durumu kaybetmeyiz
     private static string _globalSelectedTab = "Home";
 
     public static readonly BindableProperty SelectedTabProperty =
@@ -150,7 +149,6 @@ public partial class BottomNavBar : ContentView
         int totalVisibleTabs = ListBorder.IsVisible ? 4 : 3;
         if (totalVisibleTabs == 0) return;
         
-        // Matematiksel olarak kesin konum hesaplama:
         double tabWidth = ContainerGrid.Width / totalVisibleTabs;
         int visualIndex = GetVisualIndex(SelectedTab);
 
@@ -158,7 +156,6 @@ public partial class BottomNavBar : ContentView
         double indicatorWidth = SlidingIndicator.WidthRequest; // 50
         double targetX = targetCenter - (indicatorWidth / 2);
 
-        // OlasÄ± Ã§akÄ±ÅŸmalarÄ± ve hatalarÄ± Ã¶nlemek iÃ§in Ã§alÄ±ÅŸan tÃ¼m animasyonlarÄ± temizle
         SlidingIndicator.CancelAnimations();
 
         if (animated)
@@ -195,7 +192,6 @@ public partial class BottomNavBar : ContentView
 
         _ = AnimateIcon(targetBorder);
         
-        // KullanÄ±cÄ± animasyonu hissetsin diye yarÄ±m saniyenin onda biri kadar bekle (tepkisellik)
         await Task.Delay(50);
         
         try

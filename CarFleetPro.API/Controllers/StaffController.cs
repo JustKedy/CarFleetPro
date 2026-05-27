@@ -80,7 +80,6 @@ namespace CarFleetPro.API.Controllers
             if (!allowedRoles.Contains(dto.Role))
                 return BadRequest("Geçersiz rol. 'Yönetici' veya 'Çalışan' olmalı.");
 
-            // Eski rolü kaldır, yeni rolü ekle
             if (user.Role != dto.Role)
             {
                 await _userManager.RemoveFromRoleAsync(user, user.Role);
@@ -109,7 +108,6 @@ namespace CarFleetPro.API.Controllers
             var user = await _userManager.FindByIdAsync(id);
             if (user == null) return NotFound("Personel bulunamadı.");
 
-            // Kendini pasif yapmasını engelle
             var requesterId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             if (user.Id == requesterId)
                 return BadRequest("Kendi hesabınızı pasif yapamazsınız.");
@@ -128,7 +126,6 @@ namespace CarFleetPro.API.Controllers
             var user = await _userManager.FindByIdAsync(id);
             if (user == null) return NotFound("Personel bulunamadı.");
 
-            // Kendini silmesini engelle
             var requesterId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             if (user.Id == requesterId)
                 return BadRequest("Kendi hesabınızı silemezsiniz.");

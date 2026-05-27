@@ -23,10 +23,7 @@ namespace CarFleetPro.API.Controllers
             _storage = storage;
         }
 
-        // ─────────────────────────────────────────────────────────────────────
         // GET /api/vehicleimage/{vehicleId}
-        // Araçtaki tüm fotoğrafları listele (herkes erişebilir)
-        // ─────────────────────────────────────────────────────────────────────
         [HttpGet("{vehicleId:int}")]
         [AllowAnonymous]
         public async Task<IActionResult> GetByVehicleId(int vehicleId)
@@ -50,11 +47,7 @@ namespace CarFleetPro.API.Controllers
             return Ok(images);
         }
 
-        // ─────────────────────────────────────────────────────────────────────
         // POST /api/vehicleimage/upload/{vehicleId}
-        // Araç için fotoğraf yükle (Yönetici)
-        // Form-data: file (IFormFile)
-        // ─────────────────────────────────────────────────────────────────────
         [HttpPost("upload/{vehicleId:int}")]
         [Authorize(Roles = "Yönetici")]
         [RequestSizeLimit(10 * 1024 * 1024)] // 10 MB limit
@@ -63,7 +56,6 @@ namespace CarFleetPro.API.Controllers
             var vehicle = await _context.Vehicles.FindAsync(vehicleId);
             if (vehicle == null) return NotFound("Araç bulunamadı.");
 
-            // Araçtaki mevcut fotoğraf sayısını kontrol et (max 10)
             var existingCount = await _context.VehicleImages.CountAsync(vi => vi.VehicleId == vehicleId);
             if (existingCount >= 10)
                 return BadRequest("Araç başına maksimum 10 fotoğraf yüklenebilir.");
@@ -84,7 +76,6 @@ namespace CarFleetPro.API.Controllers
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            // İlk fotoğraf otomatik olarak birincil yapılır
             var isPrimary = existingCount == 0;
 
             var image = new VehicleImage
@@ -100,7 +91,6 @@ namespace CarFleetPro.API.Controllers
 
             _context.VehicleImages.Add(image);
 
-            // Birincil fotoğraf ise Vehicle.ImageUrl'i de güncelle
             if (isPrimary)
             {
                 _context.Attach(vehicle);
@@ -122,10 +112,7 @@ namespace CarFleetPro.API.Controllers
             });
         }
 
-        // ─────────────────────────────────────────────────────────────────────
         // POST /api/vehicleimage/upload-multiple/{vehicleId}
-        // Aynı anda birden fazla fotoğraf yükle (Yönetici)
-        // ─────────────────────────────────────────────────────────────────────
         [HttpPost("upload-multiple/{vehicleId:int}")]
         [Authorize(Roles = "Yönetici")]
         [RequestSizeLimit(50 * 1024 * 1024)] // 50 MB toplam
@@ -204,10 +191,7 @@ namespace CarFleetPro.API.Controllers
             });
         }
 
-        // ─────────────────────────────────────────────────────────────────────
         // PUT /api/vehicleimage/{imageId}/set-primary
-        // Birincil (kapak) fotoğrafı değiştir (Yönetici)
-        // ─────────────────────────────────────────────────────────────────────
         [HttpPut("{imageId:int}/set-primary")]
         [Authorize(Roles = "Yönetici")]
         public async Task<IActionResult> SetPrimary(int imageId)
@@ -215,7 +199,6 @@ namespace CarFleetPro.API.Controllers
             var image = await _context.VehicleImages.FindAsync(imageId);
             if (image == null) return NotFound("Fotoğraf bulunamadı.");
 
-            // Aynı araçtaki tüm fotoğraflardan birincil işaretini kaldır
             var allImages = await _context.VehicleImages
                 .Where(vi => vi.VehicleId == image.VehicleId)
                 .ToListAsync();
@@ -226,7 +209,6 @@ namespace CarFleetPro.API.Controllers
                 img.IsPrimary = img.VehicleImageId == imageId;
             }
 
-            // Vehicle.ImageUrl'i de güncelle
             var vehicle = await _context.Vehicles.FindAsync(image.VehicleId);
             if (vehicle != null)
             {
@@ -240,11 +222,7 @@ namespace CarFleetPro.API.Controllers
             return Ok(new { message = "Birincil fotoğraf güncellendi." });
         }
 
-        // ─────────────────────────────────────────────────────────────────────
         // PUT /api/vehicleimage/{vehicleId}/reorder
-        // Fotoğraf sıralamasını güncelle (Yönetici)
-        // Body: { "orders": { "imageId1": 0, "imageId2": 1, ... } }
-        // ─────────────────────────────────────────────────────────────────────
         [HttpPut("{vehicleId:int}/reorder")]
         [Authorize(Roles = "Yönetici")]
         public async Task<IActionResult> Reorder(int vehicleId, [FromBody] ReorderImagesDto dto)
@@ -266,10 +244,7 @@ namespace CarFleetPro.API.Controllers
             return Ok(new { message = "Sıralama güncellendi." });
         }
 
-        // ─────────────────────────────────────────────────────────────────────
         // DELETE /api/vehicleimage/{imageId}
-        // Fotoğrafı Cloudinary'den ve DB'den sil (Yönetici)
-        // ─────────────────────────────────────────────────────────────────────
         [HttpDelete("{imageId:int}")]
         [Authorize(Roles = "Yönetici")]
         public async Task<IActionResult> Delete(int imageId)
@@ -280,14 +255,11 @@ namespace CarFleetPro.API.Controllers
             var vehicleId = image.VehicleId;
             var wasPrimary = image.IsPrimary;
 
-            // Cloudinary'den sil
             await _storage.DeleteAsync(image.PublicId);
 
-            // DB'den sil
             _context.VehicleImages.Remove(image);
             await _context.SaveChangesAsync();
 
-            // Silinen birincil fotoğrafsa, sıradaki fotoğrafı birincil yap
             if (wasPrimary)
             {
                 var nextImage = await _context.VehicleImages
@@ -312,7 +284,6 @@ namespace CarFleetPro.API.Controllers
                 }
                 else
                 {
-                    // Son fotoğraf da silindiyse Vehicle.ImageUrl'i temizle
                     var vehicle = await _context.Vehicles.FindAsync(vehicleId);
                     if (vehicle != null)
                     {

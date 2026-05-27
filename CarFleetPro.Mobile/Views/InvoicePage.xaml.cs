@@ -38,8 +38,6 @@ namespace CarFleetPro.Mobile.Views
                 {
                     var pdfUrl = $"https://carfleetpro-hcf2f6hua6f2h5f0.westeurope-01.azurewebsites.net/api/Invoice/{invoice.InvoiceId}/pdf";
                     
-                    // Geçici bir MAUI dosyası açmak yerine direkt URL'yi tarayıcıda açmak en güvenli/kolay yoldur
-                    // Eğer Android izin verirse direkt PDF görüntüleyiciyi tetikler.
                     await Microsoft.Maui.ApplicationModel.Launcher.OpenAsync(new Uri(pdfUrl));
                 }
                 catch (Exception ex)

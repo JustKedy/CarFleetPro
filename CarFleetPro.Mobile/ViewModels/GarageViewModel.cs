@@ -48,7 +48,6 @@ namespace CarFleetPro.Mobile.ViewModels
                 if (apiVehicles == null || apiVehicles.Count == 0)
                     throw new Exception("API boş liste döndürdü.");
 
-                // Kiralama detaylarını çekelim
                 List<RentalInfo> rentals = new();
                 try
                 {
@@ -89,7 +88,6 @@ namespace CarFleetPro.Mobile.ViewModels
                         _tumAraclar.Add(v);
                     }
 
-                    // Türleri (Segment) doldur
                     var mevcutSegmentler = SegmentFilters.Select(s => s.Name).ToHashSet();
                     foreach (var seg in apiSegmentler)
                     {
@@ -99,7 +97,6 @@ namespace CarFleetPro.Mobile.ViewModels
                         }
                     }
 
-                    // Markaları doldur
                     var mevcutMarkalar = BrandFilters.Select(s => s.Name).ToHashSet();
                     foreach (var marka in apiMarkalar)
                     {
@@ -174,7 +171,6 @@ namespace CarFleetPro.Mobile.ViewModels
 
             foreach (var vehicle in _tumAraclar)
             {
-                // Önce Durum filtresi (Tümü, Müsait vs.)
                 bool durumUyuyor = false;
                 if (IsTumuSelected)
                 {
@@ -195,14 +191,12 @@ namespace CarFleetPro.Mobile.ViewModels
 
                 if (!durumUyuyor) continue;
 
-                // Segment filtresi
                 var vSegment = string.IsNullOrWhiteSpace(vehicle.Segment) ? "Diğer" : vehicle.Segment;
                 if (seciliSegmentler.Count > 0 && !seciliSegmentler.Contains(vSegment))
                 {
                     continue; 
                 }
 
-                // Marka filtresi
                 var vMarka = string.IsNullOrWhiteSpace(vehicle.Marka) ? "Diğer" : vehicle.Marka;
                 if (seciliMarkalar.Count > 0 && !seciliMarkalar.Contains(vMarka))
                 {
@@ -213,19 +207,15 @@ namespace CarFleetPro.Mobile.ViewModels
             }
         }
 
-        /// <summary>
-        /// Aktif s\u00f6zle\u015fmeyi uzat\u0131r. API'ye PUT /api/rental/{id}/extend isteği atar.
-        /// </summary>
+        /// <summary>Aktif sözleşmeyi uzatır.</summary>
         public async Task<(bool Success, string Message)> UzatSozlesme(Vehicle vehicle, int gunSayisi)
         {
             if (vehicle == null) return (false, "Ara\u00e7 bilgisi bo\u015f.");
             if (gunSayisi <= 0)  return (false, "G\u00fcn say\u0131s\u0131 s\u0131f\u0131rdan b\u00fcy\u00fck olmal\u0131d\u0131r.");
             if (gunSayisi > 30)  return (false, "Tek seferde en fazla 30 g\u00fcn uzatma yapabilirsiniz.");
 
-            // ActiveRentalId kontrolü — API'den geldi mi?
             if (vehicle.ActiveRentalId == null)
             {
-                // Fallback: Kiralama listesinden ara
                 var rentals = await _apiService.GetRentalsAsync();
                 var aktif = rentals.FirstOrDefault(r =>
                     r.VehiclePlate == vehicle.Plaka &&
@@ -238,7 +228,6 @@ namespace CarFleetPro.Mobile.ViewModels
 
             if (success)
             {
-                // UI g\u00fcncellemesi: bitiş tarihini g\u00fcncelle
                 vehicle.uzatilanGunSayisi += gunSayisi;
                 if (!string.IsNullOrEmpty(newEndDate))
                     vehicle.KiralamaSuresi = newEndDate;
@@ -248,9 +237,6 @@ namespace CarFleetPro.Mobile.ViewModels
             return (success, message);
         }
 
-        /// <summary>
-        /// \u0130leri tarihli rezervasyon oluşturur. API'ye POST /api/rental atar.
-        /// </summary>
         public async Task<(bool Success, string Message)> EkleRezervasyon(
             Vehicle vehicle,
             string musteriAdi,
@@ -262,7 +248,6 @@ namespace CarFleetPro.Mobile.ViewModels
             if (string.IsNullOrWhiteSpace(musteriAdi)) return (false, "Geçerli bir müşteri adı giriniz.");
             if (gunSuresi <= 0)  return (false, "Süre sıfırdan büyük olmalıdır.");
 
-            // Ad ve soyadı ayır
             string firstName = musteriAdi;
             string lastName = "Misafir";
             var parts = musteriAdi.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -285,10 +270,8 @@ namespace CarFleetPro.Mobile.ViewModels
 
             if (success)
             {
-                // UI ve listeleri güncellemek için API'den verileri yeniden çekelim
                 await LoadVehiclesFromApi(forceRefresh: true);
                 
-                // Badge'i hemen güncelle — sayfayı yenilemeden görünsün
                 vehicle.HasFutureReservation = true;
                 vehicle.TetikleBitisTarihiGuncellemesi();
             }
