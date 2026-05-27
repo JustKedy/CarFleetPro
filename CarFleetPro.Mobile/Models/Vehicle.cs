@@ -25,6 +25,14 @@ namespace CarFleetPro.Mobile.Models
         public decimal BasePrice { get; set; }
         public double MaxDiscountPercentage { get; set; }
 
+        // Rezervasyon desteği
+        /// <summary>İleri tarihli rezervasyon var mı? Garaj kartında "Rezervasyonlu" badge göstermek için.</summary>
+        public bool HasFutureReservation { get; set; }
+        /// <summary>Aktif kiralamanın ID'si — sözleşme uzatma API çağrısı için gerekli.</summary>
+        public int? ActiveRentalId { get; set; }
+        /// <summary>Bu araç için dolu tarih aralıkları (kiralama takvimi kırmızı tarihleri).</summary>
+        public List<OccupiedDateRange> OccupiedDates { get; set; } = new();
+
         public string DisplayName => $"{Marka} {Model} ({Plaka})";
 
         /// <summary>0=Müsait, 1=Kirada(Dolu), 2=Bakımda</summary>

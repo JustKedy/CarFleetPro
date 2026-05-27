@@ -15,6 +15,7 @@ namespace CarFleetPro.Mobile.Views
         private readonly Vehicle? _vehicle;
         private decimal _bazFiyat = 0;   // Tavan (girilecek max fiyat)
         private decimal _tabanFiyat = 0; // Taban (girilecek min fiyat)
+        private DateTime _currentCalendarMonth = DateTime.Today;
 
         public RentalFormPage(Vehicle vehicle)
         {
@@ -23,8 +24,8 @@ namespace CarFleetPro.Mobile.Views
             BindingContext = _vehicle;
 
             // Fiyatlar OnAppearing içinde yüklenecek
-            StartDatePicker.DateSelected += (s, e) => HesaplaToplamTutar();
-            EndDatePicker.DateSelected += (s, e) => HesaplaToplamTutar();
+            StartDatePicker.DateSelected += (s, e) => { HesaplaToplamTutar(); RenderCalendar(); };
+            EndDatePicker.DateSelected += (s, e) => { HesaplaToplamTutar(); RenderCalendar(); };
         }
 
         public RentalFormPage()
@@ -41,6 +42,26 @@ namespace CarFleetPro.Mobile.Views
             await LoadVehicleImages();
             await BelirleAracDurumu();
             await ApplyPricing();
+
+            // Dolu tarihleri API'den taze çekelim ve takvimi çizelim
+            if (_vehicle != null)
+            {
+                try
+                {
+                    var occupied = await _apiService.GetOccupiedDatesAsync(_vehicle.Id);
+                    if (occupied != null)
+                    {
+                        _vehicle.OccupiedDates = occupied;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[RentalFormPage] Dolu tarihler yüklenirken hata: {ex.Message}");
+                }
+
+                _currentCalendarMonth = DateTime.Today;
+                RenderCalendar();
+            }
         }
 
         private async Task ApplyPricing()
@@ -325,6 +346,19 @@ namespace CarFleetPro.Mobile.Views
             if (endDate <= startDate)
             { await DisplayAlertAsync("Uyarı", "Dönüş tarihi teslim tarihinden sonra olmalıdır.", "Tamam"); return; }
 
+            // Çakışma kontrolü
+            if (_vehicle?.OccupiedDates != null)
+            {
+                bool overlap = _vehicle.OccupiedDates.Any(o =>
+                    startDate.Date <= o.EndDate.Date && endDate.Date >= o.StartDate.Date
+                );
+                if (overlap)
+                {
+                    await DisplayAlertAsync("Çakışma Hatası", "Seçilen tarih aralığı dolu/rezervasyonlu tarihlerle çakışmaktadır. Lütfen takvimdeki boş günleri seçiniz.", "Tamam");
+                    return;
+                }
+            }
+
             decimal depositAmount = 0;
             if (!string.IsNullOrWhiteSpace(DepozitoEntry.Text))
                 decimal.TryParse(DepozitoEntry.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out depositAmount);
@@ -340,7 +374,7 @@ namespace CarFleetPro.Mobile.Views
                 firstName:     FirstNameEntry.Text,
                 lastName:      LastNameEntry.Text,
                 phone:         PhoneEntry.Text,
-                vehicleId:     _vehicle.Id,
+                vehicleId:     _vehicle!.Id,
                 startDate:     startDate,
                 endDate:       endDate,
                 depositAmount: depositAmount,
@@ -420,6 +454,126 @@ namespace CarFleetPro.Mobile.Views
             if (ImagesCarousel.ItemsSource is System.Collections.ICollection collection)
             {
                 UpdateImageCounter(e.CurrentPosition, collection.Count);
+            }
+        }
+
+        // ─────────────────────────────────────────
+        //  GÖRSEL TAKVİM (CALENDAR) LOGİC
+        // ─────────────────────────────────────────
+        private void RenderCalendar()
+        {
+            if (_vehicle == null) return;
+
+            // Ay ve yıl başlığını Türkçe formatta güncelle
+            MonthYearLabel.Text = _currentCalendarMonth.ToString("MMMM yyyy", new CultureInfo("tr-TR"));
+
+            // Ayın ilk gününün haftanın hangi günü olduğunu bulalım (Pazartesi=0, Salı=1...)
+            var firstDayOfMonth = new DateTime(_currentCalendarMonth.Year, _currentCalendarMonth.Month, 1);
+            int offset = ((int)firstDayOfMonth.DayOfWeek + 6) % 7; // Pzt=0 yapıyoruz.
+
+            var daysInMonth = DateTime.DaysInMonth(_currentCalendarMonth.Year, _currentCalendarMonth.Month);
+            var items = new List<CalendarDayItem>();
+
+            // Boş günler ekle (offset kadar)
+            for (int i = 0; i < offset; i++)
+            {
+                items.Add(new CalendarDayItem { Date = null });
+            }
+
+            var startSelection = StartDatePicker.Date;
+            var endSelection = EndDatePicker.Date;
+
+            // Günleri ekle
+            for (int day = 1; day <= daysInMonth; day++)
+            {
+                var currentDate = new DateTime(_currentCalendarMonth.Year, _currentCalendarMonth.Month, day);
+                
+                // Doluluk kontrolü
+                bool isOccupied = false;
+                if (_vehicle.OccupiedDates != null)
+                {
+                    isOccupied = _vehicle.OccupiedDates.Any(o => currentDate.Date >= o.StartDate.Date && currentDate.Date <= o.EndDate.Date);
+                }
+
+                // Seçim aralığı kontrolü
+                bool isSelected = false;
+                if (startSelection.HasValue && endSelection.HasValue)
+                {
+                    isSelected = currentDate.Date >= startSelection.Value.Date && currentDate.Date <= endSelection.Value.Date;
+                }
+
+                items.Add(new CalendarDayItem
+                {
+                    Date = currentDate,
+                    IsOccupied = isOccupied,
+                    IsSelected = isSelected
+                });
+            }
+
+            CalendarCollectionView.ItemsSource = items;
+        }
+
+        private void OnPrevMonthClicked(object? sender, EventArgs e)
+        {
+            _currentCalendarMonth = _currentCalendarMonth.AddMonths(-1);
+            RenderCalendar();
+        }
+
+        private void OnNextMonthClicked(object? sender, EventArgs e)
+        {
+            _currentCalendarMonth = _currentCalendarMonth.AddMonths(1);
+            RenderCalendar();
+        }
+
+        private async void OnCalendarDayTapped(object? sender, TappedEventArgs e)
+        {
+            if (e.Parameter is CalendarDayItem tappedDay && tappedDay.Date.HasValue)
+            {
+                var date = tappedDay.Date.Value;
+
+                // Dolu bir güne tıklanıp tıklanmadığını kontrol edelim
+                if (tappedDay.IsOccupied)
+                {
+                    await DisplayAlertAsync("Uyarı", "Seçtiğiniz tarih başka bir kiralama ile çakışmaktadır. Lütfen boş günleri seçiniz.", "Tamam");
+                    return;
+                }
+
+                var start = StartDatePicker.Date;
+                var end = EndDatePicker.Date;
+
+                if (!start.HasValue || (start.HasValue && end.HasValue && date < start.Value))
+                {
+                    StartDatePicker.Date = date;
+                    EndDatePicker.Date = date.AddDays(1);
+                }
+                else if (date > start.Value)
+                {
+                    // Tıklanan tarih başlangıç tarihinden büyükse, bitiş tarihi yapalım.
+                    // Ancak bu aralıkta herhangi bir dolu gün var mı kontrol etmeliyiz!
+                    bool hasOccupiedBetween = false;
+                    if (_vehicle?.OccupiedDates != null)
+                    {
+                        hasOccupiedBetween = _vehicle.OccupiedDates.Any(o =>
+                            !(date.Date < o.StartDate.Date || start.Value.Date > o.EndDate.Date)
+                        );
+                    }
+
+                    if (hasOccupiedBetween)
+                    {
+                        await DisplayAlertAsync("Uyarı", "Seçtiğiniz aralıkta başka bir kiralama/rezervasyon bulunmaktadır.", "Tamam");
+                        return;
+                    }
+
+                    EndDatePicker.Date = date;
+                }
+                else
+                {
+                    StartDatePicker.Date = date;
+                    EndDatePicker.Date = date.AddDays(1);
+                }
+
+                RenderCalendar();
+                HesaplaToplamTutar();
             }
         }
     }

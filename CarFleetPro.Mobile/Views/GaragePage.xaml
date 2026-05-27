@@ -384,38 +384,51 @@
                                                         </DataTrigger>
                                                     </Ellipse.Triggers>
                                                 </Ellipse>
-                                                <Label Grid.Column="1" Text="{Binding Durum}" FontSize="12" FontAttributes="Bold" CharacterSpacing="0.8" VerticalOptions="Center">
-                                                    <Label.Triggers>
-                                                        <DataTrigger TargetType="Label" Binding="{Binding Durum}" Value="MÜSAİT">
-                                                            <Setter Property="TextColor" Value="#137333"/>
-                                                            <Setter Property="Text" Value="ARAÇ MÜSAİT"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger TargetType="Label" Binding="{Binding Durum}" Value="Müsait">
-                                                            <Setter Property="TextColor" Value="#137333"/>
-                                                            <Setter Property="Text" Value="ARAÇ MÜSAİT"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger TargetType="Label" Binding="{Binding Durum}" Value="müsait">
-                                                            <Setter Property="TextColor" Value="#137333"/>
-                                                            <Setter Property="Text" Value="ARAÇ MÜSAİT"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger TargetType="Label" Binding="{Binding Durum}" Value="DOLU">
-                                                            <Setter Property="TextColor" Value="#C5221F"/>
-                                                            <Setter Property="Text" Value="ARAÇ KİRALANMIŞ (DOLU)"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger TargetType="Label" Binding="{Binding Durum}" Value="Dolu">
-                                                            <Setter Property="TextColor" Value="#C5221F"/>
-                                                            <Setter Property="Text" Value="ARAÇ KİRALANMIŞ (DOLU)"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger TargetType="Label" Binding="{Binding Durum}" Value="BAKIMDA">
-                                                            <Setter Property="TextColor" Value="#B06000"/>
-                                                            <Setter Property="Text" Value="ARAÇ BAKIM SÜRECİNDE"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger TargetType="Label" Binding="{Binding Durum}" Value="Bakımda">
-                                                            <Setter Property="TextColor" Value="#B06000"/>
-                                                            <Setter Property="Text" Value="ARAÇ BAKIM SÜRECİNDE"/>
-                                                        </DataTrigger>
-                                                    </Label.Triggers>
-                                                </Label>
+                                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="1">
+                                                    <Label Text="{Binding Durum}" FontSize="12" FontAttributes="Bold" CharacterSpacing="0.8">
+                                                        <Label.Triggers>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding Durum}" Value="MÜSAİT">
+                                                                <Setter Property="TextColor" Value="#137333"/>
+                                                                <Setter Property="Text" Value="ARAÇ MÜSAİT"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding Durum}" Value="Müsait">
+                                                                <Setter Property="TextColor" Value="#137333"/>
+                                                                <Setter Property="Text" Value="ARAÇ MÜSAİT"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding Durum}" Value="müsait">
+                                                                <Setter Property="TextColor" Value="#137333"/>
+                                                                <Setter Property="Text" Value="ARAÇ MÜSAİT"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding Durum}" Value="DOLU">
+                                                                <Setter Property="TextColor" Value="#C5221F"/>
+                                                                <Setter Property="Text" Value="ARAÇ KİRALANMIŞ (DOLU)"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding Durum}" Value="Dolu">
+                                                                <Setter Property="TextColor" Value="#C5221F"/>
+                                                                <Setter Property="Text" Value="ARAÇ KİRALANMIŞ (DOLU)"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding Durum}" Value="BAKIMDA">
+                                                                <Setter Property="TextColor" Value="#B06000"/>
+                                                                <Setter Property="Text" Value="ARAÇ BAKIM SÜRECİNDE"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding Durum}" Value="Bakımda">
+                                                                <Setter Property="TextColor" Value="#B06000"/>
+                                                                <Setter Property="Text" Value="ARAÇ BAKIM SÜRECİNDE"/>
+                                                            </DataTrigger>
+                                                        </Label.Triggers>
+                                                    </Label>
+                                                    <!-- Rezervasyonlu Alt Bilgisi -->
+                                                    <Label Text="Rezervasyonlu" FontSize="10" FontAttributes="Bold" TextColor="#1E3A8A" Margin="0,1,0,0">
+                                                        <Label.Triggers>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding HasFutureReservation}" Value="False">
+                                                                <Setter Property="IsVisible" Value="False"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding HasFutureReservation}" Value="True">
+                                                                <Setter Property="IsVisible" Value="True"/>
+                                                            </DataTrigger>
+                                                        </Label.Triggers>
+                                                    </Label>
+                                                </VerticalStackLayout>
                                             </Grid>
                                         </Border>
 

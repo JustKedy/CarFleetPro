@@ -213,45 +213,87 @@ namespace CarFleetPro.Mobile.ViewModels
             }
         }
 
-        public void UzatSozlesme(Vehicle vehicle, int gunSayisi)
+        /// <summary>
+        /// Aktif s\u00f6zle\u015fmeyi uzat\u0131r. API'ye PUT /api/rental/{id}/extend isteği atar.
+        /// </summary>
+        public async Task<(bool Success, string Message)> UzatSozlesme(Vehicle vehicle, int gunSayisi)
         {
-            if (vehicle == null) return;
-            if (gunSayisi > vehicle.MaksimumUzatilabilirGunSayisi)
+            if (vehicle == null) return (false, "Ara\u00e7 bilgisi bo\u015f.");
+            if (gunSayisi <= 0)  return (false, "G\u00fcn say\u0131s\u0131 s\u0131f\u0131rdan b\u00fcy\u00fck olmal\u0131d\u0131r.");
+            if (gunSayisi > 30)  return (false, "Tek seferde en fazla 30 g\u00fcn uzatma yapabilirsiniz.");
+
+            // ActiveRentalId kontrolü — API'den geldi mi?
+            if (vehicle.ActiveRentalId == null)
             {
-                return;
+                // Fallback: Kiralama listesinden ara
+                var rentals = await _apiService.GetRentalsAsync();
+                var aktif = rentals.FirstOrDefault(r =>
+                    r.VehiclePlate == vehicle.Plaka &&
+                    r.Status == "Aktif");
+                if (aktif == null) return (false, "Bu ara\u00e7 i\u00e7in aktif kiralama bulunamad\u0131.");
+                vehicle.ActiveRentalId = aktif.RentalId;
             }
 
-            if (DateTime.TryParseExact(vehicle.KiralamaSuresi, "dd.MM.yyyy", null, System.Globalization.DateTimeStyles.None, out var mevcutBitis))
+            var (success, message, newEndDate) = await _apiService.ExtendRentalAsync(vehicle.ActiveRentalId!.Value, gunSayisi);
+
+            if (success)
             {
-                var yeniBitis = mevcutBitis.AddDays(gunSayisi);
-                vehicle.KiralamaSuresi = yeniBitis.ToString("dd.MM.yyyy");
+                // UI g\u00fcncellemesi: bitiş tarihini g\u00fcncelle
                 vehicle.uzatilanGunSayisi += gunSayisi;
+                if (!string.IsNullOrEmpty(newEndDate))
+                    vehicle.KiralamaSuresi = newEndDate;
                 vehicle.TetikleBitisTarihiGuncellemesi();
             }
+
+            return (success, message);
         }
 
-        public void EkleRezervasyon(Vehicle vehicle, string musteriAdi, string musteriTelefon, DateTime baslangicTarihi, int gunSuresi)
+        /// <summary>
+        /// \u0130leri tarihli rezervasyon oluşturur. API'ye POST /api/rental atar.
+        /// </summary>
+        public async Task<(bool Success, string Message)> EkleRezervasyon(
+            Vehicle vehicle,
+            string musteriAdi,
+            string musteriTelefon,
+            DateTime baslangicTarihi,
+            int gunSuresi)
         {
-            if (vehicle == null || string.IsNullOrWhiteSpace(musteriAdi)) return;
+            if (vehicle == null) return (false, "Araç bilgisi boş.");
+            if (string.IsNullOrWhiteSpace(musteriAdi)) return (false, "Geçerli bir müşteri adı giriniz.");
+            if (gunSuresi <= 0)  return (false, "Süre sıfırdan büyük olmalıdır.");
+
+            // Ad ve soyadı ayır
+            string firstName = musteriAdi;
+            string lastName = "Misafir";
+            var parts = musteriAdi.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length > 1)
+            {
+                lastName = parts[parts.Length - 1];
+                firstName = string.Join(" ", parts.Take(parts.Length - 1));
+            }
 
             var bitisTarihi = baslangicTarihi.AddDays(gunSuresi);
-            var yeniRezervasyon = new RentalInfo
-            {
-                RentalId = new Random().Next(10000, 99999),
-                CustomerName = musteriAdi,
-                CustomerPhone = musteriTelefon,
-                VehiclePlate = vehicle.Plaka,
-                VehicleName = vehicle.DisplayName,
-                StartDate = baslangicTarihi,
-                PlannedEndDate = bitisTarihi,
-                DailyRate = vehicle.GunlukUcret,
-                TotalAmount = vehicle.GunlukUcret * gunSuresi,
-                Status = "Aktif",
-                Notes = "İleri tarihli randevulu kiralama sözleşmesi."
-            };
+            var (success, message) = await _apiService.CreateRentalWithGuestAsync(
+                firstName,
+                lastName,
+                musteriTelefon,
+                vehicle.Id,
+                baslangicTarihi,
+                bitisTarihi,
+                depositAmount: 0,
+                notes: "İleri tarihli rezervasyon.");
 
-            vehicle.Rezervasyonlar.Add(yeniRezervasyon);
-            vehicle.TetikleBitisTarihiGuncellemesi();
+            if (success)
+            {
+                // UI ve listeleri güncellemek için API'den verileri yeniden çekelim
+                await LoadVehiclesFromApi(forceRefresh: true);
+                
+                // Badge'i hemen güncelle — sayfayı yenilemeden görünsün
+                vehicle.HasFutureReservation = true;
+                vehicle.TetikleBitisTarihiGuncellemesi();
+            }
+
+            return (success, message);
         }
     }
-}
+}

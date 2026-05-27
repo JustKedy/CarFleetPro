@@ -94,9 +94,16 @@ namespace CarFleetPro.Mobile.Views
                 var prevPage = navigationStack[navigationStack.Count - 2];
                 if (prevPage.BindingContext is GarageViewModel vm)
                 {
-                    vm.UzatSozlesme(_vehicle, gunSayisi);
-                    await DisplayAlertAsync("Başarılı", $"Sözleşme süresi {gunSayisi} gün uzatıldı. Yeni Bitiş Tarihi: {_vehicle.KiralamaSuresi}", "Tamam");
-                    await Navigation.PopAsync();
+                    var (success, message) = await vm.UzatSozlesme(_vehicle, gunSayisi);
+                    if (success)
+                    {
+                        await DisplayAlertAsync("Başarılı", $"Sözleşme süresi {gunSayisi} gün uzatıldı. Yeni Bitiş Tarihi: {_vehicle.KiralamaSuresi}", "Tamam");
+                        await Navigation.PopAsync();
+                    }
+                    else
+                    {
+                        await DisplayAlertAsync("Hata", message, "Tamam");
+                    }
                 }
                 else
                 {

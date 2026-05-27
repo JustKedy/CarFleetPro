@@ -84,15 +84,23 @@ namespace CarFleetPro.Mobile.Views
                 var prevPage = navigationStack[navigationStack.Count - 2];
                 if (prevPage.BindingContext is GarageViewModel vm)
                 {
-                    vm.EkleRezervasyon(_vehicle, musteriAdi, musteriTelefon, baslangicTarihi, gunSuresi);
+                    // Butonları devre dışı bırakıp bekleme durumu gösterebiliriz veya doğrudan çağırabiliriz
+                    var (success, message) = await vm.EkleRezervasyon(_vehicle, musteriAdi, musteriTelefon, baslangicTarihi, gunSuresi);
                     
-                    // Formu temizle
-                    _vehicle.RezMusteriAdi = string.Empty;
-                    _vehicle.RezMusteriTelefon = string.Empty;
-                    _vehicle.RezGunSuresi = "1";
+                    if (success)
+                    {
+                        // Formu temizle
+                        _vehicle.RezMusteriAdi = string.Empty;
+                        _vehicle.RezMusteriTelefon = string.Empty;
+                        _vehicle.RezGunSuresi = "1";
 
-                    await DisplayAlertAsync("Rezervasyon Başarılı", $"{musteriAdi} adına ileri tarihli rezervasyon kaydı başarıyla oluşturuldu.", "Tamam");
-                    await Navigation.PopAsync();
+                        await DisplayAlertAsync("Rezervasyon Başarılı", $"{musteriAdi} adına ileri tarihli rezervasyon kaydı başarıyla oluşturuldu.", "Tamam");
+                        await Navigation.PopAsync();
+                    }
+                    else
+                    {
+                        await DisplayAlertAsync("Rezervasyon Başarısız", $"Rezervasyon kaydı oluşturulamadı: {message}", "Tamam");
+                    }
                 }
                 else
                 {

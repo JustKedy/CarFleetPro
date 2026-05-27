@@ -16,9 +16,26 @@ namespace CarFleetPro.API.DTOs
         public int EndMileage { get; set; }
     }
 
+    /// <summary>PUT /api/rental/{id}/extend body</summary>
+    public class ExtendRentalDto
+    {
+        public int Days { get; set; }
+    }
+
+    /// <summary>GET /api/rental/vehicle/{vehicleId}/occupied-dates response item</summary>
+    public class OccupiedDateRangeDto
+    {
+        public int RentalId { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public string CustomerName { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty; // "Aktif" | "İleri Tarihli"
+    }
+
     public class RentalListDto
     {
         public int RentalId { get; set; }
+        public int VehicleId { get; set; }
         public string CustomerName { get; set; } = string.Empty;
         public string VehiclePlate { get; set; } = string.Empty;
         public string VehicleName { get; set; } = string.Empty;

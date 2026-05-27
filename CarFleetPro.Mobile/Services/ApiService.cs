@@ -771,6 +771,63 @@ namespace CarFleetPro.Mobile.Services
         }
 
         // ==========================================
+        //  KİRALAMA — YENİ: UZATMA + DOLU TARİHLER
+        // ==========================================
+
+        /// <summary>
+        /// PUT /api/rental/{id}/extend — Aktif sözleşmeyi 'days' gün uzatır.
+        /// Returns (true, "Sözleşme X gün uzatıldı.") on success.
+        /// </summary>
+        public async Task<(bool Success, string Message, string? NewEndDate)> ExtendRentalAsync(int rentalId, int days)
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                var payload  = new { Days = days };
+                var response = await _httpClient.PutAsJsonAsync($"Rental/{rentalId}/extend", payload);
+                var content  = await response.Content.ReadAsStringAsync();
+
+                System.Diagnostics.Debug.WriteLine($"[API] ExtendRental {rentalId} +{days}d → {(int)response.StatusCode}: {content}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    // API { message, newEndDate, newTotalAmount } döner
+                    using var doc = System.Text.Json.JsonDocument.Parse(content);
+                    var msg     = doc.RootElement.GetProperty("message").GetString() ?? "Sözleşme uzatıldı.";
+                    var newEnd  = doc.RootElement.TryGetProperty("newEndDate", out var ep) ? ep.GetString() : null;
+                    return (true, msg, newEnd);
+                }
+
+                var errMsg = content.Trim().Trim('"');
+                return (false, string.IsNullOrEmpty(errMsg) ? "Uzatma işlemi başarısız." : errMsg, null);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[API] ExtendRental exception: {ex.Message}");
+                return (false, $"Bağlantı hatası: {ex.Message}", null);
+            }
+        }
+
+        /// <summary>
+        /// GET /api/rental/vehicle/{vehicleId}/occupied-dates
+        /// Kiralama formu takviminde kırmızı gösterilecek dolu tarih aralıklarını getirir.
+        /// </summary>
+        public async Task<List<OccupiedDateRange>> GetOccupiedDatesAsync(int vehicleId)
+        {
+            try
+            {
+                await SetAuthorizationHeader();
+                var result = await _httpClient.GetFromJsonAsync<List<OccupiedDateRange>>($"Rental/vehicle/{vehicleId}/occupied-dates");
+                return result ?? new();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[API] GetOccupiedDates exception: {ex.Message}");
+                return new();
+            }
+        }
+
+        // ==========================================
         //  BAKIM (MAINTENANCE)
         // ==========================================
 

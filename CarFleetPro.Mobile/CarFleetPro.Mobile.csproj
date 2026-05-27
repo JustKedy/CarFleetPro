@@ -46,7 +46,22 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 
-		<NoWarn>$(NoWarn);XA0141</NoWarn>
+		<NoWarn>$(NoWarn);XA0141;CA1416</NoWarn>
+	</PropertyGroup>
+
+	<!-- ==========================================
+	     Android Debug Configuration
+	     Required for Visual Studio debugger attach
+	     ========================================== -->
+	<PropertyGroup Condition="'$(Configuration)' == 'Debug' And $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+		<!-- Enable debug symbols so VS can attach the debugger -->
+		<DebugSymbols>true</DebugSymbols>
+		<DebugType>portable</DebugType>
+		<AndroidIncludeDebugSymbols>true</AndroidIncludeDebugSymbols>
+		<!-- Embed assemblies to avoid Fast Deployment permission errors on API 36 -->
+		<EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
+		<!-- Support both ARM64 (physical) and x86_64 (emulator) -->
+		<RuntimeIdentifiers>android-arm64;android-x64</RuntimeIdentifiers>
 	</PropertyGroup>
 
 	<ItemGroup>

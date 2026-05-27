@@ -322,11 +322,78 @@
                     </VerticalStackLayout>
                 </Grid>
 
-                <!-- KİRALAMA DETAYLARI -->
-                <Label Text="Kiralama Detayları" FontSize="18" FontAttributes="Bold"
-                       TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" Margin="0,6,0,0"/>
+                 <!-- KİRALAMA DETAYLARI -->
+                 <Label Text="Kiralama Detayları" FontSize="18" FontAttributes="Bold"
+                        TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" Margin="0,6,0,0"/>
 
-                <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
+                 <!-- Görsel Dolu Tarih Takvimi -->
+                 <Border StrokeThickness="1" Stroke="{AppThemeBinding Light=#E5E7EB, Dark=#334155}" 
+                         BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Padding="15">
+                     <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                     <VerticalStackLayout Spacing="10">
+                         <!-- Ay Başlığı -->
+                         <Grid ColumnDefinitions="Auto, *, Auto" VerticalOptions="Center">
+                             <Button Grid.Column="0" Text="◀" FontSize="14" FontAttributes="Bold"
+                                     TextColor="#3B82F6" BackgroundColor="Transparent" BorderColor="Transparent"
+                                     WidthRequest="40" HeightRequest="40" Clicked="OnPrevMonthClicked" VerticalOptions="Center"/>
+                             
+                             <Label Grid.Column="1" x:Name="MonthYearLabel" Text="Yükleniyor..." FontSize="16" FontAttributes="Bold"
+                                    TextColor="{AppThemeBinding Light=#1F2937, Dark=#F1F5F9}" HorizontalOptions="Center" VerticalOptions="Center"/>
+                             
+                             <Button Grid.Column="2" Text="▶" FontSize="14" FontAttributes="Bold"
+                                     TextColor="#3B82F6" BackgroundColor="Transparent" BorderColor="Transparent"
+                                     WidthRequest="40" HeightRequest="40" Clicked="OnNextMonthClicked" VerticalOptions="Center"/>
+                         </Grid>
+
+                         <!-- Gün İsimleri -->
+                         <Grid ColumnDefinitions="*,*,*,*,*,*,*" Margin="0,5">
+                             <Label Grid.Column="0" Text="Pt" HorizontalOptions="Center" FontSize="11" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}"/>
+                             <Label Grid.Column="1" Text="Sa" HorizontalOptions="Center" FontSize="11" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}"/>
+                             <Label Grid.Column="2" Text="Ça" HorizontalOptions="Center" FontSize="11" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}"/>
+                             <Label Grid.Column="3" Text="Pe" HorizontalOptions="Center" FontSize="11" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}"/>
+                             <Label Grid.Column="4" Text="Cu" HorizontalOptions="Center" FontSize="11" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#9CA3AF, Dark=#64748B}"/>
+                             <Label Grid.Column="5" Text="Ct" HorizontalOptions="Center" FontSize="11" FontAttributes="Bold" TextColor="#EF4444"/>
+                             <Label Grid.Column="6" Text="Pz" HorizontalOptions="Center" FontSize="11" FontAttributes="Bold" TextColor="#EF4444"/>
+                         </Grid>
+
+                         <!-- Günler Grid -->
+                         <CollectionView x:Name="CalendarCollectionView" SelectionMode="None">
+                             <CollectionView.ItemsLayout>
+                                 <GridItemsLayout Orientation="Vertical" Span="7" VerticalItemSpacing="6" HorizontalItemSpacing="4"/>
+                             </CollectionView.ItemsLayout>
+                             <CollectionView.ItemTemplate>
+                                 <DataTemplate x:DataType="models:CalendarDayItem">
+                                     <Border WidthRequest="36" HeightRequest="36" StrokeThickness="0" BackgroundColor="{Binding BackgroundColor}" HorizontalOptions="Center" VerticalOptions="Center">
+                                         <Border.StrokeShape><RoundRectangle CornerRadius="18"/></Border.StrokeShape>
+                                         <Border.GestureRecognizers>
+                                             <TapGestureRecognizer Tapped="OnCalendarDayTapped" CommandParameter="{Binding .}"/>
+                                         </Border.GestureRecognizers>
+                                         <Label Text="{Binding DayNumber}" TextColor="{Binding TextColor}" FontSize="12" FontAttributes="Bold"
+                                                HorizontalOptions="Center" VerticalOptions="Center"/>
+                                     </Border>
+                                 </DataTemplate>
+                             </CollectionView.ItemTemplate>
+                         </CollectionView>
+
+                         <!-- Açıklama (Legend) -->
+                         <HorizontalStackLayout Spacing="12" HorizontalOptions="Center" Margin="0,5,0,0">
+                             <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                                 <Ellipse WidthRequest="8" HeightRequest="8" Fill="#EF4444" VerticalOptions="Center"/>
+                                 <Label Text="Dolu" FontSize="10" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}"/>
+                             </HorizontalStackLayout>
+                             <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                                 <Ellipse WidthRequest="8" HeightRequest="8" Fill="{AppThemeBinding Light=#F3F4F6, Dark=#334155}" VerticalOptions="Center"/>
+                                 <Label Text="Boş" FontSize="10" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}"/>
+                             </HorizontalStackLayout>
+                             <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                                 <Ellipse WidthRequest="8" HeightRequest="8" Fill="#3B82F6" VerticalOptions="Center"/>
+                                 <Label Text="Seçili" FontSize="10" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}"/>
+                             </HorizontalStackLayout>
+                         </HorizontalStackLayout>
+                     </VerticalStackLayout>
+                 </Border>
+
+                 <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
                     <VerticalStackLayout Grid.Column="0" Spacing="6">
                         <Label Text="Teslim Tarihi" FontSize="12" TextColor="{AppThemeBinding Light=#6B7280, Dark=#94A3B8}"/>
                         <Border HeightRequest="50" Padding="10,0" StrokeThickness="1"

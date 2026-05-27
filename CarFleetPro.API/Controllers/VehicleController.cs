@@ -215,89 +215,104 @@ namespace CarFleetPro.API.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetVehicleCardsForFrontend()
         {
-            
-            
             var requestETag = Request.Headers.IfNoneMatch.FirstOrDefault();
 
-            
-            if (!string.IsNullOrEmpty(requestETag) && 
-                _cache.TryGetValue(CardsETagKey, out string? cachedETag) && 
+            if (!string.IsNullOrEmpty(requestETag) &&
+                _cache.TryGetValue(CardsETagKey, out string? cachedETag) &&
                 requestETag == cachedETag)
             {
-                return StatusCode(304); 
+                return StatusCode(304);
             }
 
             var currentYear = DateTime.UtcNow.Year;
+            var today       = DateTime.UtcNow.Date;
 
-            
-            
+            // Araç kartlarını getir
             var cardList = await _context.Vehicles
                 .Select(v => new VehicleCardDto
                 {
-                    Id = v.VehicleId,
-                    Plaka = v.PlateNumber,
-                    Marka = v.Brand.Name,
-                    Model = v.Model.Name,
-                    Hp = v.HorsePower,
-                    Yas = currentYear - v.Year,
-                    Km = v.Mileage,
-                    Durum = v.Status == VehicleStatus.Available ? "MÜSAİT" :
-                            v.Status == VehicleStatus.Rented ? "DOLU" : "BAKIMDA",
-                    ResimUrl = v.ImageUrl ?? "https://via.placeholder.com/300",
-                    Branch = v.Branch,
-                    GunlukUcret = v.DailyRate,
-                    Segment = v.Type.Name,
-                    BasePrice = v.BasePrice,
+                    Id     = v.VehicleId,
+                    Plaka  = v.PlateNumber,
+                    Marka  = v.Brand.Name,
+                    Model  = v.Model.Name,
+                    Hp     = v.HorsePower,
+                    Yas    = currentYear - v.Year,
+                    Km     = v.Mileage,
+                    Durum  = v.Status == VehicleStatus.Available  ? "MÜSAİT" :
+                             v.Status == VehicleStatus.Rented     ? "DOLU"   : "BAKIMDA",
+                    ResimUrl             = v.ImageUrl ?? "https://via.placeholder.com/300",
+                    Branch               = v.Branch,
+                    GunlukUcret          = v.DailyRate,
+                    Segment              = v.Type.Name,
+                    BasePrice            = v.BasePrice,
                     MaxDiscountPercentage = v.MaxDiscountPercentage
                 })
                 .ToListAsync();
 
-            
+            // Tüm aktif (ve ileri tarihli) kiralamaları tek sorguda çek
             var activeRentals = await _context.Rentals
-                .Where(r => r.Status == RentalStatus.Active)
+                .Where(r => r.Status == RentalStatus.Active && r.PlannedEndDate >= today)
                 .Join(_context.Customers,
                     r => r.CustomerId,
                     c => c.CustomerId,
                     (r, c) => new
                     {
+                        r.RentalId,
                         r.VehicleId,
                         r.TotalAmount,
                         r.StartDate,
                         r.PlannedEndDate,
-                        KiralayanKisi = c.FirstName + " " + c.LastName
+                        KiralayanKisi = c.FirstName + " " + c.LastName,
+                        IsFuture      = r.StartDate.Date > today
                     })
                 .ToListAsync();
 
-            
-            // Aynı araca birden fazla aktif kiralama olsa bile crash atmaz
-            var rentalMap = activeRentals
+            // Araç başına dolu tarih listesi
+            var occupiedByVehicle = activeRentals
                 .GroupBy(r => r.VehicleId)
-                .ToDictionary(g => g.Key, g => g.First());
+                .ToDictionary(g => g.Key, g => g.ToList());
+
             foreach (var card in cardList)
             {
-                if (rentalMap.TryGetValue(card.Id, out var rental))
+                if (!occupiedByVehicle.TryGetValue(card.Id, out var rentals)) continue;
+
+                // Aktif (anlık) kiralama bilgileri
+                var active = rentals.FirstOrDefault(r => !r.IsFuture);
+                if (active != null)
                 {
-                    card.KiralayanKisi = rental.KiralayanKisi;
-                    card.KiralamaFiyati = rental.TotalAmount;
-                    card.KiralamaSuresi = $"{(rental.PlannedEndDate - rental.StartDate).Days} Gün";
-                    card.KiralamaTarihi = rental.StartDate.ToString("dd.MM.yyyy");
+                    card.KiralayanKisi   = active.KiralayanKisi;
+                    card.KiralamaFiyati  = active.TotalAmount;
+                    card.KiralamaSuresi  = $"{(active.PlannedEndDate - active.StartDate).Days} Gün";
+                    card.KiralamaTarihi  = active.StartDate.ToString("dd.MM.yyyy");
+                    card.ActiveRentalId  = active.RentalId;
                 }
+
+                // İleri tarihli rezervasyon var mı?
+                card.HasFutureReservation = rentals.Any(r => r.IsFuture);
+
+                // Tüm dolu tarih aralıkları (takvim için)
+                card.OccupiedDates = rentals.Select(r => new OccupiedDateRangeDto
+                {
+                    RentalId     = r.RentalId,
+                    StartDate    = r.StartDate,
+                    EndDate      = r.PlannedEndDate,
+                    CustomerName = r.KiralayanKisi,
+                    Status       = r.IsFuture ? "İleri Tarihli" : "Aktif"
+                }).ToList();
             }
 
-            
-            var json = JsonSerializer.Serialize(cardList);
-            var hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(json)));
-            var etag = $"\"{hash[..16]}\""; 
+            var json  = JsonSerializer.Serialize(cardList);
+            var hash  = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(json)));
+            var etag  = $"\"{hash[..16]}\"";
 
-            
             _cache.Set(CardsETagKey, etag, new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(10)));
 
-            
-            Response.Headers.ETag = etag;
-            Response.Headers.CacheControl = "private, max-age=60"; 
+            Response.Headers.ETag         = etag;
+            Response.Headers.CacheControl = "private, max-age=60";
 
             return Ok(cardList);
         }
+
 
         [HttpPut("{id}/maintenance/start")]
         public async Task<IActionResult> SendToMaintenance(int id)

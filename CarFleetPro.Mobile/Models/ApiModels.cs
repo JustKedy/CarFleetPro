@@ -108,6 +108,7 @@ namespace CarFleetPro.Mobile.Models
     public class RentalInfo
     {
         public int RentalId { get; set; }
+        public int VehicleId { get; set; }
         public string CustomerName { get; set; } = string.Empty;
         public string VehiclePlate { get; set; } = string.Empty;
         public string VehicleName { get; set; } = string.Empty;
@@ -125,6 +126,16 @@ namespace CarFleetPro.Mobile.Models
         public string Status { get; set; } = string.Empty;
         public string Notes { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
+    }
+
+    /// <summary>Bir aracın dolu tarih aralığı (takvimde kırmızı gösterilecek)</summary>
+    public class OccupiedDateRange
+    {
+        public int RentalId { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public string CustomerName { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty; // "Aktif" | "İleri Tarihli"
     }
 
     public class MaintenanceInfo
@@ -306,5 +317,17 @@ namespace CarFleetPro.Mobile.Models
         public string DriverLicenseNumber { get; set; } = string.Empty;
         public DateTime DriverLicenseExpiry { get; set; }
         public string Address { get; set; } = string.Empty;
+    }
+
+    public class CalendarDayItem
+    {
+        public DateTime? Date { get; set; }
+        public string DayNumber => Date?.Day.ToString() ?? "";
+        public bool IsOccupied { get; set; }
+        public bool IsSelected { get; set; }
+        public bool IsEmpty => Date == null;
+
+        public string BackgroundColor => IsEmpty ? "#00000000" : (IsSelected ? "#3B82F6" : (IsOccupied ? "#EF4444" : (Microsoft.Maui.Controls.Application.Current?.RequestedTheme == Microsoft.Maui.ApplicationModel.AppTheme.Dark ? "#334155" : "#F3F4F6")));
+        public string TextColor => IsEmpty ? "#00000000" : (IsSelected || IsOccupied ? "#FFFFFF" : (Microsoft.Maui.Controls.Application.Current?.RequestedTheme == Microsoft.Maui.ApplicationModel.AppTheme.Dark ? "#CBD5E1" : "#1F2937"));
     }
 }
